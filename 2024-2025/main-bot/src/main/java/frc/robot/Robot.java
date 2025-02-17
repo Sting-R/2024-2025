@@ -18,6 +18,7 @@
 package frc.robot;
 
 import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -126,6 +127,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
+    SimulatedArena.getInstance();
   }
 
   /** This function is called periodically whilst in simulation. */

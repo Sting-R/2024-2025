@@ -6,7 +6,7 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.seasonspecific.crescendo2024.CrescendoNoteOnField;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
-import edu.wpi.first.units.Units;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -37,11 +37,11 @@ public class MapleSimSubsystem extends SubsystemBase {
                         COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof, // Use the COF for Neoprene Wheels
                         9)) // L3 Gear ratio
                 // Configures the track length and track width (spacing between swerve modules)
-                .withTrackLengthTrackWidth(Units.Inches.of(DrivetrainConstants.lengthBetweenSwerveModules),
-                        Units.Inches.of(DrivetrainConstants.lengthBetweenSwerveModules))
+                .withTrackLengthTrackWidth(Inches.of(DrivetrainConstants.lengthBetweenSwerveModules),
+                        Inches.of(DrivetrainConstants.lengthBetweenSwerveModules))
                 // Configures the bumper size (dimensions of the robot bumper)
-                .withBumperSize(Units.Inches.of(DrivetrainConstants.lengthOfBumpers),
-                        Units.Inches.of(DrivetrainConstants.lengthOfBumpers));
+                .withBumperSize(Inches.of(DrivetrainConstants.lengthOfBumpers),
+                        Inches.of(DrivetrainConstants.lengthOfBumpers));
     }
 
     public void addGamePiece() {

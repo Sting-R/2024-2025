@@ -32,8 +32,8 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
                                                                                  // actually initialized
         m_elevatorLeftMotor = new TalonFX(elevatorLeftMotorId);
         m_elevatorRightMotor = new TalonFX(elevatorRightMotorId);
-        m_elevatorTopLimitSwitch = new DigitalInput(1);
-        m_elevatorBottomLimitSwitch = new DigitalInput(2);
+        m_elevatorTopLimitSwitch = new DigitalInput(7);
+        m_elevatorBottomLimitSwitch = new DigitalInput(8);
         m_Encoder1 = new Encoder(0, 1);
         currentElevatorState = ElevatorPresets.Level1;
     }
