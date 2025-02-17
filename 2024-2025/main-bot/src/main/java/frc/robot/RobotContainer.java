@@ -141,7 +141,8 @@ public class RobotContainer {
          */
         private void configureBindings(double random) {
 
-                // ================ Elevator Subsystem ================ //
+                // ============================ Elevator Subsystem ============================
+                // //
 
                 // Sets the default command for the elevator (the command that always runs)
                 // Checks if the left joystick is being moved, if it is, it will run the
@@ -169,29 +170,34 @@ public class RobotContainer {
                                                 () -> m_elevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level4),
                                                 m_elevatorSubsystem));
 
-                // ================ Algae Arm Subsystem ================ //
-                m_auxillaryController.povUp().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(true, false, false))
-                                .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));// makes algaeBar
-                                                                                                      // spin faster if
-                                                                                                      // A
-                                                                                                      // pressed, else
-                                                                                                      // stop
-                m_auxillaryController.povDown().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(false, true, false))
-                                .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));// makes algae bar
-                                                                                                      // spit out ball
-                                                                                                      // if B
-                                                                                                      // pressed, else
-                                                                                                      // stop
-                m_auxillaryController.povLeft().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, true))
-                                .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));// makes algae bar
-                                                                                                      // spin slowly if
-                                                                                                      // Y
-                                                                                                      // pressed, else
-                                                                                                      // stop
-                // m_auxillaryController.a().whileTrue(m_AlgaeArmSubsystem.commandAlgaeIntake(m_AlgaeArmSubsystem))
-                // .onFalse(m_AlgaeArmSubsystem.commandAlgaeOuttake(m_AlgaeArmSubsystem));
-                // This command was taken out due to clashing and we already have a command that
-                // does the same thing
+                // ====================== Algae Arm Subsystem ====================== //
+
+                m_auxillaryController.leftTrigger()
+                                // makes algae bar intake if LT pressed
+                                .whileTrue(m_AlgaeArmSubsystem.commandAlgaeIntake(m_AlgaeArmSubsystem))
+                                // Interrupts the command, causing motors to SLOWLY SPIN INWARDS (this way they
+                                // can maintain control of the algae)
+                                .onFalse(m_AlgaeArmSubsystem.commandInterrupt());
+                m_auxillaryController.rightTrigger()
+                                // makes algae bar outtake if RT pressed
+                                .whileTrue(m_AlgaeArmSubsystem.commandAlgaeOuttake(m_AlgaeArmSubsystem))
+                                // interrupts the command, causing motors to STOP
+                                .onFalse(m_AlgaeArmSubsystem.commandInterrupt());
+
+                // The code below was taken out to streamline the Algae arm (we need two buttons
+                // to control the algae arm, the method below uses 3 buttons)
+                // // makes algae bar spin faster if A pressed, else stop
+                // m_auxillaryController.povUp().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(true,
+                // false, false))
+                // .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));
+                // // makes algae bar spit out ball if B pressed, else stop
+                // m_auxillaryController.povDown().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(false,
+                // true, false))
+                // .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));
+                // // makes algae bar spin slowly if Y pressed, else stop
+                // m_auxillaryController.povLeft().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(false,
+                // false, true))
+                // .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));
 
                 // Command Compositions for Elevator + Coral
                 // Level 1 Preset
@@ -243,7 +249,7 @@ public class RobotContainer {
                 // m_elevatorSubsystem.commandMoveToPreset(ElevatorPresets.Lowest)
                 // .until(m_elevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Highest))));
 
-                // ================ Coral Arm Subsystem ================ //
+                // ====================== Coral Arm Subsystem ====================== //
                 // makes coral arm go up
                 m_auxillaryController.leftBumper()
                                 .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0.5, CoralArmLevels.Up));
@@ -258,7 +264,7 @@ public class RobotContainer {
                 // it
                 m_auxillaryController.povCenter().onTrue(m_CoralArmSubsystem.emergencyStop());
 
-                // ================ Drive Subsystem ================ //
+                // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
 
                 // Note that X is defined as forward according to WPILib convention,
@@ -266,23 +272,12 @@ public class RobotContainer {
                 drivetrain.setDefaultCommand(
                                 // Drivetrain will execute this command periodically
                                 drivetrain.applyRequest(() -> drive
-                                                .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive
-                                                                                                          // forward
-                                                                                                          // with
-                                                                                                          // negative
-                                                                                                          // Y
-                                                                                                          // (forward)
-                                                .withVelocityY(-m_driverController.getLeftX() * MaxSpeed) // Drive left
-                                                                                                          // with
-                                                                                                          // negative X
-                                                                                                          // (left)
-                                                .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate) // Drive
-                                                                                                                      // counterclockwise
-                                                                                                                      // with
-                                                                                                                      // negative
-                                                                                                                      // X
-                                                                                                                      // (left)
-                                ));
+                                                // Drive forward with negative Y (forward)
+                                                .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                                                // Drive left with negative X (left)
+                                                .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                                                // Drive counterclockwise with negative X (left)
+                                                .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate)));
                 m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
                 m_driverController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(
                                 new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
