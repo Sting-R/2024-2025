@@ -12,11 +12,10 @@
  *    Back + X - SysId Dynamic Reverse
  *    Start + Y - SysId Quasistatic Forward
  *    Start + X - SysId Quasistatic Reverse
- *    DPad Up - Coral Arm Up
- *    DPad Down - Coral Arm Down
- *    DPad Center - Coral Arm Stop
- *    Right Stick - Coral Arm Emergency Stop
+ *    Left Joystick - Move (Field Orientated)
+ *    Right Joystick - Turn
  *    LB - Reset Field Centric Seed
+ *    RT - Align with Apriltag
  * 
  *  Auxiliary Controller:
  *    A - Level 1 Elevator + Coral Arm 
@@ -87,12 +86,11 @@ public class RobotContainer {
 
         private final SendableChooser<Command> autoChooser;
         /* Swerve drive platform setup */ // From Swerve Project Generator
-        private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                      // speed
-        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
-                                                                                          // second
-                                                                                          // max
-                                                                                          // angular velocity
+
+        // kSpeedAt12Volts Desired Top speed←
+        private double MaxSpeed = Constants.DrivetrainConstants.MaxSpeed;
+        // 3/4 of a rotation per second max angular velocity
+        private double MaxAngularRate = Constants.DrivetrainConstants.MaxAngularRate;
 
         /* Setting up bindings for necessary control of the swerve drive platform */
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1)
@@ -106,7 +104,7 @@ public class RobotContainer {
 
         public final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
         // The following subsystems must be created after the drivetrain
-        public final LimeLightSubsystem m_LightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem);
+        public final LimeLightSubsystem m_LimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem);
         public final MapleSimSubsystem m_MapleSimSubsystem = new MapleSimSubsystem(m_DrivetrainSubsystem);
 
         // End of Swerve Drive Platform setup
@@ -115,7 +113,6 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
-
                 // Build an auto chooser. This will use Commands.none() as the default option.
                 autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -260,13 +257,13 @@ public class RobotContainer {
                 // makes coral arm go down
                 m_auxillaryController.rightBumper()
                                 .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.5, CoralArmLevels.Down));
-                // stops coral arm
-                // m_auxillaryController.povCenter().whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0,
-                // CoralArmLevels.Stop));
                 // Emergency Stop for Coral Arm (in case it goes past the top or bottom) Note: I
                 // don't know if the onTrue method will only run once, so test it before you use
                 // it
                 m_auxillaryController.povCenter().onTrue(m_CoralArmSubsystem.emergencyStop());
+                // stops coral arm
+                // m_auxillaryController.povCenter().whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0,
+                // CoralArmLevels.Stop));
 
                 // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
@@ -285,6 +282,15 @@ public class RobotContainer {
                 m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> brake));
                 m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> point.withModuleDirection(
                                 new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
+
+                // limelight override
+                m_driverController.rightTrigger().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> drive
+                                // Drive forward with negative Y (forward)
+                                .withVelocityX(m_LimeLightSubsystem.limelight_range_proportional())
+                                // Drive left with negative X (left)
+                                .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                                // Drive counterclockwise with negative X (left)
+                                .withRotationalRate(m_LimeLightSubsystem.limelight_aim_proportional())));
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
