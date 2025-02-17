@@ -3,7 +3,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Encoder;
 
 import java.util.function.BooleanSupplier;
@@ -25,8 +26,12 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     private final Encoder m_Encoder1;
     // private TitanQuadEncoder m_elevatorEncoder;
     private double m_elevatorEncoder; // Placeholder
+    private ElevatorPresets currentElevatorState;
+    // Constants
+    private double motorElevatorSpeed;
 
     private ElevatorPresets currentElevatorState;
+    
 
     public ElevatorSubsystem(int elevatorLeftMotorId, int elevatorRightMotorId) {// this is da place where stuff is
                                                                                  // actually initialized
@@ -45,26 +50,27 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         Level2, Level3, Level4, Highest // top
     }
 
-    // The commands below that are commented are currently not being used and have
-    // been replaced. They are kept just cause
+    public Command raiseElevator() {
+        // Placeholder
+        return runOnce(() -> {
+            /* one-time action goes here */
+            setMotorElevatorSpeed(0.1);
+        });
+    }
 
-    // public Command raiseElevator() {
-    // Placeholder
-    // return runOnce(
-    // () -> {
-    // /* one-time action goes here */
-    // setMotorElevatorSpeed(0.1);
-    // });
-    // }
+    public Command lowerElevator() {
+        // Placeholder
+        return runOnce(() -> {
+            /* one-time action goes here */
+            setMotorElevatorSpeed(-0.1);
+        });
+    }
 
-    // public Command lowerElevator() {
-    // // Placeholder
-    // return runOnce(
-    // () -> {
-    // /* one-time action goes here */
-    // setMotorElevatorSpeed(-0.1);
-    // });
-    // }
+    public void debuggingMethod() {
+        SmartDashboard.putNumber("Elevator Encoder", m_Encoder1.get());
+        SmartDashboard.putBoolean("Elevator Top Limit Switch", m_elevatorTopLimitSwitch.get());
+        SmartDashboard.putBoolean("Elevator Bottom Limit Switch", m_elevatorBottomLimitSwitch.get());
+    }
 
     public boolean isElevatorAtTop() {
         // Placeholder
@@ -73,11 +79,8 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         } else if (m_Encoder1.get() < ElevatorConstants.kElevatorEncoderTopValue && m_elevatorTopLimitSwitch.get()) {
             System.out.println("Error: Encoder And Top Limit Switch Mismatched");
             return true;
-        } else if (m_Encoder1.get() >= ElevatorConstants.kElevatorEncoderTopValue && !m_elevatorTopLimitSwitch.get()) {
-            System.out.println("Error: Encoder And Top Limit Switch Mismatched");
-            return true;
         } else {
-            return false;
+            return true;
         }
     }
 
@@ -89,12 +92,8 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
                 && m_elevatorBottomLimitSwitch.get()) {
             System.out.println("Error: Encoder And Bottom Limit Switch Mismatched");
             return true;
-        } else if (m_Encoder1.get() <= ElevatorConstants.kElevatorEncoderBottomValue
-                && !m_elevatorBottomLimitSwitch.get()) {
-            System.out.println("Error: Encoder And Bottom Limit Switch Mismatched");
-            return true;
         } else {
-            return false;
+            return true;
         }
     }
 
@@ -105,11 +104,12 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // conditions will only be evaluated once.
         // We need to check the conditions continually somehow.
 
-        if (voltage > 0 && isElevatorAtTop()) {// if motor is moving and elevators at the top, make both move up
+        debuggingMethod();
+        if (voltage > 0 && !isElevatorAtTop()) {// if motor is moving and elevators at the top, make both move up
             m_elevatorLeftMotor.set(voltage);
             m_elevatorRightMotor.set(-voltage);
             Utility.printLn("Elevator is moving up");
-        } else if (voltage < 0 && isElevatorAtBottom()) {// or if its at bottom make move down
+        } else if (voltage < 0 && !isElevatorAtBottom()) {// or if its at bottom make move down
             m_elevatorLeftMotor.set(voltage);
             m_elevatorRightMotor.set(-voltage);
             Utility.printLn("Elevator is moving down");
@@ -151,17 +151,19 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
                                                                                         // position based on the encoder
                                                                                         // value
         // WILL HAVE TO REVERSE ONE MOTOR DEPENDING ON ORIENTATION!!!!
-        if (m_elevatorEncoder <= position && !isElevatorAtBottom()) { // checking to see if the motor wants to move down
-                                                                      // and makes sure the elevator isn't at the bottom
-            m_elevatorLeftMotor.set(-ElevatorConstants.kMotorElevatorSpeed);
-            m_elevatorRightMotor.set(ElevatorConstants.kMotorElevatorSpeed);
+        debuggingMethod();
+        if (m_Encoder1.get() <= (position + 5) && !isElevatorAtBottom()) { // checking to see if the motor wants to move
+                                                                           // down and makes sure the elevator isn't at
+                                                                           // the bottom
+            m_elevatorLeftMotor.set(-motorElevatorSpeed);
+            m_elevatorRightMotor.set(motorElevatorSpeed);
             Utility.printLn("Elevator is moving down");
-        } else if (m_elevatorEncoder >= position && !isElevatorAtTop()) { // checking to see if the motor wants to move
-                                                                          // up and makes sure the elevator isn't at the
-                                                                          // top
-            m_elevatorLeftMotor.set(ElevatorConstants.kMotorElevatorSpeed);
-            m_elevatorRightMotor.set(-ElevatorConstants.kMotorElevatorSpeed);
-            Utility.printLn("Elevator is moving up");
+        } else if (m_Encoder1.get() >= (position - 5) && !isElevatorAtTop()) { // checking to see if the motor wants to
+                                                                               // move up and makes sure the elevator
+                                                                               // isn't at the top
+            m_elevatorLeftMotor.set(motorElevatorSpeed);
+            m_elevatorRightMotor.set(-motorElevatorSpeed);
+            Utility.printLn("Elevator is moving up");1
         } else {
             m_elevatorLeftMotor.set(0);
             m_elevatorRightMotor.set(0);
