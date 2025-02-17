@@ -30,9 +30,6 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     // Constants
     private double motorElevatorSpeed;
 
-    private ElevatorPresets currentElevatorState;
-    
-
     public ElevatorSubsystem(int elevatorLeftMotorId, int elevatorRightMotorId) {// this is da place where stuff is
                                                                                  // actually initialized
         m_elevatorEncoder = 0; // Placeholder
@@ -41,13 +38,11 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         m_elevatorTopLimitSwitch = new DigitalInput(1);
         m_elevatorBottomLimitSwitch = new DigitalInput(2);
         m_Encoder1 = new Encoder(0, 1);
-        currentElevatorState = ElevatorPresets.Lowest;
+        currentElevatorState = ElevatorPresets.Level1;
     }
 
-    public enum ElevatorPresets {
-        Lowest, // bottom
-        Level1, // Levels of the reef
-        Level2, Level3, Level4, Highest // top
+    public enum ElevatorPresets { // different levels for the coral reef
+        Level1, Level2, Level3, Level4
     }
 
     public Command raiseElevator() {
@@ -99,11 +94,6 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
     public void setMotorElevatorSpeed(double voltage) {
         // Placeholder
-
-        // BEN: If this method truly will be run once (as above), then the stop
-        // conditions will only be evaluated once.
-        // We need to check the conditions continually somehow.
-
         debuggingMethod();
         if (voltage > 0 && !isElevatorAtTop()) {// if motor is moving and elevators at the top, make both move up
             m_elevatorLeftMotor.set(voltage);
@@ -142,10 +132,15 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     /**
      * The moveElevatorToPosition method takes a double as a parameter. This value
      * represents the number of rotations necessary to reach the target position.
+     * 
      * fun fact: 6!! is 6 * 4 * 2 while 7!! is 7 * 5 * 3 * 1. Kind of like a
      * selective factorial. Yeah idk why I said that. Moving on
      * 
+     * Oooooo thats a really fun fact! I didn't know you could have selective
+     * factorials! - H
+     * 
      * @param position
+     * @param desiredPreset
      */
     public void moveElevatorToPosition(double position, ElevatorPresets desiredPreset) {// moves elevator to a certain
                                                                                         // position based on the encoder
@@ -163,7 +158,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
                                                                                // isn't at the top
             m_elevatorLeftMotor.set(motorElevatorSpeed);
             m_elevatorRightMotor.set(-motorElevatorSpeed);
-            Utility.printLn("Elevator is moving up");1
+            Utility.printLn("Elevator is moving up");
         } else {
             m_elevatorLeftMotor.set(0);
             m_elevatorRightMotor.set(0);
