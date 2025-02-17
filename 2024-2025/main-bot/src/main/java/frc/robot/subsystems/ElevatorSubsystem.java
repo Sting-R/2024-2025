@@ -24,15 +24,12 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     private DigitalInput m_elevatorBottomLimitSwitch;
     // Encoder
     private final Encoder m_Encoder1;
-    // private TitanQuadEncoder m_elevatorEncoder;
-    private double m_elevatorEncoder; // Placeholder
     private ElevatorPresets currentElevatorState;
     // Constants
     private double motorElevatorSpeed;
 
     public ElevatorSubsystem(int elevatorLeftMotorId, int elevatorRightMotorId) {// this is da place where stuff is
                                                                                  // actually initialized
-        m_elevatorEncoder = 0; // Placeholder
         m_elevatorLeftMotor = new TalonFX(elevatorLeftMotorId);
         m_elevatorRightMotor = new TalonFX(elevatorRightMotorId);
         m_elevatorTopLimitSwitch = new DigitalInput(1);
