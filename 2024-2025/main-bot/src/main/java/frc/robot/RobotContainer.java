@@ -46,6 +46,8 @@ import java.lang.Math;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.MapleSimSubsystem;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
 import frc.robot.subsystems.AlgaeArmSubsystem;
@@ -71,7 +73,7 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
 public class RobotContainer {
         // The robot's subsystems and commands are defined here...
         // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-        private final ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(
+        private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem(
                         Constants.ElevatorConstants.kElevatorLeftMotorPort,
                         Constants.ElevatorConstants.kElevatorRightMotorPort);
         private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new AlgaeArmSubsystem(
@@ -80,6 +82,8 @@ public class RobotContainer {
                         Constants.CoralArmConstants.coralArmID);
         private final CommandXboxController m_driverController = new CommandXboxController(
                         OperatorConstants.kDriverControllerPort);
+        private final CommandXboxController m_auxillaryController = new CommandXboxController(
+                        Constants.OperatorConstants.kAuxiliaryControllerPort);
 
         private final SendableChooser<Command> autoChooser;
         /* Swerve drive platform setup */ // From Swerve Project Generator
@@ -100,10 +104,10 @@ public class RobotContainer {
 
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
-        private final CommandXboxController m_auxillaryController = new CommandXboxController(
-                        Constants.OperatorConstants.kAuxiliaryControllerPort);
-
-        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        public final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
+        // The following subsystems must be created after the drivetrain
+        public final LimeLightSubsystem m_LightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem);
+        public final MapleSimSubsystem m_MapleSimSubsystem = new MapleSimSubsystem(m_DrivetrainSubsystem);
 
         // End of Swerve Drive Platform setup
 
@@ -147,28 +151,28 @@ public class RobotContainer {
                 // Sets the default command for the elevator (the command that always runs)
                 // Checks if the left joystick is being moved, if it is, it will run the
                 // commandVoltage method with the left joystick's Y value
-                m_elevatorSubsystem.setDefaultCommand((Math.abs(m_auxillaryController.getLeftY()) > 0.1)
-                                ? m_elevatorSubsystem.commandVoltage(m_auxillaryController.getLeftY())
-                                : m_elevatorSubsystem.commandVoltage(0));
+                m_ElevatorSubsystem.setDefaultCommand((Math.abs(m_auxillaryController.getLeftY()) > 0.1)
+                                ? m_ElevatorSubsystem.commandVoltage(m_auxillaryController.getLeftY())
+                                : m_ElevatorSubsystem.commandVoltage(0));
                 // 10 is a PLACEHOLDER value for now
 
                 // The commands below make the elevator go to certain levels
                 m_auxillaryController.a()
                                 .onTrue(new RunCommand(
-                                                () -> m_elevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level1),
-                                                m_elevatorSubsystem));
+                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level1),
+                                                m_ElevatorSubsystem));
                 m_auxillaryController.b()
                                 .onTrue(new RunCommand(
-                                                () -> m_elevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level2),
-                                                m_elevatorSubsystem));
+                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level2),
+                                                m_ElevatorSubsystem));
                 m_auxillaryController.x()
                                 .onTrue(new RunCommand(
-                                                () -> m_elevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level3),
-                                                m_elevatorSubsystem));
+                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level3),
+                                                m_ElevatorSubsystem));
                 m_auxillaryController.y()
                                 .onTrue(new RunCommand(
-                                                () -> m_elevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level4),
-                                                m_elevatorSubsystem));
+                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level4),
+                                                m_ElevatorSubsystem));
 
                 // ====================== Algae Arm Subsystem ====================== //
 
@@ -269,34 +273,35 @@ public class RobotContainer {
 
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
-                drivetrain.setDefaultCommand(
+                m_DrivetrainSubsystem.setDefaultCommand(
                                 // Drivetrain will execute this command periodically
-                                drivetrain.applyRequest(() -> drive
+                                m_DrivetrainSubsystem.applyRequest(() -> drive
                                                 // Drive forward with negative Y (forward)
                                                 .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                                                 // Drive left with negative X (left)
                                                 .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                                                 // Drive counterclockwise with negative X (left)
                                                 .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate)));
-                m_driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-                m_driverController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(
+                m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> brake));
+                m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> point.withModuleDirection(
                                 new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
 
                 // Run SysId routines when holding back/start and X/Y.
                 // Note that each routine should be run exactly once in a single log.
                 m_driverController.back().and(m_driverController.y())
-                                .whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+                                .whileTrue(m_DrivetrainSubsystem.sysIdDynamic(Direction.kForward));
                 m_driverController.back().and(m_driverController.x())
-                                .whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+                                .whileTrue(m_DrivetrainSubsystem.sysIdDynamic(Direction.kReverse));
                 m_driverController.start().and(m_driverController.y())
-                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+                                .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kForward));
                 m_driverController.start().and(m_driverController.x())
-                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+                                .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kReverse));
 
                 // reset the field-centric heading on left bumper press
-                m_driverController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+                m_driverController.leftBumper()
+                                .onTrue(m_DrivetrainSubsystem.runOnce(() -> m_DrivetrainSubsystem.seedFieldCentric()));
 
-                drivetrain.registerTelemetry(logger::telemeterize);
+                m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
 
         }
 
