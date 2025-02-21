@@ -20,6 +20,8 @@ package frc.robot;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,6 +74,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    SignalLogger.stop();
   }
 
   @Override
@@ -106,6 +109,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    SignalLogger.setPath("C:\\Users\\teams\\Desktop\\2025HootLogs");
+    SignalLogger.start();
   }
 
   /** This function is called periodically during operator control. */
