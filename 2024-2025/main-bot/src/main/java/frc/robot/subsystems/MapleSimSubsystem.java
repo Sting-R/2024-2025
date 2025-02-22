@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants.DrivetrainConstants;;
+import frc.robot.Constants.DriveTrainConstants;;
 
 public class MapleSimSubsystem extends SubsystemBase {
 
@@ -37,11 +37,11 @@ public class MapleSimSubsystem extends SubsystemBase {
                         COTS.WHEELS.DEFAULT_NEOPRENE_TREAD.cof, // Use the COF for Neoprene Wheels
                         9)) // L3 Gear ratio
                 // Configures the track length and track width (spacing between swerve modules)
-                .withTrackLengthTrackWidth(Inches.of(DrivetrainConstants.lengthBetweenSwerveModules),
-                        Inches.of(DrivetrainConstants.lengthBetweenSwerveModules))
+                .withTrackLengthTrackWidth(Inches.of(DriveTrainConstants.lengthBetweenSwerveModules),
+                        Inches.of(DriveTrainConstants.lengthBetweenSwerveModules))
                 // Configures the bumper size (dimensions of the robot bumper)
-                .withBumperSize(Inches.of(DrivetrainConstants.lengthOfBumpers),
-                        Inches.of(DrivetrainConstants.lengthOfBumpers));
+                .withBumperSize(Inches.of(DriveTrainConstants.lengthOfBumpers),
+                        Inches.of(DriveTrainConstants.lengthOfBumpers));
     }
 
     public void addGamePiece() {
