@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.LimelightHelpers;
 // import edu.first.LimelightHelpers;
 // import edu.first.wpilibj.
@@ -135,7 +135,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     double targetingAngularVelocity = LimelightHelpers.getTX("DriveCamera") * kP;
 
     // convert to radians per second for our drive method
-    targetingAngularVelocity *= DrivetrainConstants.MaxAngularRate;
+    targetingAngularVelocity *= DriveTrainConstants.MaxAngularRate;
 
     // invert since tx is positive when the target is to the right of the crosshair
     targetingAngularVelocity *= -1.0;
@@ -152,7 +152,7 @@ public class LimeLightSubsystem extends SubsystemBase {
   public double limelight_range_proportional() {
     double kP = .1;
     double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
-    targetingForwardSpeed *= DrivetrainConstants.MaxSpeed;
+    targetingForwardSpeed *= DriveTrainConstants.MaxSpeed;
     targetingForwardSpeed *= -1.0;
     return targetingForwardSpeed;
   }
