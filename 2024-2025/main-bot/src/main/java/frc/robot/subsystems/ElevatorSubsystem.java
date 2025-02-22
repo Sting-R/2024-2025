@@ -3,9 +3,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Logging;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 import java.util.function.BooleanSupplier;
 
@@ -37,6 +40,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         m_Encoder1 = new Encoder(0, 1);
         currentElevatorState = ElevatorPresets.Level1;
         elevatorLogger = new Logging("ElevatorSubsystem");
+        motorElevatorSpeed = ElevatorConstants.kMotorElevatorSpeed;
     }
 
     public enum ElevatorPresets { // different levels for the coral reef
@@ -69,7 +73,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // Placeholder
         if (m_Encoder1.get() <= ElevatorConstants.kElevatorEncoderTopValue && !m_elevatorTopLimitSwitch.get()) {
             return false;
-        } else if (m_Encoder1.get() <= ElevatorConstants.kElevatorEncoderTopValue && m_elevatorTopLimitSwitch.get()) {
+        } else if (m_Encoder1.get() <= ElevatorConstants.kElevatorEncoderTopValue || !m_elevatorTopLimitSwitch.get()) {
             // System.out.println("Error: Encoder And Top Limit Switch Mismatched");
             elevatorLogger.error("Encoder And Top Limit Switch Mismatched");
             return true;
@@ -83,7 +87,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         if (m_Encoder1.get() >= ElevatorConstants.kElevatorEncoderBottomValue && !m_elevatorBottomLimitSwitch.get()) {
             return false;
         } else if (m_Encoder1.get() >= ElevatorConstants.kElevatorEncoderBottomValue
-                && m_elevatorBottomLimitSwitch.get()) {
+                || !m_elevatorBottomLimitSwitch.get()) {
             // System.out.println("Error: Encoder And Bottom Limit Switch Mismatched");
             elevatorLogger.error("Encoder And Bottom Limit Switch Mismatched");
             return true;
@@ -98,15 +102,28 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         if (voltage > 0 && !isElevatorAtTop()) {// if motor is moving and elevators at the top, make both move up
             m_elevatorLeftMotor.set(voltage);
             m_elevatorRightMotor.set(-voltage);
+            // Utility.printLn("Voltage Value: " + voltage + "\n Elevator Encoder Value: " +
+            // m_Encoder1.get()
+            // + "\n Elevator Top Limit Switch Value: " + m_elevatorTopLimitSwitch.get()
+            // + "\n Elevator Bottom Limit Switch Value: " +
+            // m_elevatorBottomLimitSwitch.get());
             Utility.printLn("Elevator is moving up");
         } else if (voltage < 0 && !isElevatorAtBottom()) {// or if its at bottom make move down
             m_elevatorLeftMotor.set(voltage);
             m_elevatorRightMotor.set(-voltage);
+            // Utility.printLn("Voltage Value: " + voltage + "\n Elevator Encoder Value: " +
+            // m_Encoder1.get()
+            // + "\n Elevator Top Limit Switch Value: " + m_elevatorTopLimitSwitch.get()
+            // + "\n Elevator Bottom Limit Switch Value: " +
+            // m_elevatorBottomLimitSwitch.get());
             Utility.printLn("Elevator is moving down");
         } else {// otherwise just no speed
             m_elevatorLeftMotor.set(0);
             m_elevatorRightMotor.set(0);
-            Utility.printLn("Elevator is at the top or bottom and therefore the motors have been stopped");
+            Utility.printLn("Voltage Value: " + voltage + "\n Elevator Encoder Value: " + m_Encoder1.get()
+                    + "\n Elevator Top Limit Switch Value: " + m_elevatorTopLimitSwitch.get()
+                    + "\n Elevator Bottom Limit Switch Value: " + m_elevatorBottomLimitSwitch.get());
+            Utility.printLn("Elevator is at the top, bottom, or desired position. motors have been stopped");
         }
     }
 
@@ -114,16 +131,20 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
                                                                      // presets using distgusting switch case statements
         switch (desiredPreset) {
         case Level1:
-            moveElevatorToPreset(ElevatorConstants.ElevatorPreset.level1EncoderValue, desiredPreset);
+            SmartDashboard.putString("DesiredPreset", "Level1");
+            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level1EncoderValue, desiredPreset);
             break;
         case Level2:
-            moveElevatorToPreset(ElevatorConstants.ElevatorPreset.level2EncoderValue, desiredPreset);
+            SmartDashboard.putString("DesiredPreset", "Level2");
+            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level2EncoderValue, desiredPreset);
             break;
         case Level3:
-            moveElevatorToPreset(ElevatorConstants.ElevatorPreset.level3EncoderValue, desiredPreset);
+            SmartDashboard.putString("DesiredPreset", "Level3");
+            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level3EncoderValue, desiredPreset);
             break;
         case Level4:
-            moveElevatorToPreset(ElevatorConstants.ElevatorPreset.level4EncoderValue, desiredPreset);
+            SmartDashboard.putString("DesiredPreset", "Level4");
+            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level4EncoderValue, desiredPreset);
             break;
         }
     }
@@ -141,9 +162,10 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
      * @param position
      * @param desiredPreset
      */
-    public void moveElevatorToPreset(double position, ElevatorPresets desiredPreset) {// moves elevator to a certain
-                                                                                      // position based on the encoder
-                                                                                      // value
+    public void moveElevatorToSpecificPreset(double position, ElevatorPresets desiredPreset) {// moves elevator to a
+                                                                                              // certain
+        // position based on the encoder
+        // value
         // WILL HAVE TO REVERSE ONE MOTOR DEPENDING ON ORIENTATION!!!!
         debuggingMethod();
         if (m_Encoder1.get() <= (position + 5) && !isElevatorAtBottom()) { // checking to see if the motor wants to move

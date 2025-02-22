@@ -56,6 +56,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -98,9 +99,9 @@ public class RobotContainer {
         /* Swerve drive platform setup */ // From Swerve Project Generator
 
         // kSpeedAt12Volts Desired Top speed←
-        private double MaxSpeed = Constants.DriveTrainConstants.MaxSpeed;
+        private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         // 3/4 of a rotation per second max angular velocity
-        private double MaxAngularRate = Constants.DriveTrainConstants.MaxAngularRate;
+        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 
         /* Setting up bindings for necessary control of the swerve drive platform */
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1)
@@ -123,6 +124,7 @@ public class RobotContainer {
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+
                 // Build an auto chooser. This will use Commands.none() as the default option.
                 autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -148,7 +150,7 @@ public class RobotContainer {
          * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick
          * Flight joysticks}.
          * 
-         * @param random TODO
+         * @param random
          */
         private void configureBindings(double random) {
 
@@ -158,26 +160,39 @@ public class RobotContainer {
                 // Sets the default command for the elevator (the command that always runs)
                 // Checks if the left joystick is being moved, if it is, it will run the
                 // commandVoltage method with the left joystick's Y value
-                m_ElevatorSubsystem.setDefaultCommand((Math.abs(m_auxillaryController.getLeftY()) > 0.1)
-                                ? m_ElevatorSubsystem.commandVoltage(m_auxillaryController.getLeftY())
-                                : m_ElevatorSubsystem.commandVoltage(0));
-                // 10 is a PLACEHOLDER value for now
+                // m_ElevatorSubsystem.setDefaultCommand(((Math.abs(m_auxillaryController.getLeftY())
+                // > 0.1) && (testMethod()))
+                // ? m_ElevatorSubsystem.commandVoltage(m_auxillaryController.getLeftY())
+                // : m_ElevatorSubsystem.commandVoltage(0));
+
+                new Trigger(() -> m_auxillaryController.getLeftY() > 0.1).whileTrue(new InstantCommand(() -> {
+                        SmartDashboard.putBoolean("Going Up Triggered", true);
+                        SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
+                        m_ElevatorSubsystem.setMotorElevatorSpeed(0.2);
+                }, m_ElevatorSubsystem)).onFalse(
+                                new InstantCommand(() -> SmartDashboard.putBoolean("Going Up Triggered", false)));
+
+                new Trigger(() -> m_auxillaryController.getLeftY() < -0.1).whileTrue(new InstantCommand(() -> {
+                        SmartDashboard.putBoolean("Going Down triggered", true);
+                        SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
+                        m_ElevatorSubsystem.setMotorElevatorSpeed(-0.2);
+                })).onFalse(new InstantCommand(() -> SmartDashboard.putBoolean("Going Down triggered", false)));
 
                 // The commands below make the elevator go to certain levels
                 m_auxillaryController.a()
-                                .onTrue(new RunCommand(
+                                .onTrue(new InstantCommand(
                                                 () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level1),
                                                 m_ElevatorSubsystem));
                 m_auxillaryController.b()
-                                .onTrue(new RunCommand(
+                                .onTrue(new InstantCommand(
                                                 () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level2),
                                                 m_ElevatorSubsystem));
-                m_auxillaryController.x()
-                                .onTrue(new RunCommand(
+                m_auxillaryController.y()
+                                .onTrue(new InstantCommand(
                                                 () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level3),
                                                 m_ElevatorSubsystem));
-                m_auxillaryController.y()
-                                .onTrue(new RunCommand(
+                m_auxillaryController.x()
+                                .onTrue(new InstantCommand(
                                                 () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level4),
                                                 m_ElevatorSubsystem));
 
@@ -260,17 +275,15 @@ public class RobotContainer {
                 // ====================== Coral Arm Subsystem ====================== //
                 // makes coral arm go up
                 m_auxillaryController.leftBumper()
-                                .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0.5, CoralArmLevels.Up));
+                                .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0.2, CoralArmLevels.Up));
                 // makes coral arm go down
                 m_auxillaryController.rightBumper()
-                                .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.5, CoralArmLevels.Down));
+                                .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.2, CoralArmLevels.Down));
                 // Emergency Stop for Coral Arm (in case it goes past the top or bottom) Note: I
                 // don't know if the onTrue method will only run once, so test it before you use
                 // it
                 m_auxillaryController.povCenter().onTrue(m_CoralArmSubsystem.emergencyStop());
                 // stops coral arm
-                // m_auxillaryController.povCenter().whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0,
-                // CoralArmLevels.Stop));
 
                 // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
@@ -329,3 +342,31 @@ public class RobotContainer {
 }
 // another why not comment :)
 // I do love some good comments :D
+
+// Saw this code in another teams robot and took it, may be interesting to
+// implement
+// Endgame alert triggers
+
+// new Trigger(
+// () ->
+// DriverStation.isTeleopEnabled()
+// && DriverStation.getMatchTime() > 0
+// && DriverStation.getMatchTime() <= Math.round(endgameAlert1.get()))
+// .onTrue(
+// controllerRumbleCommand()
+// .withTimeout(0.5)
+// .beforeStarting(() -> Leds.getInstance().endgameAlert = true)
+// .finallyDo(() -> Leds.getInstance().endgameAlert = false));
+// new Trigger(
+// () ->
+// DriverStation.isTeleopEnabled()
+// && DriverStation.getMatchTime() > 0
+// && DriverStation.getMatchTime() <= Math.round(endgameAlert2.get()))
+// .onTrue(
+// controllerRumbleCommand()
+// .withTimeout(0.2)
+// .andThen(Commands.waitSeconds(0.1))
+// .repeatedly()
+// .withTimeout(0.9) // Rumble three times
+// .beforeStarting(() -> Leds.getInstance().endgameAlert = true)
+// .finallyDo(() -> Leds.getInstance().endgameAlert = false));
