@@ -8,6 +8,7 @@
  *  Driver Controller:
  *    A - Brake
  *    B - Point
+ *    Dpad Center - climber
  *    Back + Y - SysId Dynamic Forward
  *    Back + X - SysId Dynamic Reverse
  *    Start + Y - SysId Quasistatic Forward
@@ -50,9 +51,11 @@ import frc.robot.subsystems.MapleSimSubsystem;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
 import frc.robot.subsystems.AlgaeArmSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -60,6 +63,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
 
 /**
@@ -71,7 +75,6 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
  */
 public class RobotContainer {
         // The robot's subsystems and commands are defined here...
-        // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
         private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem(
                         Constants.ElevatorConstants.kElevatorLeftMotorPort,
                         Constants.ElevatorConstants.kElevatorRightMotorPort);
@@ -79,18 +82,25 @@ public class RobotContainer {
                         Constants.AlgaeArmConstants.algaeArmBarID);
         private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem(
                         Constants.CoralArmConstants.coralArmID);
+        private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem(
+                        Constants.ClimberConstants.kLeftClimberMotorID,
+                        Constants.ClimberConstants.kRightClimberMotorID);
+
+        // Controllers
         private final CommandXboxController m_driverController = new CommandXboxController(
                         OperatorConstants.kDriverControllerPort);
         private final CommandXboxController m_auxillaryController = new CommandXboxController(
                         Constants.OperatorConstants.kAuxiliaryControllerPort);
 
         private final SendableChooser<Command> autoChooser;
+
+        DigitalInput climberLimitSwitch = new DigitalInput(Constants.ClimberConstants.kClimberLimitSwitchID);
         /* Swerve drive platform setup */ // From Swerve Project Generator
 
         // kSpeedAt12Volts Desired Top speed←
-        private double MaxSpeed = Constants.DrivetrainConstants.MaxSpeed;
+        private double MaxSpeed = Constants.DriveTrainConstants.MaxSpeed;
         // 3/4 of a rotation per second max angular velocity
-        private double MaxAngularRate = Constants.DrivetrainConstants.MaxAngularRate;
+        private double MaxAngularRate = Constants.DriveTrainConstants.MaxAngularRate;
 
         /* Setting up bindings for necessary control of the swerve drive platform */
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1)
@@ -185,34 +195,31 @@ public class RobotContainer {
                                 // interrupts the command, causing motors to STOP
                                 .onFalse(m_AlgaeArmSubsystem.commandInterrupt());
 
-                // The code below was taken out to streamline the Algae arm (we need two buttons
-                // to control the algae arm, the method below uses 3 buttons)
-                // // makes algae bar spin faster if A pressed, else stop
-                // m_auxillaryController.povUp().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(true,
-                // false, false))
-                // .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));
-                // // makes algae bar spit out ball if B pressed, else stop
-                // m_auxillaryController.povDown().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(false,
-                // true, false))
-                // .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));
-                // // makes algae bar spin slowly if Y pressed, else stop
-                // m_auxillaryController.povLeft().whileTrue(m_AlgaeArmSubsystem.commandMakeBarSpin(false,
-                // false, true))
-                // .onFalse(m_AlgaeArmSubsystem.commandMakeBarSpin(false, false, false));
-
-                // Command Compositions for Elevator + Coral
+                // ====================== Climber Subsystem ====================== //
+                Trigger climberTrigger = new Trigger(() -> climberLimitSwitch.get());
+                climberTrigger.onTrue(m_ClimberSubsystem.runOnce(() -> m_ClimberSubsystem.climberSwitchTriggered()));
+                m_auxillaryController.povCenter()
+                                .onTrue(m_ClimberSubsystem.runOnce(() -> m_ClimberSubsystem.engageClimber()));
+                // ====================== Elevator Preset Compositions ====================== //
                 // Level 1 Preset
                 // m_auxillaryController.a()
                 // .onTrue(Commands.sequence(
-                // m_elevatorSubsystem.commandMoveToPreset(ElevatorPresets.Level1)
-                // .until(m_elevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Level1)),
-                // m_CoralArmSubsystem.CommandsetCoralArmVoltage(0.1, CoralArmLevels.Up)
-                // .until(m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.Up)),
-                // Commands.waitSeconds(.5), // Allow the driver time to move up to the reef
+                // m_ElevatorSubsystem
+                // .commandMoveToPreset(ElevatorPresets.Level1)
+                // .until(m_ElevatorSubsystem.isElevatorAtDesiredState(
+                // ElevatorPresets.Level1)),
+                // m_CoralArmSubsystem
+                // .CommandsetCoralArmVoltage(0.1, CoralArmLevels.Up)
+                // .until(m_CoralArmSubsystem.isCoralArmAtDesiredState(
+                // CoralArmLevels.Up)),
+                // Commands.waitSeconds(4.2), // Allow the driver time to move up to the
+                // // reef
                 // m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.1, CoralArmLevels.Down)
-                // .until(m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.Down)),
-                // m_elevatorSubsystem.commandMoveToPreset(ElevatorPresets.Lowest)
-                // .until(m_elevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Highest))));
+                // .until(m_CoralArmSubsystem.isCoralArmAtDesiredState(
+                // CoralArmLevels.Down)),
+                // m_ElevatorSubsystem.commandMoveToPreset(ElevatorPresets.Level1)
+                // .until(m_ElevatorSubsystem.isElevatorAtDesiredState(
+                // ElevatorPresets.Level4))));
                 // // Level 2 Preset
                 // m_auxillaryController.b()
                 // .onTrue(Commands.sequence(
