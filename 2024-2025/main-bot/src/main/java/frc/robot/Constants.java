@@ -20,7 +20,7 @@ import edu.wpi.first.units.measure.Distance;
  * It is advised to statically import this class (or one of its inner classes)
  * wherever the constants are needed, to reduce verbosity.
  */
-public final class Constants {
+public class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kAuxiliaryControllerPort = 1;
@@ -28,9 +28,13 @@ public final class Constants {
 
   // PLACEHOLDER IDS!!!
   public static class ElevatorConstants {
-    public static final int kElevatorLeftMotorPort = 12;
-    public static final int kElevatorRightMotorPort = 13;
+    public static final int kElevatorLeftMotorID = 12;
+    public static final int kElevatorRightMotorID = 13;
     public static final double kMotorElevatorSpeed = 0.2;
+    public static final int kLeftElevatorEncoderID1 = 0;
+    public static final int kLeftElevatorEncoderID2 = 1;
+    public static final int kRightElevatorEncoderID1 = 2;
+    public static final int kRightElevatorEncoderID2 = 3;
     public static final int kElevatorEncoderBottomValue = 0;
     public static final int kElevatorEncoderTopValue = 1000;
 
@@ -44,11 +48,13 @@ public final class Constants {
   }
 
   public static final class AlgaeArmConstants {
-    public static final int algaeArmBarID = 8;// placeholder
+    public static final int algaeArmBarMotorID = 8;// placeholder
   }
 
   public static class CoralArmConstants {
-    public static final int coralArmID = 69;// placeholder with funny number hehe
+    public static final int coralArmMotorID = 69;// placeholder with funny number hehe
+    public static final int kCoralEncoderID1 = 4;
+    public static final int kCoralEncoderID2 = 5;
     public static final int kCoralEncoderTopValue = 1000;
     public static final int kCoralEncoderTopBuffer = kCoralEncoderTopValue + 10;
     public static final int kCoralEncoderBottomValue = 0;

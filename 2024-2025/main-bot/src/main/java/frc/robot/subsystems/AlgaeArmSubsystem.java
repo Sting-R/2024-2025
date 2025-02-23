@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.AlgaeArmConstants;
 
 public class AlgaeArmSubsystem extends SubsystemBase {
 
@@ -17,8 +18,8 @@ public class AlgaeArmSubsystem extends SubsystemBase {
     private final TalonSRX m_algaeBarMotor;
 
     // Initialized Stuff
-    public AlgaeArmSubsystem(int algaeBarMoveID) {
-        m_algaeBarMotor = new TalonSRX(algaeBarMoveID);
+    public AlgaeArmSubsystem() {
+        m_algaeBarMotor = new TalonSRX(AlgaeArmConstants.algaeArmBarMotorID);
     }
 
     public Command commandMakeBarSpin(boolean APressed, boolean BPressed, boolean YPressed) {// makes, well, the bar

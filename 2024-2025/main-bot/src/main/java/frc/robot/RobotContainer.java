@@ -75,17 +75,11 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-        // The robot's subsystems and commands are defined here...
-        private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem(
-                        Constants.ElevatorConstants.kElevatorLeftMotorPort,
-                        Constants.ElevatorConstants.kElevatorRightMotorPort);
-        private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new AlgaeArmSubsystem(
-                        Constants.AlgaeArmConstants.algaeArmBarID);
-        private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem(
-                        Constants.CoralArmConstants.coralArmID);
-        private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem(
-                        Constants.ClimberConstants.kLeftClimberMotorID,
-                        Constants.ClimberConstants.kRightClimberMotorID);
+        // The robot's subsystems and commands are defined here...ElevatorConstants
+        private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
+        private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new AlgaeArmSubsystem();
+        private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem();
+        private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
         // Controllers
         private final CommandXboxController m_driverController = new CommandXboxController(
@@ -168,14 +162,14 @@ public class RobotContainer {
                 new Trigger(() -> m_auxillaryController.getLeftY() > 0.1).whileTrue(new InstantCommand(() -> {
                         SmartDashboard.putBoolean("Going Up Triggered", true);
                         SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
-                        m_ElevatorSubsystem.setMotorElevatorSpeed(0.2);
+                        m_ElevatorSubsystem.setMotorElevatorSpeed(true);
                 }, m_ElevatorSubsystem)).onFalse(
                                 new InstantCommand(() -> SmartDashboard.putBoolean("Going Up Triggered", false)));
 
                 new Trigger(() -> m_auxillaryController.getLeftY() < -0.1).whileTrue(new InstantCommand(() -> {
                         SmartDashboard.putBoolean("Going Down triggered", true);
                         SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
-                        m_ElevatorSubsystem.setMotorElevatorSpeed(-0.2);
+                        m_ElevatorSubsystem.setMotorElevatorSpeed(false);
                 })).onFalse(new InstantCommand(() -> SmartDashboard.putBoolean("Going Down triggered", false)));
 
                 // The commands below make the elevator go to certain levels

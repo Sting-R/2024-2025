@@ -25,6 +25,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class LimeLightSubsystem extends SubsystemBase {
 
+  /**
+   * tx - Horizontal Offset ty - Vertical Offset ta - Area of target tv - Target
+   * Visible
+   */
+
   int FLIndex = 0;
   int FRIndex = 1;
   int BLIndex = 2;

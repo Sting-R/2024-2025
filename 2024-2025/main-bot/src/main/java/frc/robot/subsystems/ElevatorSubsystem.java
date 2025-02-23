@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Logging;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.ElevatorConstants;
 
 import java.util.function.BooleanSupplier;
 
 //import com.ctre.phoenix.Util;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.Utility;
-import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsystem into an actual subsystem
     private final Logging elevatorLogger;
@@ -26,54 +26,74 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     private DigitalInput m_elevatorTopLimitSwitch;
     private DigitalInput m_elevatorBottomLimitSwitch;
     // Encoder
-    private final Encoder m_Encoder1;
+    private final Encoder m_leftElevatorEncoder;
+    private final Encoder m_rightElevatorEncoder;
     private ElevatorPresets currentElevatorState;
     // Constants
-    private double motorElevatorSpeed;
+    private double motorElevatorSpeed; // Might take out in favor of motion magic
+    private final double elevatorEncoderTopValue;
+    private final double elevatorEncoderBottomValue;
+    private final double preset1EncoderValue;
+    private final double preset2EncoderValue;
+    private final double preset3EncoderValue;
+    private final double preset4EncoderValue;
 
-    public ElevatorSubsystem(int elevatorLeftMotorId, int elevatorRightMotorId) {// this is da place where stuff is
-                                                                                 // actually initialized
-        m_elevatorLeftMotor = new TalonFX(elevatorLeftMotorId);
-        m_elevatorRightMotor = new TalonFX(elevatorRightMotorId);
+    public ElevatorSubsystem() {// constructor for the elevator subsystem
+        // Motor Initialization
+        m_elevatorLeftMotor = new TalonFX(ElevatorConstants.kElevatorLeftMotorID);
+        m_elevatorRightMotor = new TalonFX(ElevatorConstants.kElevatorRightMotorID);
+        // Limit Switch Initialization
         m_elevatorTopLimitSwitch = new DigitalInput(7);
         m_elevatorBottomLimitSwitch = new DigitalInput(8);
-        m_Encoder1 = new Encoder(0, 1);
+        // Encoder Initialization
+        m_leftElevatorEncoder = new Encoder(ElevatorConstants.kLeftElevatorEncoderID1,
+                ElevatorConstants.kLeftElevatorEncoderID2);
+        m_rightElevatorEncoder = new Encoder(ElevatorConstants.kRightElevatorEncoderID1,
+                ElevatorConstants.kRightElevatorEncoderID2);
+        // Current State Initialization
         currentElevatorState = ElevatorPresets.Level1;
         elevatorLogger = new Logging("ElevatorSubsystem");
+        // Constants Initialization
         motorElevatorSpeed = ElevatorConstants.kMotorElevatorSpeed;
+        elevatorEncoderTopValue = ElevatorConstants.kElevatorEncoderTopValue;
+        elevatorEncoderBottomValue = ElevatorConstants.kElevatorEncoderBottomValue;
+        preset1EncoderValue = ElevatorConstants.ElevatorPreset.level1EncoderValue;
+        preset2EncoderValue = ElevatorConstants.ElevatorPreset.level2EncoderValue;
+        preset3EncoderValue = ElevatorConstants.ElevatorPreset.level3EncoderValue;
+        preset4EncoderValue = ElevatorConstants.ElevatorPreset.level4EncoderValue;
     }
 
     public enum ElevatorPresets { // different levels for the coral reef
         Level1, Level2, Level3, Level4
     }
 
-    public Command raiseElevator() {
-        // Placeholder
-        return runOnce(() -> {
-            /* one-time action goes here */
-            setMotorElevatorSpeed(0.1);
-        });
-    }
+    // public Command raiseElevator() {
+    // // Placeholder
+    // return runOnce(() -> {
+    // /* one-time action goes here */
+    // setMotorElevatorSpeed(0.1);
+    // });
+    // }
 
-    public Command lowerElevator() {
-        // Placeholder
-        return runOnce(() -> {
-            /* one-time action goes here */
-            setMotorElevatorSpeed(-0.1);
-        });
-    }
+    // public Command lowerElevator() {
+    // // Placeholder
+    // return runOnce(() -> {
+    // /* one-time action goes here */
+    // setMotorElevatorSpeed(-0.1);
+    // });
+    // }
 
     public void debuggingMethod() {
-        SmartDashboard.putNumber("Elevator Encoder", m_Encoder1.get());
+        SmartDashboard.putNumber("Elevator Encoder", m_leftElevatorEncoder.get());
         SmartDashboard.putBoolean("Elevator Top Limit Switch", m_elevatorTopLimitSwitch.get());
         SmartDashboard.putBoolean("Elevator Bottom Limit Switch", m_elevatorBottomLimitSwitch.get());
     }
 
     public boolean isElevatorAtTop() {
         // Placeholder
-        if (m_Encoder1.get() <= ElevatorConstants.kElevatorEncoderTopValue && !m_elevatorTopLimitSwitch.get()) {
+        if (m_leftElevatorEncoder.get() <= elevatorEncoderTopValue && !m_elevatorTopLimitSwitch.get()) {
             return false;
-        } else if (m_Encoder1.get() <= ElevatorConstants.kElevatorEncoderTopValue || !m_elevatorTopLimitSwitch.get()) {
+        } else if (m_leftElevatorEncoder.get() <= elevatorEncoderBottomValue || !m_elevatorTopLimitSwitch.get()) {
             // System.out.println("Error: Encoder And Top Limit Switch Mismatched");
             elevatorLogger.error("Encoder And Top Limit Switch Mismatched");
             return true;
@@ -84,10 +104,9 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
     public boolean isElevatorAtBottom() {
         // Placeholder
-        if (m_Encoder1.get() >= ElevatorConstants.kElevatorEncoderBottomValue && !m_elevatorBottomLimitSwitch.get()) {
+        if (m_leftElevatorEncoder.get() >= elevatorEncoderBottomValue && !m_elevatorBottomLimitSwitch.get()) {
             return false;
-        } else if (m_Encoder1.get() >= ElevatorConstants.kElevatorEncoderBottomValue
-                || !m_elevatorBottomLimitSwitch.get()) {
+        } else if (m_leftElevatorEncoder.get() >= elevatorEncoderBottomValue || !m_elevatorBottomLimitSwitch.get()) {
             // System.out.println("Error: Encoder And Bottom Limit Switch Mismatched");
             elevatorLogger.error("Encoder And Bottom Limit Switch Mismatched");
             return true;
@@ -96,31 +115,23 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         }
     }
 
-    public void setMotorElevatorSpeed(double voltage) {
+    public void setMotorElevatorSpeed(boolean isGoingup) {
         // Placeholder
         debuggingMethod();
-        if (voltage > 0 && !isElevatorAtTop()) {// if motor is moving and elevators at the top, make both move up
-            m_elevatorLeftMotor.set(voltage);
-            m_elevatorRightMotor.set(-voltage);
-            // Utility.printLn("Voltage Value: " + voltage + "\n Elevator Encoder Value: " +
-            // m_Encoder1.get()
-            // + "\n Elevator Top Limit Switch Value: " + m_elevatorTopLimitSwitch.get()
-            // + "\n Elevator Bottom Limit Switch Value: " +
-            // m_elevatorBottomLimitSwitch.get());
+        if (isGoingup && !isElevatorAtTop()) {// if motor is moving and elevators at the top, make both move up
+            m_elevatorLeftMotor.set(motorElevatorSpeed);
+            m_elevatorRightMotor.set(-motorElevatorSpeed);
             Utility.printLn("Elevator is moving up");
-        } else if (voltage < 0 && !isElevatorAtBottom()) {// or if its at bottom make move down
-            m_elevatorLeftMotor.set(voltage);
-            m_elevatorRightMotor.set(-voltage);
-            // Utility.printLn("Voltage Value: " + voltage + "\n Elevator Encoder Value: " +
-            // m_Encoder1.get()
-            // + "\n Elevator Top Limit Switch Value: " + m_elevatorTopLimitSwitch.get()
-            // + "\n Elevator Bottom Limit Switch Value: " +
-            // m_elevatorBottomLimitSwitch.get());
+        } else if (!isGoingup && !isElevatorAtBottom()) {// or if its at bottom make move down
+            m_elevatorLeftMotor.set(-motorElevatorSpeed);
+            m_elevatorRightMotor.set(-motorElevatorSpeed);
             Utility.printLn("Elevator is moving down");
         } else {// otherwise just no speed
             m_elevatorLeftMotor.set(0);
             m_elevatorRightMotor.set(0);
-            Utility.printLn("Voltage Value: " + voltage + "\n Elevator Encoder Value: " + m_Encoder1.get()
+            System.out.println("Motor Voltage Value: " + m_elevatorLeftMotor.getMotorVoltage()
+                    + "\n desired Voltage Value: " + motorElevatorSpeed + "\n is elevator going up: " + isGoingup
+                    + "\n Elevator Encoder Value: " + m_leftElevatorEncoder.get()
                     + "\n Elevator Top Limit Switch Value: " + m_elevatorTopLimitSwitch.get()
                     + "\n Elevator Bottom Limit Switch Value: " + m_elevatorBottomLimitSwitch.get());
             Utility.printLn("Elevator is at the top, bottom, or desired position. motors have been stopped");
@@ -132,19 +143,19 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         switch (desiredPreset) {
         case Level1:
             SmartDashboard.putString("DesiredPreset", "Level1");
-            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level1EncoderValue, desiredPreset);
+            moveElevatorToSpecificPreset(preset1EncoderValue, desiredPreset);
             break;
         case Level2:
             SmartDashboard.putString("DesiredPreset", "Level2");
-            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level2EncoderValue, desiredPreset);
+            moveElevatorToSpecificPreset(preset2EncoderValue, desiredPreset);
             break;
         case Level3:
             SmartDashboard.putString("DesiredPreset", "Level3");
-            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level3EncoderValue, desiredPreset);
+            moveElevatorToSpecificPreset(preset3EncoderValue, desiredPreset);
             break;
         case Level4:
             SmartDashboard.putString("DesiredPreset", "Level4");
-            moveElevatorToSpecificPreset(ElevatorConstants.ElevatorPreset.level4EncoderValue, desiredPreset);
+            moveElevatorToSpecificPreset(preset4EncoderValue, desiredPreset);
             break;
         }
     }
@@ -168,15 +179,17 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // value
         // WILL HAVE TO REVERSE ONE MOTOR DEPENDING ON ORIENTATION!!!!
         debuggingMethod();
-        if (m_Encoder1.get() <= (position + 5) && !isElevatorAtBottom()) { // checking to see if the motor wants to move
-                                                                           // down and makes sure the elevator isn't at
-                                                                           // the bottom
+        if (m_leftElevatorEncoder.get() <= (position + 5) && !isElevatorAtBottom()) { // checking to see if the motor
+                                                                                      // wants to move
+            // down and makes sure the elevator isn't at
+            // the bottom
             m_elevatorLeftMotor.set(-motorElevatorSpeed);
             m_elevatorRightMotor.set(motorElevatorSpeed);
             Utility.printLn("Elevator is moving down");
-        } else if (m_Encoder1.get() >= (position - 5) && !isElevatorAtTop()) { // checking to see if the motor wants to
-                                                                               // move up and makes sure the elevator
-                                                                               // isn't at the top
+        } else if (m_leftElevatorEncoder.get() >= (position - 5) && !isElevatorAtTop()) { // checking to see if the
+                                                                                          // motor wants to
+            // move up and makes sure the elevator
+            // isn't at the top
             m_elevatorLeftMotor.set(motorElevatorSpeed);
             m_elevatorRightMotor.set(-motorElevatorSpeed);
             Utility.printLn("Elevator is moving up");
@@ -197,11 +210,12 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         return () -> currentElevatorState == desiredState;
     }
 
-    public Command commandVoltage(double voltage) {// just exists because just felt like it
-        return runOnce(() -> {
-            setMotorElevatorSpeed(voltage);
-        });
-    }
+    // public Command commandVoltage(double voltage) {// just exists because just
+    // felt like it
+    // return runOnce(() -> {
+    // setMotorElevatorSpeed(voltage);
+    // });
+    // }
 
     public Command commandMoveToPreset(ElevatorPresets desiredPreset) {// The first function in a very tall dependancy
                                                                        // tree
