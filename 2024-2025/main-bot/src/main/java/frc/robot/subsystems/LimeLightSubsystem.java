@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.LimelightHelpers;
 // import edu.first.LimelightHelpers;
 // import edu.first.wpilibj.
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLightSubsystem extends SubsystemBase {
 
@@ -35,9 +37,11 @@ public class LimeLightSubsystem extends SubsystemBase {
   int BLIndex = 2;
   int BRIndex = 3;
 
+  private String limelightName;
+
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
-  public LimeLightSubsystem(CommandSwerveDrivetrain swerveDriveTrain) {
+  public LimeLightSubsystem(CommandSwerveDrivetrain swerveDriveTrain, String LimelightName) {
 
     m_poseEstimator = new SwerveDrivePoseEstimator(swerveDriveTrain.getKinematics(),
         swerveDriveTrain.getPigeon2().getRotation2d(),
@@ -46,6 +50,8 @@ public class LimeLightSubsystem extends SubsystemBase {
             swerveDriveTrain.getModule(3).getPosition(true) },
         new Pose2d(), VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
         VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
+    limelightName = LimelightName;
   }
 
   public void updateOdometry(CommandSwerveDrivetrain swerveDriveTrain) {
@@ -89,11 +95,11 @@ public class LimeLightSubsystem extends SubsystemBase {
         swerveDriveTrain.addVisionMeasurement(mt1.pose, mt1.timestampSeconds, VecBuilder.fill(.5, .5, 9999999));
       }
     } else if (useMegaTag2 == true) {
-      LimelightHelpers.SetRobotOrientation("limelight",
+      LimelightHelpers.SetRobotOrientation(limelightName,
           m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
       // Same thing as above
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
       // NOTE! The .getAngularVelocityZWorld() update is different from orignal code.
       // The method .getRate() is depreicated and will be removed soom, so we have
       // switched to this method. However, it is CCW+ instead of CW+, and may not
@@ -137,7 +143,7 @@ public class LimeLightSubsystem extends SubsystemBase {
 
     // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the
     // rightmost edge of your limelight 3 feed, tx should return roughly 31 degrees.
-    double targetingAngularVelocity = LimelightHelpers.getTX("DriveCamera") * kP;
+    double targetingAngularVelocity = LimelightHelpers.getTX(limelightName) * kP;
 
     // convert to radians per second for our drive method
     targetingAngularVelocity *= DriveTrainConstants.MaxAngularRate;
@@ -153,12 +159,43 @@ public class LimeLightSubsystem extends SubsystemBase {
    * best if your Limelight's mount height and target mount height are different.
    * if your limelight and target are mounted at the same or similar heights, use
    * "ta" (area) for target ranging rather than "ty"
+   * 
+   * Theoretically this should work for aiming intake
+   * 
    */
   public double limelight_range_proportional() {
     double kP = .1;
-    double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
+    double targetingForwardSpeed = LimelightHelpers.getTY(limelightName) * kP;
     targetingForwardSpeed *= DriveTrainConstants.MaxSpeed;
     targetingForwardSpeed *= -1.0;
     return targetingForwardSpeed;
   }
+
+  public double getDistanceToTarget() {
+    double x = LimelightHelpers.getCameraPose3d_TargetSpace(limelightName).getX();
+    double y = LimelightHelpers.getCameraPose3d_TargetSpace(limelightName).getZ();
+    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+  }
+
+  /**
+   * This method is used to get the area of the target from the limelight It will
+   * be used to determine whether the distance from the target is too far or too
+   * close
+   */
+  public double limelight_intake_forward_speed() {
+    double kP = 0.1;
+    double distanceFromTarget = getDistanceToTarget();
+    double desiredForwardSpeed = (LimelightConstants.desiredIntakeDistance - distanceFromTarget) * kP;
+    SmartDashboard.putNumber(limelightName, desiredForwardSpeed);
+    return desiredForwardSpeed;
+  }
+
+  public double limelight_outtake_forward_speed() {
+    double kP = 0.1;
+    double distanceFromTarget = getDistanceToTarget();
+    double desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistance - distanceFromTarget) * kP;
+    SmartDashboard.putNumber(limelightName, desiredForwardSpeed);
+    return desiredForwardSpeed;
+  }
+
 }

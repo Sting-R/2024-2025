@@ -112,7 +112,7 @@ public class TunerConstants {
                         .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
         public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft = ConstantCreator
-                        .createModuleConstants(Constants.DriveTrainConstants.kFrontLeftSteerMotorId,
+                        .createModuleConstants(Constants.DriveTrainConstants.kFrontLeftTurnMotorId,
                                         Constants.DriveTrainConstants.kFrontLeftDriveMotorId,
                                         Constants.DriveTrainConstants.kFrontLeftEncoderId,
                                         Constants.DriveTrainConstants.kFrontLeftEncoderOffset,
@@ -121,7 +121,7 @@ public class TunerConstants {
                                         Constants.DriveTrainConstants.kFrontLeftSteerMotorInverted,
                                         Constants.DriveTrainConstants.kFrontLeftEncoderInverted);
         public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontRight = ConstantCreator
-                        .createModuleConstants(Constants.DriveTrainConstants.kFrontRightSteerMotorId,
+                        .createModuleConstants(Constants.DriveTrainConstants.kFrontRightTurnMotorId,
                                         Constants.DriveTrainConstants.kFrontRightDriveMotorId,
                                         Constants.DriveTrainConstants.kFrontRightEncoderId,
                                         Constants.DriveTrainConstants.kFrontRightEncoderOffset,
@@ -130,7 +130,7 @@ public class TunerConstants {
                                         Constants.DriveTrainConstants.kFrontRightSteerMotorInverted,
                                         Constants.DriveTrainConstants.kFrontRightEncoderInverted);
         public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackLeft = ConstantCreator
-                        .createModuleConstants(Constants.DriveTrainConstants.kBackLeftSteerMotorId,
+                        .createModuleConstants(Constants.DriveTrainConstants.kBackLeftTurnMotorId,
                                         Constants.DriveTrainConstants.kBackLeftDriveMotorId,
                                         Constants.DriveTrainConstants.kBackLeftEncoderId,
                                         Constants.DriveTrainConstants.kBackLeftEncoderOffset,
@@ -139,7 +139,7 @@ public class TunerConstants {
                                         Constants.DriveTrainConstants.kBackLeftSteerMotorInverted,
                                         Constants.DriveTrainConstants.kBackLeftEncoderInverted);
         public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> BackRight = ConstantCreator
-                        .createModuleConstants(Constants.DriveTrainConstants.kBackRightSteerMotorId,
+                        .createModuleConstants(Constants.DriveTrainConstants.kBackRightTurnMotorId,
                                         Constants.DriveTrainConstants.kBackRightDriveMotorId,
                                         Constants.DriveTrainConstants.kBackRightEncoderId,
                                         Constants.DriveTrainConstants.kBackRightEncoderOffset,

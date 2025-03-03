@@ -23,10 +23,12 @@ import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnFie
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import frc.robot.subsystems.ElevatorSubsystem;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -37,7 +39,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
 
   private Command m_autonomousCommand;
-
   private final RobotContainer m_robotContainer;
 
   /**
@@ -47,7 +48,6 @@ public class Robot extends TimedRobot {
   public Robot() {// instantiate robot container
 
     m_robotContainer = new RobotContainer();
-
   }
 
   /**
@@ -69,6 +69,7 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    m_robotContainer.debugMethod();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -87,7 +88,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

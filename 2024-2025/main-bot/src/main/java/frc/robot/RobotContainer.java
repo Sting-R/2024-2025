@@ -25,8 +25,8 @@
  *    X - Level 4 Elevator + Coral Arm
  *    Left Joystick up - Move Elevator up
  *    Left Joystick down - Move Elevator down
- *    LB - Coral Arm Up
- *    RB - Coral Arm Down
+ *    LB - Coral Arm Intake
+ *    RB - Coral Arm Outtake
  *    DPad Center - Coral Arm Stop
  *    LT - Algae intake
  *    RT - Algae outtake
@@ -65,7 +65,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * little secret comment OwO This class is where the bulk of the robot should be
@@ -78,16 +80,18 @@ public class RobotContainer {
         // The robot's subsystems and commands are defined here...ElevatorConstants
         private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
         private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new AlgaeArmSubsystem();
-        private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem();
-        private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
+        // private final CoralArmSubsystem m_CoralArmSubsystem = new
+        // CoralArmSubsystem();
+        // private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
         // Controllers
-        private final CommandXboxController m_driverController = new CommandXboxController(
-                        OperatorConstants.kDriverControllerPort);
+        // private final CommandXboxController m_driverController = new
+        // CommandXboxController(
+        // OperatorConstants.kDriverControllerPort);
         private final CommandXboxController m_auxillaryController = new CommandXboxController(
                         Constants.OperatorConstants.kAuxiliaryControllerPort);
 
-        private final SendableChooser<Command> autoChooser;
+        // private final SendableChooser<Command> autoChooser;
 
         DigitalInput climberLimitSwitch = new DigitalInput(Constants.ClimberConstants.kClimberLimitSwitchID);
         /* Swerve drive platform setup */ // From Swerve Project Generator
@@ -107,10 +111,13 @@ public class RobotContainer {
 
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
-        public final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
-        // The following subsystems must be created after the drivetrain
-        public final LimeLightSubsystem m_LimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem);
-        public final MapleSimSubsystem m_MapleSimSubsystem = new MapleSimSubsystem(m_DrivetrainSubsystem);
+        // public final CommandSwerveDrivetrain m_DrivetrainSubsystem =
+        // TunerConstants.createDrivetrain();
+        // // The following subsystems must be created after the drivetrain
+        // public final LimeLightSubsystem m_LimeLightSubsystem = new
+        // LimeLightSubsystem(m_DrivetrainSubsystem);
+        // public final MapleSimSubsystem m_MapleSimSubsystem = new
+        // MapleSimSubsystem(m_DrivetrainSubsystem);
 
         // End of Swerve Drive Platform setup
 
@@ -120,9 +127,9 @@ public class RobotContainer {
         public RobotContainer() {
 
                 // Build an auto chooser. This will use Commands.none() as the default option.
-                autoChooser = AutoBuilder.buildAutoChooser();
+                // autoChooser = AutoBuilder.buildAutoChooser();
 
-                SmartDashboard.putData("Auto Chooser", autoChooser);
+                // SmartDashboard.putData("Auto Chooser", autoChooser);
 
                 // Register named commands for use in autonomous routines
                 // NamedCommands.registerCommand("Example Command",
@@ -150,6 +157,21 @@ public class RobotContainer {
 
                 // ============================ Elevator Subsystem ============================
                 // //
+                // new Trigger(() -> DriverStation.isTeleopEnabled() &&
+                // DriverStation.getMatchTime() > 0 && DriverStation
+                // .getMatchTime() <=
+                // Math.round(endgameAlert1.get())).onTrue(controllerRumbleCommand()
+                // .withTimeout(0.5)
+                // .beforeStarting(() -> Leds.getInstance().endgameAlert = true)
+                // .finallyDo(() -> Leds.getInstance().endgameAlert = false));
+                // new Trigger(() -> DriverStation.isTeleopEnabled() &&
+                // DriverStation.getMatchTime() > 0 && DriverStation
+                // .getMatchTime() <=
+                // Math.round(endgameAlert2.get())).onTrue(controllerRumbleCommand()
+                // .withTimeout(0.2).andThen(Commands.waitSeconds(0.1)).repeatedly()
+                // .withTimeout(0.9)
+                // .beforeStarting(() -> Leds.getInstance().endgameAlert = true)
+                // .finallyDo(() -> Leds.getInstance().endgameAlert = false));
 
                 // Sets the default command for the elevator (the command that always runs)
                 // Checks if the left joystick is being moved, if it is, it will run the
@@ -159,56 +181,180 @@ public class RobotContainer {
                 // ? m_ElevatorSubsystem.commandVoltage(m_auxillaryController.getLeftY())
                 // : m_ElevatorSubsystem.commandVoltage(0));
 
-                new Trigger(() -> m_auxillaryController.getLeftY() > 0.1).whileTrue(new InstantCommand(() -> {
+                // new Trigger(() -> m_auxillaryController.getLeftY() > 0.1).whileTrue(new
+                // InstantCommand(() -> {
+                // SmartDashboard.putBoolean("Going Up Triggered", true);
+                // SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
+                // m_ElevatorSubsystem.setMotorElevatorSpeed(true);
+                // }, m_ElevatorSubsystem)).onFalse(
+                // new InstantCommand(() -> SmartDashboard.putBoolean("Going Up Triggered",
+                // false)));
+
+                // new Trigger(() -> m_auxillaryController.getLeftY() < -0.1).whileTrue(new
+                // InstantCommand(() -> {
+                // SmartDashboard.putBoolean("Going Down triggered", true);
+                // SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
+                // m_ElevatorSubsystem.setMotorElevatorSpeed(false);
+                // })).onFalse(new InstantCommand(() -> SmartDashboard.putBoolean("Going Down
+                // triggered", false)));
+
+                // Actual elevator commands
+
+                new Trigger(() -> -m_auxillaryController.getLeftY() > 0.1).whileTrue(new RunCommand(() -> {
                         SmartDashboard.putBoolean("Going Up Triggered", true);
                         SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
-                        m_ElevatorSubsystem.setMotorElevatorSpeed(true);
-                }, m_ElevatorSubsystem)).onFalse(
-                                new InstantCommand(() -> SmartDashboard.putBoolean("Going Up Triggered", false)));
+                        if (m_ElevatorSubsystem.isElevatorAtTop()) {
+                                m_ElevatorSubsystem.elevatorVoltageMM(
+                                                Constants.ElevatorConstants.kLeftElevatorEncoderTopValue);
+                        } else {
+                                m_ElevatorSubsystem.elevatorMaintainPositionMM();
+                        }
 
-                new Trigger(() -> m_auxillaryController.getLeftY() < -0.1).whileTrue(new InstantCommand(() -> {
+                }, m_ElevatorSubsystem)).onFalse(new InstantCommand(() -> {
+                        m_ElevatorSubsystem.elevatorMaintainPositionMM();
+                        SmartDashboard.putBoolean("Going Up Triggered", false);
+                }));
+
+                new Trigger(() -> -m_auxillaryController.getLeftY() < -0.1).whileTrue(new RunCommand(() -> {
                         SmartDashboard.putBoolean("Going Down triggered", true);
                         SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
-                        m_ElevatorSubsystem.setMotorElevatorSpeed(false);
-                })).onFalse(new InstantCommand(() -> SmartDashboard.putBoolean("Going Down triggered", false)));
+                        if (m_ElevatorSubsystem.isElevatorAtBottom()) {
+                                m_ElevatorSubsystem.elevatorVoltageMM(
+                                                Constants.ElevatorConstants.kLeftElevatorEncoderBottomValue);
+                        } else {
+                                m_ElevatorSubsystem.elevatorMaintainPositionMM();
+                        }
+                })).onFalse(new InstantCommand(() -> {
+                        m_ElevatorSubsystem.elevatorMaintainPositionMM();
+                        SmartDashboard.putBoolean("Going Down triggered", false);
+                }));
+
+                m_auxillaryController.povCenter().whileTrue(new InstantCommand(() -> m_ElevatorSubsystem.sysIdTest()));
 
                 // The commands below make the elevator go to certain levels
-                m_auxillaryController.a()
-                                .onTrue(new InstantCommand(
-                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level1),
+                m_auxillaryController.a().whileTrue(
+                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level1),
                                                 m_ElevatorSubsystem));
-                m_auxillaryController.b()
-                                .onTrue(new InstantCommand(
-                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level2),
+                m_auxillaryController.b().whileTrue(
+                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level2),
                                                 m_ElevatorSubsystem));
-                m_auxillaryController.y()
-                                .onTrue(new InstantCommand(
-                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level3),
+                m_auxillaryController.y().whileTrue(
+                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3),
                                                 m_ElevatorSubsystem));
-                m_auxillaryController.x()
-                                .onTrue(new InstantCommand(
-                                                () -> m_ElevatorSubsystem.moveElevatorToPreset(ElevatorPresets.Level4),
+                m_auxillaryController.x().whileTrue(
+                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4),
                                                 m_ElevatorSubsystem));
 
                 // ====================== Algae Arm Subsystem ====================== //
 
                 m_auxillaryController.leftTrigger()
                                 // makes algae bar intake if LT pressed
-                                .whileTrue(m_AlgaeArmSubsystem.commandAlgaeIntake(m_AlgaeArmSubsystem))
-                                // Interrupts the command, causing motors to SLOWLY SPIN INWARDS (this way they
+                                .whileTrue(new RunCommand(() -> {
+                                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.3);
+                                        SmartDashboard.putBoolean("CoralArmIntake", true);
+                                }, m_AlgaeArmSubsystem))
+                                // Interrupts the command, causing motors to SLOWLY SPIN INWARDS (this way
+                                // they
                                 // can maintain control of the algae)
-                                .onFalse(m_AlgaeArmSubsystem.commandInterrupt());
+                                .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.1),
+                                                m_AlgaeArmSubsystem));
+
                 m_auxillaryController.rightTrigger()
-                                // makes algae bar outtake if RT pressed
-                                .whileTrue(m_AlgaeArmSubsystem.commandAlgaeOuttake(m_AlgaeArmSubsystem))
-                                // interrupts the command, causing motors to STOP
-                                .onFalse(m_AlgaeArmSubsystem.commandInterrupt());
+                                .whileTrue(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.5),
+                                                m_AlgaeArmSubsystem))
+                                .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(random),
+                                                m_AlgaeArmSubsystem));
 
                 // ====================== Climber Subsystem ====================== //
-                Trigger climberTrigger = new Trigger(() -> climberLimitSwitch.get());
-                climberTrigger.onTrue(m_ClimberSubsystem.runOnce(() -> m_ClimberSubsystem.climberSwitchTriggered()));
-                m_auxillaryController.povCenter()
-                                .onTrue(m_ClimberSubsystem.runOnce(() -> m_ClimberSubsystem.engageClimber()));
+                // Trigger climberTrigger = new Trigger(() -> climberLimitSwitch.get());
+                // climberTrigger.onTrue(m_ClimberSubsystem.runOnce(() ->
+                // m_ClimberSubsystem.climberSwitchTriggered()));
+                // m_auxillaryController.povCenter()
+                // .onTrue(m_ClimberSubsystem.runOnce(() ->
+                // m_ClimberSubsystem.engageClimber()));
+
+                // ====================== Coral Arm Subsystem ====================== //
+                // // makes coral arm go up
+
+                // Motion magic code for Coral Arm!!!
+
+                // m_auxillaryController.leftBumper().whileTrue(new RunCommand(() -> {
+                // m_CoralArmSubsystem.coralArmIntake();
+                // }, m_CoralArmSubsystem)).onFalse(new InstantCommand(() -> {
+                // m_CoralArmSubsystem.coralArmDefaultState();
+                // }));
+
+                // m_auxillaryController.rightBumper().whileTrue(new RunCommand(() -> {
+                // m_CoralArmSubsystem.coralArmOuttake();
+                // }, m_CoralArmSubsystem)).onFalse(new InstantCommand(() -> {
+                // m_CoralArmSubsystem.coralArmDefaultState();
+                // }));
+
+                // Normal code !!!!!
+                // m_auxillaryController.leftBumper()
+                // .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0.2,
+                // CoralArmLevels.Up));
+                // // makes coral arm go down
+                // m_auxillaryController.rightBumper()
+                // .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.2,
+                // CoralArmLevels.Down));
+                // // Emergency Stop for Coral Arm (in case it goes past the top or bottom)
+                // Note: I
+                // // don't know if the onTrue method will only run once, so test it before you
+                // use
+                // // it
+                // m_auxillaryController.povCenter().onTrue(m_CoralArmSubsystem.emergencyStop());
+                // // stops coral arm
+
+                // ====================== Drive Subsystem ====================== //
+                // Code below is from swerve drive project generator
+
+                // Note that X is defined as forward according to WPILib convention,
+                // and Y is defined as to the left according to WPILib convention.
+                // m_DrivetrainSubsystem.setDefaultCommand(
+                // // Drivetrain will execute this command periodically
+                // m_DrivetrainSubsystem.applyRequest(() -> drive
+                // // Drive forward with negative Y (forward)
+                // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                // // Drive left with negative X (left)
+                // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                // // Drive counterclockwise with negative X (left)
+                // .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate)));
+                // m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() ->
+                // brake));
+                // m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() ->
+                // point.withModuleDirection(
+                // new Rotation2d(-m_driverController.getLeftY(),
+                // -m_driverController.getLeftX()))));
+
+                // // limelight override
+                // m_driverController.rightTrigger().whileTrue(m_DrivetrainSubsystem.applyRequest(()
+                // -> drive
+                // // Drive forward with negative Y (forward)
+                // .withVelocityX(m_LimeLightSubsystem.limelight_range_proportional())
+                // // Drive left with negative X (left)
+                // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                // // Drive counterclockwise with negative X (left)
+                // .withRotationalRate(m_LimeLightSubsystem.limelight_aim_proportional())));
+
+                // // Run SysId routines when holding back/start and X/Y.
+                // // Note that each routine should be run exactly once in a single log.
+                // m_driverController.back().and(m_driverController.y())
+                // .whileTrue(m_DrivetrainSubsystem.sysIdDynamic(Direction.kForward));
+                // m_driverController.back().and(m_driverController.x())
+                // .whileTrue(m_DrivetrainSubsystem.sysIdDynamic(Direction.kReverse));
+                // m_driverController.start().and(m_driverController.y())
+                // .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kForward));
+                // m_driverController.start().and(m_driverController.x())
+                // .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kReverse));
+
+                // // reset the field-centric heading on left bumper press
+                // m_driverController.leftBumper()
+                // .onTrue(m_DrivetrainSubsystem.runOnce(() ->
+                // m_DrivetrainSubsystem.seedFieldCentric()));
+
+                // m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
+
                 // ====================== Elevator Preset Compositions ====================== //
                 // Level 1 Preset
                 // m_auxillaryController.a()
@@ -266,63 +412,10 @@ public class RobotContainer {
                 // m_elevatorSubsystem.commandMoveToPreset(ElevatorPresets.Lowest)
                 // .until(m_elevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Highest))));
 
-                // ====================== Coral Arm Subsystem ====================== //
-                // makes coral arm go up
-                m_auxillaryController.leftBumper()
-                                .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(0.2, CoralArmLevels.Up));
-                // makes coral arm go down
-                m_auxillaryController.rightBumper()
-                                .whileTrue(m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.2, CoralArmLevels.Down));
-                // Emergency Stop for Coral Arm (in case it goes past the top or bottom) Note: I
-                // don't know if the onTrue method will only run once, so test it before you use
-                // it
-                m_auxillaryController.povCenter().onTrue(m_CoralArmSubsystem.emergencyStop());
-                // stops coral arm
+        }
 
-                // ====================== Drive Subsystem ====================== //
-                // Code below is from swerve drive project generator
-
-                // Note that X is defined as forward according to WPILib convention,
-                // and Y is defined as to the left according to WPILib convention.
-                m_DrivetrainSubsystem.setDefaultCommand(
-                                // Drivetrain will execute this command periodically
-                                m_DrivetrainSubsystem.applyRequest(() -> drive
-                                                // Drive forward with negative Y (forward)
-                                                .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                                                // Drive left with negative X (left)
-                                                .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                                                // Drive counterclockwise with negative X (left)
-                                                .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate)));
-                m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> brake));
-                m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> point.withModuleDirection(
-                                new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
-
-                // limelight override
-                m_driverController.rightTrigger().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> drive
-                                // Drive forward with negative Y (forward)
-                                .withVelocityX(m_LimeLightSubsystem.limelight_range_proportional())
-                                // Drive left with negative X (left)
-                                .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                                // Drive counterclockwise with negative X (left)
-                                .withRotationalRate(m_LimeLightSubsystem.limelight_aim_proportional())));
-
-                // Run SysId routines when holding back/start and X/Y.
-                // Note that each routine should be run exactly once in a single log.
-                m_driverController.back().and(m_driverController.y())
-                                .whileTrue(m_DrivetrainSubsystem.sysIdDynamic(Direction.kForward));
-                m_driverController.back().and(m_driverController.x())
-                                .whileTrue(m_DrivetrainSubsystem.sysIdDynamic(Direction.kReverse));
-                m_driverController.start().and(m_driverController.y())
-                                .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kForward));
-                m_driverController.start().and(m_driverController.x())
-                                .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kReverse));
-
-                // reset the field-centric heading on left bumper press
-                m_driverController.leftBumper()
-                                .onTrue(m_DrivetrainSubsystem.runOnce(() -> m_DrivetrainSubsystem.seedFieldCentric()));
-
-                m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
-
+        public void debugMethod() {
+                m_ElevatorSubsystem.debuggingMethod();
         }
 
         /**
@@ -330,9 +423,10 @@ public class RobotContainer {
          *
          * @return the command to run in autonomous
          */
-        public Command getAutonomousCommand() {
-                return autoChooser.getSelected();
-        }
+        // public Command getAutonomousCommand() {
+        // return autoChooser.getSelected();
+        // }
+
 }
 // another why not comment :)
 // I do love some good comments :D
@@ -340,27 +434,3 @@ public class RobotContainer {
 // Saw this code in another teams robot and took it, may be interesting to
 // implement
 // Endgame alert triggers
-
-// new Trigger(
-// () ->
-// DriverStation.isTeleopEnabled()
-// && DriverStation.getMatchTime() > 0
-// && DriverStation.getMatchTime() <= Math.round(endgameAlert1.get()))
-// .onTrue(
-// controllerRumbleCommand()
-// .withTimeout(0.5)
-// .beforeStarting(() -> Leds.getInstance().endgameAlert = true)
-// .finallyDo(() -> Leds.getInstance().endgameAlert = false));
-// new Trigger(
-// () ->
-// DriverStation.isTeleopEnabled()
-// && DriverStation.getMatchTime() > 0
-// && DriverStation.getMatchTime() <= Math.round(endgameAlert2.get()))
-// .onTrue(
-// controllerRumbleCommand()
-// .withTimeout(0.2)
-// .andThen(Commands.waitSeconds(0.1))
-// .repeatedly()
-// .withTimeout(0.9) // Rumble three times
-// .beforeStarting(() -> Leds.getInstance().endgameAlert = true)
-// .finallyDo(() -> Leds.getInstance().endgameAlert = false));

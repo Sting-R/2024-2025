@@ -28,22 +28,24 @@ public class Constants {
 
   // PLACEHOLDER IDS!!!
   public static class ElevatorConstants {
-    public static final int kElevatorLeftMotorID = 12;
-    public static final int kElevatorRightMotorID = 13;
-    public static final double kMotorElevatorSpeed = 0.2;
-    public static final int kLeftElevatorEncoderID1 = 0;
-    public static final int kLeftElevatorEncoderID2 = 1;
-    public static final int kRightElevatorEncoderID1 = 2;
-    public static final int kRightElevatorEncoderID2 = 3;
-    public static final int kElevatorEncoderBottomValue = 0;
-    public static final int kElevatorEncoderTopValue = 1000;
+    public static final int kElevatorLeftMotorID = 15;
+    public static final int kElevatorRightMotorID = 16;
+    public static final double kMaxMotorElevatorSpeed = 0.05;
+    public static final int kLeftElevatorEncoderID1 = 9;
+    public static final int kLeftElevatorEncoderID2 = 8;
+    // public static final int kRightElevatorEncoderID1 = 7;
+    // public static final int kRightElevatorEncoderID2 = 6;
+    public static final double kLeftElevatorEncoderBottomValue = 0;
+    public static final double kLeftElevatorEncoderTopValue = 15.09;
+    public static final double kRightElevatorEncoderBottomValue = 0;
+    public static final double kRightElevatorEncoderTopValue = 15.13;
 
     public static class ElevatorPreset {
       // PLACEHOLDER VALUES!!!
-      public static final double level1EncoderValue = 0.5;
-      public static final double level2EncoderValue = 1.0;
-      public static final double level3EncoderValue = 1.5;
-      public static final double level4EncoderValue = 2.0;
+      public static final double level1EncoderValue = 0;
+      public static final double level2EncoderValue = 2;
+      public static final double level3EncoderValue = 5;
+      public static final double level4EncoderValue = 7;
     }
   }
 
@@ -53,18 +55,42 @@ public class Constants {
 
   public static class CoralArmConstants {
     public static final int coralArmMotorID = 69;// placeholder with funny number hehe
-    public static final int kCoralEncoderID1 = 4;
-    public static final int kCoralEncoderID2 = 5;
-    public static final int kCoralEncoderTopValue = 1000;
-    public static final int kCoralEncoderTopBuffer = kCoralEncoderTopValue + 10;
-    public static final int kCoralEncoderBottomValue = 0;
-    public static final int kCoralEncoderBottomBuffer = kCoralEncoderBottomValue - 10;
+    public static final int kLeftCoralMotorID = 70;
+    public static final int kRightCoralMotorID = 71;
+    public static final int kCoralArmEncoderID1 = 4;
+    public static final int kCoralArmEncoderID2 = 5;
+    public static final int kCoramIntakeEncoderID1 = 6;
+    public static final int kCoralIntakeEncoderID2 = 7;
+    public static final int kCoralLightSensorID = 3;
+    public static final double kCoralEncoderTopValue = 3;
+    public static final double kCoralEncoderTopPosition = 0.5;
+    public static final double kCoralEncoderIntakePosition = 0.3; // Temp
+    public static final double kCoralEncoderOuttakePosition = 0.1; // Temp
+    public static final double kCoralEncoderDefaultPosition = 0.2; // Temp
+    // public static final int kCoralEncoderTopBuffer = kCoralEncoderTopValue + 10;
+    public static final double kCoralEncoderBottomPosition = 0;
+    // public static final int kCoralEncoderBottomBuffer = kCoralEncoderBottomValue
+    // - 10;
   }
 
   public static class ClimberConstants {
     public static final int kLeftClimberMotorID = 25; // TEMP
     public static final int kRightClimberMotorID = 26; // TEMP
-    public static final int kClimberLimitSwitchID = 6; // TEMP
+    public static final int kClimberLimitSwitchID = 20; // TEMP
+  }
+
+  public static class LimelightConstants {
+    public static final String kReefLimelightName = "ReefDriveLimelight";
+    public static final String kIntakeLimelightName = "IntakeLimelight";
+    public static final String kBackLimelightName = "BackLimelight";
+
+    public static final double desiredIntakeDistance = 0.5; // Placeholder
+    public static final double desiredOuttakeDistance = 0.5; // Placeholder
+    public static final double desiredIntakeAngle = 0.5; // Placeholder
+    public static final double desiredOuttakeAngle = 0.5; // Placeholder
+    public static final double desiredIntakeAngleOffset = 0.5; // Placeholder. We also need these because the limelights
+                                                               // are not centered
+    public static final double desiredOuttakeAngleOffset = 0.5; // Placeholder
   }
 
   public static class DriveTrainConstants {
@@ -76,41 +102,41 @@ public class Constants {
 
     // Motor and encoder ids (ALL ARE PLACEHOLDERS. FIND ACTUAL IDS IN
     // COMMANDSWERVEDRIVETRAIN.JAVA)
-    public static final int FLDriveMotorID = 0;
-    public static final int FLTurnMotorID = 1;
+    // public static final int FLDriveMotorID = 0;
+    // public static final int FLTurnMotorID = 1;
     // You can finish this out Scott! :D
 
     // Front Left Constants
-    public static final int kFrontLeftDriveMotorId = 42;
-    public static final int kFrontLeftSteerMotorId = 1;
-    public static final int kFrontLeftEncoderId = 0;
+    public static final int kFrontLeftDriveMotorId = 1;
+    public static final int kFrontLeftTurnMotorId = 2;
+    public static final int kFrontLeftEncoderId = 11;
     public static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.432373046875);
     public static final boolean kFrontLeftSteerMotorInverted = true;
     public static final boolean kFrontLeftEncoderInverted = false;
     public static final Distance kFrontLeftXPos = Inches.of(11.25);
     public static final Distance kFrontLeftYPos = Inches.of(11.25);
     // Front Right Constants
-    public static final int kFrontRightDriveMotorId = 2;
-    public static final int kFrontRightSteerMotorId = 3;
-    public static final int kFrontRightEncoderId = 2;
+    public static final int kFrontRightDriveMotorId = 3;
+    public static final int kFrontRightTurnMotorId = 4;
+    public static final int kFrontRightEncoderId = 12;
     public static final Angle kFrontRightEncoderOffset = Rotations.of(-0.282958984375);
     public static final boolean kFrontRightSteerMotorInverted = true;
     public static final boolean kFrontRightEncoderInverted = false;
     public static final Distance kFrontRightXPos = Inches.of(11.25);
     public static final Distance kFrontRightYPos = Inches.of(-11.25);
     // Back Left Constants
-    public static final int kBackLeftDriveMotorId = 6;
-    public static final int kBackLeftSteerMotorId = 7;
-    public static final int kBackLeftEncoderId = 6;
+    public static final int kBackLeftDriveMotorId = 5;
+    public static final int kBackLeftTurnMotorId = 6;
+    public static final int kBackLeftEncoderId = 13;
     public static final Angle kBackLeftEncoderOffset = Rotations.of(-0.09326171875);
     public static final boolean kBackLeftSteerMotorInverted = true;
     public static final boolean kBackLeftEncoderInverted = false;
     public static final Distance kBackLeftXPos = Inches.of(-11.25);
     public static final Distance kBackLeftYPos = Inches.of(11.25);
     // Back Right Constants
-    public static final int kBackRightDriveMotorId = 4;
-    public static final int kBackRightSteerMotorId = 0;
-    public static final int kBackRightEncoderId = 4;
+    public static final int kBackRightDriveMotorId = 7;
+    public static final int kBackRightTurnMotorId = 8;
+    public static final int kBackRightEncoderId = 14;
     public static final Angle kBackRightEncoderOffset = Rotations.of(-0.111328125);
     public static final boolean kBackRightSteerMotorInverted = true;
     public static final boolean kBackRightEncoderInverted = false;
