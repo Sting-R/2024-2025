@@ -80,14 +80,12 @@ public class RobotContainer {
         // The robot's subsystems and commands are defined here...ElevatorConstants
         private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
         private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new AlgaeArmSubsystem();
-        // private final CoralArmSubsystem m_CoralArmSubsystem = new
-        // CoralArmSubsystem();
+        private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem();
         // private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
         // Controllers
-        // private final CommandXboxController m_driverController = new
-        // CommandXboxController(
-        // OperatorConstants.kDriverControllerPort);
+        private final CommandXboxController m_driverController = new CommandXboxController(
+                        OperatorConstants.kDriverControllerPort);
         private final CommandXboxController m_auxillaryController = new CommandXboxController(
                         Constants.OperatorConstants.kAuxiliaryControllerPort);
 
@@ -111,11 +109,15 @@ public class RobotContainer {
 
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
-        // public final CommandSwerveDrivetrain m_DrivetrainSubsystem =
-        // TunerConstants.createDrivetrain();
+        public final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
         // // The following subsystems must be created after the drivetrain
-        // public final LimeLightSubsystem m_LimeLightSubsystem = new
-        // LimeLightSubsystem(m_DrivetrainSubsystem);
+        public final LimeLightSubsystem m_ReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
+                        Constants.LimelightConstants.kReefLimelightName);
+        public final LimeLightSubsystem m_IntakeLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
+                        Constants.LimelightConstants.kIntakeLimelightName);
+        public final LimeLightSubsystem m_BackLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
+                        Constants.LimelightConstants.kBackLimelightName);
+
         // public final MapleSimSubsystem m_MapleSimSubsystem = new
         // MapleSimSubsystem(m_DrivetrainSubsystem);
 
@@ -199,11 +201,10 @@ public class RobotContainer {
                 // triggered", false)));
 
                 // Actual elevator commands
-
                 new Trigger(() -> -m_auxillaryController.getLeftY() > 0.1).whileTrue(new RunCommand(() -> {
                         SmartDashboard.putBoolean("Going Up Triggered", true);
                         SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
-                        if (m_ElevatorSubsystem.isElevatorAtTop()) {
+                        if (!m_ElevatorSubsystem.isElevatorAtTop()) {
                                 m_ElevatorSubsystem.elevatorVoltageMM(
                                                 Constants.ElevatorConstants.kLeftElevatorEncoderTopValue);
                         } else {
@@ -218,7 +219,7 @@ public class RobotContainer {
                 new Trigger(() -> -m_auxillaryController.getLeftY() < -0.1).whileTrue(new RunCommand(() -> {
                         SmartDashboard.putBoolean("Going Down triggered", true);
                         SmartDashboard.putNumber("Y-value", m_auxillaryController.getLeftY());
-                        if (m_ElevatorSubsystem.isElevatorAtBottom()) {
+                        if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
                                 m_ElevatorSubsystem.elevatorVoltageMM(
                                                 Constants.ElevatorConstants.kLeftElevatorEncoderBottomValue);
                         } else {
@@ -232,18 +233,40 @@ public class RobotContainer {
                 m_auxillaryController.povCenter().whileTrue(new InstantCommand(() -> m_ElevatorSubsystem.sysIdTest()));
 
                 // The commands below make the elevator go to certain levels
-                m_auxillaryController.a().whileTrue(
-                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level1),
-                                                m_ElevatorSubsystem));
-                m_auxillaryController.b().whileTrue(
-                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level2),
-                                                m_ElevatorSubsystem));
-                m_auxillaryController.y().whileTrue(
-                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3),
-                                                m_ElevatorSubsystem));
-                m_auxillaryController.x().whileTrue(
-                                new RunCommand(() -> m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4),
-                                                m_ElevatorSubsystem));
+                // If a pressed and elevator is not at level 1 currently, go to level 1
+                m_auxillaryController.a().whileTrue(new RunCommand(() -> {
+                        if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
+                                m_ElevatorSubsystem.elevatorMoveToPresetMM((ElevatorPresets.Level1));
+                        } else {
+                                Utility.printLn("Elevator Is Currently At Level 1");
+                        }
+                }, m_ElevatorSubsystem));
+                // If b pressed and the method getElevatorState() does not return level 2, go to
+                // level 2
+                m_auxillaryController.b().whileTrue(new RunCommand(() -> {
+                        if (!(m_ElevatorSubsystem.getElevatorState() == ElevatorPresets.Level2)) {
+                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level2);
+                        } else {
+                                Utility.printLn("Elevator Is Currently At Level 2");
+                        }
+                }, m_ElevatorSubsystem));
+                // If y pressed and the method getElevatorState() doesn't return level 3, go to
+                // level 3
+                m_auxillaryController.y().whileTrue(new RunCommand(() -> {
+                        if (!(m_ElevatorSubsystem.getElevatorState() == ElevatorPresets.Level3)) {
+                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3);
+                        } else {
+                                Utility.printLn("Elevator Is Currently At Level 3");
+                        }
+                }));
+                // If x pressed and the elevator is not currently at level 4, go to level 4
+                m_auxillaryController.x().whileTrue(new RunCommand(() -> {
+                        if (!m_ElevatorSubsystem.isElevatorAtTop()) {
+                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
+                        } else {
+                                Utility.printLn("Elevator Is Currently At Level 4");
+                        }
+                }));
 
                 // ====================== Algae Arm Subsystem ====================== //
 
@@ -356,26 +379,42 @@ public class RobotContainer {
                 // m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
 
                 // ====================== Elevator Preset Compositions ====================== //
-                // Level 1 Preset
-                // m_auxillaryController.a()
-                // .onTrue(Commands.sequence(
-                // m_ElevatorSubsystem
-                // .commandMoveToPreset(ElevatorPresets.Level1)
-                // .until(m_ElevatorSubsystem.isElevatorAtDesiredState(
-                // ElevatorPresets.Level1)),
-                // m_CoralArmSubsystem
-                // .CommandsetCoralArmVoltage(0.1, CoralArmLevels.Up)
-                // .until(m_CoralArmSubsystem.isCoralArmAtDesiredState(
-                // CoralArmLevels.Up)),
-                // Commands.waitSeconds(4.2), // Allow the driver time to move up to the
-                // // reef
-                // m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.1, CoralArmLevels.Down)
-                // .until(m_CoralArmSubsystem.isCoralArmAtDesiredState(
-                // CoralArmLevels.Down)),
-                // m_ElevatorSubsystem.commandMoveToPreset(ElevatorPresets.Level1)
-                // .until(m_ElevatorSubsystem.isElevatorAtDesiredState(
-                // ElevatorPresets.Level4))));
-                // // Level 2 Preset
+
+                // Note for future self, if I want to make the coral arm go up at the same time
+                // as the elevator, I could make it so one command makes the elevator just go up
+                // for a second, then another command makes the elevator and the coral arm go up
+                // at the same time
+                // This command sequencey
+                m_auxillaryController.rightStick().onTrue(Commands.sequence(
+                                // Align with the reef
+                                new RunCommand(() -> m_DrivetrainSubsystem.applyRequest(() -> drive
+                                                // Drive forward with negative Y (forward)
+                                                .withVelocityX(m_ReefLimeLightSubsystem
+                                                                .limelight_intake_forward_speed())
+                                                // Drive left with negative X (left)
+                                                .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                                                // Drive counterclockwise with negative X (left)
+                                                .withRotationalRate(m_ReefLimeLightSubsystem
+                                                                .limelight_aim_proportional()))),
+
+                                // Move elevator to the level 1 preset
+                                new RunCommand(() -> {
+                                        if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
+                                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level1);
+                                        }
+                                }, m_ElevatorSubsystem).until(
+                                                m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Level1)),
+                                // Move the coral arm up
+                                new RunCommand(() -> m_CoralArmSubsystem.coralArmIntake(), m_CoralArmSubsystem).until(
+                                                m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.outtake)),
+                                // wait just to confirm everything is going okay
+                                Commands.waitSeconds(2.0),
+                                new RunCommand(() -> m_CoralArmSubsystem.coralArmOuttake(), m_CoralArmSubsystem)
+                                                .until(m_CoralArmSubsystem.isCoralInArm())
+
+                ));
+
+                // // Level
                 // m_auxillaryController.b()
                 // .onTrue(Commands.sequence(
                 // m_elevatorSubsystem.commandMoveToPreset(ElevatorPresets.Level2)

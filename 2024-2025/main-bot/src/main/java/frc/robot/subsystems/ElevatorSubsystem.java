@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Logging;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.CoralArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 
 import java.util.function.BooleanSupplier;
@@ -29,6 +30,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Utility;
+import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 
 public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsystem into an actual subsystem
     private final Logging elevatorLogger;
@@ -106,7 +108,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     }
 
     public enum ElevatorPresets { // different levels for the coral reef
-        Level1, Level2, Level3, Level4
+        Level1, Level2, Level3, Level4, inbetween,
     }
 
     private void SetUpElevatorMotors() {
@@ -178,6 +180,57 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
     }
 
+    public void elevatorMoveToPresetMM(ElevatorPresets desiredPreset) {
+        // TOOD: NEED FEEDFORWARD
+        // SmartDashboard.putNumber("Left Elevator Encoder Bottom Value",
+        // m_leftElevatorEncoder.get());
+        // SmartDashboard.putNumber("Right Elevator Encoder Bottom Value",
+        // m_rightElevatorEncoder.get());
+        switch (desiredPreset) {
+        case Level1:
+            SmartDashboard.putString("DesiredPreset", "Level1");
+            SmartDashboard.putNumber("Desired elevator position", preset1EncoderValue);
+            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
+                    && !isElevatorAtBottom()) {
+                StatusCode val = m_elevatorLeftMotor
+                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            } else {
+                this.elevatorMaintainPositionMM();
+            }
+            break;
+        case Level2:
+            SmartDashboard.putString("DesiredPreset", "Level2");
+            SmartDashboard.putNumber("Desired elevator position", preset2EncoderValue);
+            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
+                    && !(this.getElevatorState() == ElevatorPresets.Level2)) {
+                StatusCode val = m_elevatorLeftMotor
+                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            } else {
+                this.elevatorMaintainPositionMM();
+            }
+            break;
+        case Level3:
+            SmartDashboard.putString("DesiredPreset", "Level3");
+            SmartDashboard.putNumber("Desired elevator position", preset3EncoderValue);
+            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
+                    && !(this.getElevatorState() == ElevatorPresets.Level3)) {
+                StatusCode val = m_elevatorLeftMotor
+                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            } else {
+                this.elevatorMaintainPositionMM();
+            }
+            break;
+        case Level4:
+            SmartDashboard.putString("DesiredPreset", "Level4");
+            SmartDashboard.putNumber("Desired elevator position", preset4EncoderValue);
+            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 && !isElevatorAtTop()) {
+                StatusCode val = m_elevatorLeftMotor
+                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            }
+            break;
+        } // @SuppressWarnings("unused")
+    }
+
     public void elevatorMaintainPositionMM() {
         // TOOD: NEED FEEDFORWARD
 
@@ -190,40 +243,6 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // m_elevatorRightMotor.setControl(setVoltage.withPosition(desiredEncoderValue).withSlot(0));//
         // .withLimitReverseMotion(true));
 
-    }
-
-    public void elevatorMoveToPresetMM(ElevatorPresets desiredPreset) {
-        // TOOD: NEED FEEDFORWARD
-        // SmartDashboard.putNumber("Left Elevator Encoder Bottom Value",
-        // m_leftElevatorEncoder.get());
-        // SmartDashboard.putNumber("Right Elevator Encoder Bottom Value",
-        // m_rightElevatorEncoder.get());
-        switch (desiredPreset) {
-        case Level1:
-            SmartDashboard.putString("DesiredPreset", "Level1");
-            SmartDashboard.putNumber("Desired elevator position", preset1EncoderValue);
-            @SuppressWarnings("unused")
-            StatusCode val = m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));// .withLimitReverseMotion(true));
-            break;
-        case Level2:
-            SmartDashboard.putString("DesiredPreset", "Level2");
-            SmartDashboard.putNumber("Desired elevator position", preset2EncoderValue);
-            @SuppressWarnings("unused")
-            StatusCode val2 = m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset2EncoderValue).withSlot(0));// .withLimitReverseMotion(true));
-            break;
-        case Level3:
-            SmartDashboard.putString("DesiredPreset", "Level3");
-            SmartDashboard.putNumber("Desired elevator position", preset3EncoderValue);
-            @SuppressWarnings("unused")
-            StatusCode val3 = m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset3EncoderValue).withSlot(0));// .withLimitReverseMotion(true));
-            break;
-        case Level4:
-            SmartDashboard.putString("DesiredPreset", "Level4");
-            SmartDashboard.putNumber("Desired elevator position", preset4EncoderValue);
-            @SuppressWarnings("unused")
-            StatusCode val4 = m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset4EncoderValue).withSlot(0));// .withLimitReverseMotion(true));
-            break;
-        } // @SuppressWarnings("unused")
     }
 
     public void sysIdTest() {
@@ -287,6 +306,30 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
             SmartDashboard.putBoolean("Elevator thinks it is at bottom", true);
             return true;
         }
+    }
+
+    public ElevatorPresets getElevatorState() {
+        ElevatorPresets currentElevatorState;
+        if (m_leftElevatorEncoder.get() > ElevatorConstants.ElevatorPreset.level1EncoderValue - 0.1
+                && m_leftElevatorEncoder.get() < ElevatorConstants.ElevatorPreset.level1EncoderValue + 0.1) {
+            currentElevatorState = ElevatorPresets.Level1;
+        } else if (m_leftElevatorEncoder.get() > ElevatorConstants.ElevatorPreset.level2EncoderValue - 0.1
+                && m_leftElevatorEncoder.get() < ElevatorConstants.ElevatorPreset.level2EncoderValue + 0.1) {
+            currentElevatorState = ElevatorPresets.Level2;
+        } else if (m_leftElevatorEncoder.get() > ElevatorConstants.ElevatorPreset.level3EncoderValue - 0.1
+                && m_leftElevatorEncoder.get() < ElevatorConstants.ElevatorPreset.level3EncoderValue + 0.1) {
+            currentElevatorState = ElevatorPresets.Level3;
+        } else if (m_leftElevatorEncoder.get() > ElevatorConstants.ElevatorPreset.level4EncoderValue - 0.1
+                && m_leftElevatorEncoder.get() < ElevatorConstants.ElevatorPreset.level4EncoderValue + 0.1) {
+            currentElevatorState = ElevatorPresets.Level4;
+        } else {
+            currentElevatorState = ElevatorPresets.inbetween;
+        }
+        return currentElevatorState;
+    }
+
+    public BooleanSupplier isElevatorAtDesiredState(ElevatorPresets desiredState) {
+        return () -> currentElevatorState == desiredState;
     }
 
     // public void setMotorElevatorSpeed(boolean isGoingUp) {
@@ -387,13 +430,14 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     // }
     // }
 
-    public ElevatorPresets getElevatorState() {
-        return currentElevatorState;
-    }
+    // public ElevatorPresets getElevatorState() {
+    // return currentElevatorState;
+    // }
 
-    public BooleanSupplier isElevatorAtDesiredState(ElevatorPresets desiredState) {
-        return () -> currentElevatorState == desiredState;
-    }
+    // public BooleanSupplier isElevatorAtDesiredState(ElevatorPresets desiredState)
+    // {
+    // return () -> currentElevatorState == desiredState;
+    // }
 
     // public Command commandVoltage(double voltage) {// just exists because just
     // felt like it

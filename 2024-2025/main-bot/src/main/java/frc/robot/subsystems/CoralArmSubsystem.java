@@ -140,6 +140,14 @@ public class CoralArmSubsystem extends SubsystemBase {
         return currentCoralArmState;
     }
 
+    public BooleanSupplier isCoralArmAtDesiredState(CoralArmLevels desiredState) {
+        return () -> currentCoralArmState == desiredState;
+    }
+
+    public BooleanSupplier isCoralInArm() {
+        return () -> m_CoralArmLightSensor.get();
+    }
+
     // public Command CommandsetCoralArmVoltage(double voltage, CoralArmLevels
     // desiredState) {
     // return runOnce(() -> {
@@ -178,10 +186,6 @@ public class CoralArmSubsystem extends SubsystemBase {
     // .withLimitReverseMotion(true));
     // // Add more motors here if neccessary
     // }
-
-    public BooleanSupplier isCoralArmAtDesiredState(CoralArmLevels desiredState) {
-        return () -> currentCoralArmState == desiredState;
-    }
 
     // public Command emergencyStop() {// Just in case the driver wants to stop the
     // arm without stopping the whole
