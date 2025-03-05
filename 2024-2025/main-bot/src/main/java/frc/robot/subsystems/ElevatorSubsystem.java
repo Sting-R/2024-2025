@@ -54,6 +54,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     private final double preset2EncoderValue;
     private final double preset3EncoderValue;
     private final double preset4EncoderValue;
+    private final double presetIntakeEncoderValue;
 
     // Test values for motion magic
     private MotionMagicVoltage setVoltage;
@@ -100,6 +101,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         preset2EncoderValue = ElevatorConstants.ElevatorPreset.level2EncoderValue;
         preset3EncoderValue = ElevatorConstants.ElevatorPreset.level3EncoderValue;
         preset4EncoderValue = ElevatorConstants.ElevatorPreset.level4EncoderValue;
+        presetIntakeEncoderValue = ElevatorConstants.ElevatorPreset.intakeEncoderValue;
 
         SetUpElevatorMotors();
 
@@ -108,7 +110,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     }
 
     public enum ElevatorPresets { // different levels for the coral reef
-        Level1, Level2, Level3, Level4, inbetween,
+        Level1, Level2, Level3, Level4, intake, inbetween,
     }
 
     private void SetUpElevatorMotors() {
@@ -190,10 +192,10 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         case Level1:
             SmartDashboard.putString("DesiredPreset", "Level1");
             SmartDashboard.putNumber("Desired elevator position", preset1EncoderValue);
-            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
-                    && !isElevatorAtBottom()) {
-                StatusCode val = m_elevatorLeftMotor
-                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            if ((preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 && !isElevatorAtTop())
+                    || (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
+                            && !isElevatorAtBottom())) {
+                m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
             } else {
                 this.elevatorMaintainPositionMM();
             }
@@ -201,10 +203,10 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         case Level2:
             SmartDashboard.putString("DesiredPreset", "Level2");
             SmartDashboard.putNumber("Desired elevator position", preset2EncoderValue);
-            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
-                    && !(this.getElevatorState() == ElevatorPresets.Level2)) {
-                StatusCode val = m_elevatorLeftMotor
-                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            if ((preset2EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 && !isElevatorAtTop())
+                    || (preset2EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
+                            && !isElevatorAtBottom())) {
+                m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset2EncoderValue).withSlot(0));
             } else {
                 this.elevatorMaintainPositionMM();
             }
@@ -212,10 +214,10 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         case Level3:
             SmartDashboard.putString("DesiredPreset", "Level3");
             SmartDashboard.putNumber("Desired elevator position", preset3EncoderValue);
-            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
-                    && !(this.getElevatorState() == ElevatorPresets.Level3)) {
-                StatusCode val = m_elevatorLeftMotor
-                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            if ((preset3EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 && !isElevatorAtTop())
+                    || (preset3EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
+                            && !isElevatorAtBottom())) {
+                m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset3EncoderValue).withSlot(0));
             } else {
                 this.elevatorMaintainPositionMM();
             }
@@ -223,12 +225,31 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         case Level4:
             SmartDashboard.putString("DesiredPreset", "Level4");
             SmartDashboard.putNumber("Desired elevator position", preset4EncoderValue);
-            if (preset1EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 && !isElevatorAtTop()) {
-                StatusCode val = m_elevatorLeftMotor
-                        .setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
+            if ((preset4EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 && !isElevatorAtTop())
+                    || (preset4EncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
+                            && !isElevatorAtBottom())) {
+                m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset4EncoderValue).withSlot(0));
+            } else {
+                this.elevatorMaintainPositionMM();
             }
             break;
-        } // @SuppressWarnings("unused")
+
+        case intake:
+            SmartDashboard.putString("DesiredPreset", "Intake Preset");
+            SmartDashboard.putNumber("Desired elevator position", presetIntakeEncoderValue);
+            if ((presetIntakeEncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
+                    && !isElevatorAtTop())
+                    || (presetIntakeEncoderValue - m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
+                            && !isElevatorAtBottom())) {
+                m_elevatorLeftMotor.setControl(setVoltage.withPosition(presetIntakeEncoderValue).withSlot(0));
+            } else {
+                this.elevatorMaintainPositionMM();
+            }
+            break;
+        case inbetween:
+            // Should never be called but just in case
+            this.elevatorMaintainPositionMM();
+        }
     }
 
     public void elevatorMaintainPositionMM() {
