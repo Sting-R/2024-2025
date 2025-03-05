@@ -46,6 +46,7 @@ public class Constants {
       public static final double level2EncoderValue = 2;
       public static final double level3EncoderValue = 5;
       public static final double level4EncoderValue = 7;
+      public static final double intakeEncoderValue = 8;
     }
   }
 
@@ -104,8 +105,6 @@ public class Constants {
     // COMMANDSWERVEDRIVETRAIN.JAVA)
     // public static final int FLDriveMotorID = 0;
     // public static final int FLTurnMotorID = 1;
-    // You can finish this out Scott! :D
-
     // Front Left Constants
     public static final int kFrontLeftDriveMotorId = 1;
     public static final int kFrontLeftTurnMotorId = 2;

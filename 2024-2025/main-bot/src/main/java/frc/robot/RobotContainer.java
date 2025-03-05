@@ -235,37 +235,21 @@ public class RobotContainer {
                 // The commands below make the elevator go to certain levels
                 // If a pressed and elevator is not at level 1 currently, go to level 1
                 m_auxillaryController.a().whileTrue(new RunCommand(() -> {
-                        if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
-                                m_ElevatorSubsystem.elevatorMoveToPresetMM((ElevatorPresets.Level1));
-                        } else {
-                                Utility.printLn("Elevator Is Currently At Level 1");
-                        }
+                        m_ElevatorSubsystem.elevatorMoveToPresetMM((ElevatorPresets.Level1));
                 }, m_ElevatorSubsystem));
                 // If b pressed and the method getElevatorState() does not return level 2, go to
                 // level 2
                 m_auxillaryController.b().whileTrue(new RunCommand(() -> {
-                        if (!(m_ElevatorSubsystem.getElevatorState() == ElevatorPresets.Level2)) {
-                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level2);
-                        } else {
-                                Utility.printLn("Elevator Is Currently At Level 2");
-                        }
+                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level2);
                 }, m_ElevatorSubsystem));
                 // If y pressed and the method getElevatorState() doesn't return level 3, go to
                 // level 3
                 m_auxillaryController.y().whileTrue(new RunCommand(() -> {
-                        if (!(m_ElevatorSubsystem.getElevatorState() == ElevatorPresets.Level3)) {
-                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3);
-                        } else {
-                                Utility.printLn("Elevator Is Currently At Level 3");
-                        }
+                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3);
                 }));
                 // If x pressed and the elevator is not currently at level 4, go to level 4
                 m_auxillaryController.x().whileTrue(new RunCommand(() -> {
-                        if (!m_ElevatorSubsystem.isElevatorAtTop()) {
-                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
-                        } else {
-                                Utility.printLn("Elevator Is Currently At Level 4");
-                        }
+                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
                 }));
 
                 // ====================== Algae Arm Subsystem ====================== //
@@ -378,19 +362,46 @@ public class RobotContainer {
 
                 // m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
 
-                // ====================== Elevator Preset Compositions ====================== //
+                // ====================== Command Compositions ====================== //
+
+                // Intake Function
+                m_auxillaryController.leftBumper().onTrue(Commands.sequence(
+                                // Align with the intake station
+                                new RunCommand(() -> m_DrivetrainSubsystem.applyRequest(() -> drive
+                                                // Drive forward with negative Y (forward)
+                                                .withVelocityX(m_IntakeLimeLightSubsystem
+                                                                .limelight_intake_forward_speed())
+                                                // Drive left with negative X (left)
+                                                .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                                                // Drive counterclockwise with negative X (left)
+                                                .withRotationalRate(m_IntakeLimeLightSubsystem
+                                                                .limelight_aim_proportional()))),
+
+                                // Move elevator to the intake preset
+                                new RunCommand(() -> {
+                                        if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
+                                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level1);
+                                        }
+                                }, m_ElevatorSubsystem).until(
+                                                m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Level1)),
+                                // Move the coral arm up
+                                new RunCommand(() -> m_CoralArmSubsystem.coralArmIntake(), m_CoralArmSubsystem).until(
+                                                m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.outtake)),
+                                // wait just to confirm everything is going okay
+                                Commands.waitSeconds(2.0),
+                                new RunCommand(() -> m_CoralArmSubsystem.coralArmOuttake(), m_CoralArmSubsystem)
+                                                .until(m_CoralArmSubsystem.isCoralInArm())));
 
                 // Note for future self, if I want to make the coral arm go up at the same time
                 // as the elevator, I could make it so one command makes the elevator just go up
                 // for a second, then another command makes the elevator and the coral arm go up
                 // at the same time
-                // This command sequencey
                 m_auxillaryController.rightStick().onTrue(Commands.sequence(
                                 // Align with the reef
                                 new RunCommand(() -> m_DrivetrainSubsystem.applyRequest(() -> drive
                                                 // Drive forward with negative Y (forward)
                                                 .withVelocityX(m_ReefLimeLightSubsystem
-                                                                .limelight_intake_forward_speed())
+                                                                .limelight_outtake_forward_speed())
                                                 // Drive left with negative X (left)
                                                 .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                                                 // Drive counterclockwise with negative X (left)
@@ -405,7 +416,7 @@ public class RobotContainer {
                                 }, m_ElevatorSubsystem).until(
                                                 m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Level1)),
                                 // Move the coral arm up
-                                new RunCommand(() -> m_CoralArmSubsystem.coralArmIntake(), m_CoralArmSubsystem).until(
+                                new RunCommand(() -> m_CoralArmSubsystem.coralArmOuttake(), m_CoralArmSubsystem).until(
                                                 m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.outtake)),
                                 // wait just to confirm everything is going okay
                                 Commands.waitSeconds(2.0),
@@ -449,7 +460,8 @@ public class RobotContainer {
                 // m_CoralArmSubsystem.CommandsetCoralArmVoltage(-0.1, CoralArmLevels.Down)
                 // .until(m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.Down)),
                 // m_elevatorSubsystem.commandMoveToPreset(ElevatorPresets.Lowest)
-                // .until(m_elevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Highest))));
+                // .until(m_elevatorSubsystem.isElevatorAtDesiredState(ElevatorPrese
+                // ts.Highest))));
 
         }
 
