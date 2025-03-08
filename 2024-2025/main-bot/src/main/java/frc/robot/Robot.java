@@ -3,13 +3,9 @@
 // Basic TO DOs
 // Set up Elevator simulation or Algae arm simulation in test bed // Status: Failed
 
-// Advanced TO DOs
-//NONE
-
 // To-Dos: Once the elevator is attached
 // Move elevator and update encoder preset values in Constants.java // Status: Not Started
 // Check which motors need to be reversed// Status: Not Started
-// Investigate Motion Magic // Status: Not Started
 
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of

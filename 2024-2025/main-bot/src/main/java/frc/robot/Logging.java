@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Logging {
     String Name;
     boolean isError;
+    double randomValueIDEK = Math.random() * 100;
 
     public Logging(String name) {
         Name = name;
