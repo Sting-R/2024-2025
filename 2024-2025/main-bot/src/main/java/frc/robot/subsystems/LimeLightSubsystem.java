@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.Constants.LimelightConstants;
+import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.LimelightHelpers;
 // import edu.first.LimelightHelpers;
 // import edu.first.wpilibj.
@@ -196,6 +197,44 @@ public class LimeLightSubsystem extends SubsystemBase {
     double desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistance - distanceFromTarget) * kP;
     SmartDashboard.putNumber(limelightName, desiredForwardSpeed);
     return desiredForwardSpeed;
+  }
+
+  public double getAprilTagInfo(String dataToReturn) {
+    RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(limelightName);
+    double id = 0;
+    double txnc = 0;
+    double tync = 0;
+    double ta = 0;
+    double distToCamera = 0;
+    double distToRobot = 0;
+    double ambiguity = 0;
+    for (RawFiducial thing : fiducials) {
+      id = thing.id;
+      txnc = thing.txnc;
+      tync = thing.tync;
+      ta = thing.ta;
+      distToCamera = thing.distToCamera;
+      distToRobot = thing.distToRobot;
+      ambiguity = thing.ambiguity;
+
+    }
+    if (dataToReturn.equals("id")) {
+      return id;
+    } else if (dataToReturn.equals("tx")) {
+      return txnc;
+    } else if (dataToReturn.equals("ty")) {
+      return tync;
+    } else if (dataToReturn.equals("ta")) {
+      return ta;
+    } else if (dataToReturn.equals("distCamera")) {
+      return distToCamera;
+    } else if (dataToReturn.equals("distRobot")) {
+      return distToRobot;
+    } else if (dataToReturn.equals("amb")) {
+      return ambiguity;
+    } else {
+      return 0;
+    }
   }
 
 }
