@@ -51,27 +51,25 @@ public class Constants {
   }
 
   public static final class AlgaeArmConstants {
-    public static final int algaeArmBarMotorID = 8;// placeholder
+    public static final int algaeArmBarMotorID = 30;// placeholder
   }
 
   public static class CoralArmConstants {
-    public static final int coralArmMotorID = 69;// placeholder with funny number hehe
-    public static final int kLeftCoralMotorID = 70;
-    public static final int kRightCoralMotorID = 71;
+    public static final int coralArmMotorID = 22;
+    public static final int kLeftCoralIntakeMotorID = 20;
+    public static final int kRightCoralIntakeMotorID = 21;
     public static final int kCoralArmEncoderID1 = 4;
     public static final int kCoralArmEncoderID2 = 5;
     public static final int kCoramIntakeEncoderID1 = 6;
     public static final int kCoralIntakeEncoderID2 = 7;
     public static final int kCoralLightSensorID = 3;
-    public static final double kCoralEncoderTopValue = 3;
-    public static final double kCoralEncoderTopPosition = 0.5;
-    public static final double kCoralEncoderIntakePosition = 0.3; // Temp
-    public static final double kCoralEncoderOuttakePosition = 0.1; // Temp
-    public static final double kCoralEncoderDefaultPosition = 0.2; // Temp
-    // public static final int kCoralEncoderTopBuffer = kCoralEncoderTopValue + 10;
-    public static final double kCoralEncoderBottomPosition = 0;
-    // public static final int kCoralEncoderBottomBuffer = kCoralEncoderBottomValue
-    // - 10;
+    public static final double kMaxArmSpeed = 0.75;
+    // Positions!!!
+    public static final double kCoralEncoderTopPosition = 10;
+    public static final double kCoralEncoderIntakePosition = 4; // Temp
+    public static final double kCoralEncoderOuttakePosition = 8; // Temp
+    public static final double kCoralEncoderDefaultPosition = 0.4; // Temp
+    public static final double kCoralEncoderBottomPosition = 0.3;
   }
 
   public static class ClimberConstants {
@@ -81,12 +79,20 @@ public class Constants {
   }
 
   public static class LimelightConstants {
-    public static final String kReefLimelightName = "ReefDriveLimelight";
+    public static final String kLeftReefLimelightName = "Left_Reef_Limelight";
+    public static final String kRightReefLimelightName = "Right_Reef_Limelight";
     public static final String kIntakeLimelightName = "IntakeLimelight";
-    public static final String kBackLimelightName = "BackLimelight";
 
+    // Distances
     public static final double desiredIntakeDistance = 0.5; // Placeholder
-    public static final double desiredOuttakeDistance = 0.5; // Placeholder
+    public static final double desiredOuttakeDistanceLvl1 = 0.5; // Placeholder
+    public static final double desiredOuttakeDistanceLvl2 = 0; // Placeholder
+    public static final double desiredOuttakeDistanceLvl3 = 0; // Placeholder
+    public static final double desiredOuttakeDistanceLvl4 = 0; // Placeholder
+    // Offsets For Reef
+    public static final double desiredLeftReefOffset = 0.5; // Placeholder
+    public static final double desiredRightReefOffset = 0.5; // Placeholder
+    // Angle
     public static final double desiredIntakeAngle = 0.5; // Placeholder
     public static final double desiredOuttakeAngle = 0.5; // Placeholder
     public static final double desiredIntakeAngleOffset = 0.5; // Placeholder. We also need these because the limelights

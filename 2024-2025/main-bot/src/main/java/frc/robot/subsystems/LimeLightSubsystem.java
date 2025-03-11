@@ -191,12 +191,52 @@ public class LimeLightSubsystem extends SubsystemBase {
     return desiredForwardSpeed;
   }
 
-  public double limelight_outtake_forward_speed() {
+  public double limelight_outtake_forward_speed(int reefLvl) {
     double kP = 0.1;
     double distanceFromTarget = getDistanceToTarget();
-    double desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistance - distanceFromTarget) * kP;
+    double desiredForwardSpeed = 0;
+    switch (reefLvl) {
+    case 1:
+      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) * kP;
+      break;
+    case 2:
+      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) * kP;
+      break;
+    case 3:
+      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) * kP;
+      break;
+    case 4:
+      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) * kP;
+      break;
+    }
     SmartDashboard.putNumber(limelightName, desiredForwardSpeed);
     return desiredForwardSpeed;
+  }
+
+  public boolean isRobotInDesiredReefPosition(int reefLvl) {
+    double distanceFromTarget = getDistanceToTarget();
+    double xAngleFromTarget = LimelightHelpers.getTX(limelightName);
+    switch (reefLvl) {
+    case 1:
+      return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) < 0.1)
+          && (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1);
+    case 2:
+      return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) < 0.1)
+          && (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1);
+    case 3:
+      return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) < 0.1
+          && Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1;
+    case 4:
+      return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) < 0.1
+          && Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1;
+    default:
+      return false;
+    }
+  }
+
+  public boolean isRobotInDesiredIntakePosition() {
+    double distanceFromTarget = getDistanceToTarget();
+    return Math.abs(LimelightConstants.desiredIntakeDistance - distanceFromTarget) < 0.1;
   }
 
   public double getAprilTagInfo(String dataToReturn) {

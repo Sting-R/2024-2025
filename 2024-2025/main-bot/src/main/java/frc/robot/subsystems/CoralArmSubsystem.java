@@ -2,13 +2,17 @@ package frc.robot.subsystems;
 
 //"A good programmers code needs not any comments, for it comments on itself" - IDK who I made it up
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.CoralArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 
 import java.util.function.BooleanSupplier;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -36,6 +40,7 @@ public class CoralArmSubsystem extends SubsystemBase {
     private final DigitalInput m_CoralArmLightSensor;
     // Current state
     private CoralArmLevels currentCoralArmState;
+    private CoralArmLevels desiredCoralArmState;
 
     // Constants
     private double motorMaxCoralSpeed;
@@ -53,10 +58,11 @@ public class CoralArmSubsystem extends SubsystemBase {
         m_CoralIntakeEncoder = new Encoder(CoralArmConstants.kCoramIntakeEncoderID1,
                 CoralArmConstants.kCoralIntakeEncoderID2);
         m_CoralArmMotor = new TalonFX(CoralArmConstants.coralArmMotorID);
-        m_LeftCoralIntakeMotor = new TalonSRX(CoralArmConstants.kLeftCoralMotorID);
-        m_RightCoralIntakeMotor = new TalonSRX(CoralArmConstants.kRightCoralMotorID);
-        motorMaxCoralSpeed = ElevatorConstants.kMaxMotorElevatorSpeed;
-        currentCoralArmState = CoralArmLevels.Down;
+        m_LeftCoralIntakeMotor = new TalonSRX(CoralArmConstants.kLeftCoralIntakeMotorID);
+        m_RightCoralIntakeMotor = new TalonSRX(CoralArmConstants.kRightCoralIntakeMotorID);
+        motorMaxCoralSpeed = CoralArmConstants.kMaxArmSpeed;
+        currentCoralArmState = CoralArmLevels.defaultState;
+        desiredCoralArmState = CoralArmLevels.defaultState;
         m_CoralArmLightSensor = new DigitalInput(CoralArmConstants.kCoralLightSensorID);
         SetUpCoralArmMotor();
 
@@ -68,15 +74,23 @@ public class CoralArmSubsystem extends SubsystemBase {
         // This function is courtesy of the Team 1764 codebase
         TalonFXConfiguration coralArmMotorConfig = new TalonFXConfiguration();
 
-        coralArmMotorConfig.Slot0.kP = 0.1; // p pid //4.1
-        coralArmMotorConfig.Slot0.kD = 0;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        // Coral Arm Going up
+        coralArmMotorConfig.Slot0.kP = 1; // p pid //4.1
+        coralArmMotorConfig.Slot0.kD = 0.1;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot0.kV = 0;
         coralArmMotorConfig.Slot0.kA = 0;
-        coralArmMotorConfig.Slot0.kG = 0.65;
+        coralArmMotorConfig.Slot0.kG = 0.45;
+
+        // Coral arm going down
+        coralArmMotorConfig.Slot1.kP = 1; // p pid //4.1
+        coralArmMotorConfig.Slot1.kD = 0.1;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        coralArmMotorConfig.Slot1.kV = 0;
+        coralArmMotorConfig.Slot1.kA = 0;
+        coralArmMotorConfig.Slot1.kG = 1.5;
 
         coralArmMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         coralArmMotorConfig.MotorOutput.PeakForwardDutyCycle = motorMaxCoralSpeed;
-        coralArmMotorConfig.MotorOutput.PeakReverseDutyCycle = -0.3; // can bump up to 12 or something
+        coralArmMotorConfig.MotorOutput.PeakReverseDutyCycle = -4; // can bump up to 12 or something
         coralArmMotorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         coralArmMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -92,10 +106,13 @@ public class CoralArmSubsystem extends SubsystemBase {
     }
 
     public enum CoralArmLevels {
-        intake, outtake, Down
+        intake, outtake, defaultState
     }
 
-    public void coralArmIntake() {
+    public void intake() {
+        SmartDashboard.putBoolean("Default State Active", false);
+        SmartDashboard.putNumber("Desired Position", CoralArmConstants.kCoralEncoderIntakePosition);
+        desiredCoralArmState = CoralArmLevels.intake;
         m_CoralArmMotor.setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderIntakePosition).withSlot(0));
         if (coralGrabbed()) {
             SmartDashboard.putBoolean("Coral grabbed?", true);
@@ -109,15 +126,21 @@ public class CoralArmSubsystem extends SubsystemBase {
         // .withLimitReverseMotion(true));
     }
 
-    public void coralArmOuttake() {
+    public void outtake() {
+        SmartDashboard.putBoolean("Default State Active", false);
+        SmartDashboard.putNumber("Desired Position", CoralArmConstants.kCoralEncoderIntakePosition);
+        desiredCoralArmState = CoralArmLevels.outtake;
         m_CoralArmMotor.setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderOuttakePosition).withSlot(0));
         m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, -0.5);
         m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
         // .withLimitReverseMotion(true));
     }
 
-    public void coralArmDefaultState() {
-        m_CoralArmMotor.setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderDefaultPosition).withSlot(0));
+    public void defaultState() {
+        SmartDashboard.putBoolean("Default State Active", true);
+        SmartDashboard.putNumber("Desired Position", CoralArmConstants.kCoralEncoderDefaultPosition);
+        desiredCoralArmState = CoralArmLevels.defaultState;
+        m_CoralArmMotor.setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderDefaultPosition).withSlot(1));
         m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         // .withLimitReverseMotion(true));
@@ -135,7 +158,7 @@ public class CoralArmSubsystem extends SubsystemBase {
                 && m_CoralArmEncoder.get() < CoralArmConstants.kCoralEncoderOuttakePosition + 0.1) {
             currentCoralArmState = CoralArmLevels.outtake;
         } else {
-            currentCoralArmState = CoralArmLevels.Down;
+            currentCoralArmState = CoralArmLevels.defaultState;
         }
         return currentCoralArmState;
     }
@@ -146,6 +169,27 @@ public class CoralArmSubsystem extends SubsystemBase {
 
     public BooleanSupplier isCoralInArm() {
         return () -> m_CoralArmLightSensor.get();
+    }
+
+    public void sysIdTest() {
+        final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(new SysIdRoutine.Config(null, // Use default ramp rate
+                // (1 V/s)
+                Volts.of(1), // Reduce dynamic step voltage to 4 to prevent brownout
+                null, // Use default timeout (10 s)
+                // Log state with Phoenix SignalLogger class
+                (state) -> SignalLogger.writeString("state", state.toString())),
+                new SysIdRoutine.Mechanism(
+                        (volts) -> m_CoralArmMotor.setControl(voltageOut.withOutput(volts.in(Volts))), null, this));
+    }
+
+    public void debuggingMethod() {
+        SmartDashboard.putBoolean("is Coral In Arm", m_CoralArmLightSensor.get());
+        SmartDashboard.putString("Current CoralArm State", " " + getCurrentCoralArmState());
+        SmartDashboard.putString("Desired Coral Arm State", " " + desiredCoralArmState);
+        SmartDashboard.putNumber("Coral Arm Motor position", m_CoralArmMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Left Coral Arm Intake Power", m_LeftCoralIntakeMotor.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Right Coral Arm Intake Power", m_RightCoralIntakeMotor.getMotorOutputVoltage());
+
     }
 
     // public Command CommandsetCoralArmVoltage(double voltage, CoralArmLevels
