@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.CompCommands;
 
 public class LimeLightSubsystem extends SubsystemBase {
 
@@ -32,7 +33,6 @@ public class LimeLightSubsystem extends SubsystemBase {
    * tx - Horizontal Offset ty - Vertical Offset ta - Area of target tv - Target
    * Visible
    */
-
   int FLIndex = 0;
   int FRIndex = 1;
   int BLIndex = 2;

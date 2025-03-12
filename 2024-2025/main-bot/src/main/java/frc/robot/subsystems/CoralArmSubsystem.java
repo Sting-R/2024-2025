@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.CompCommands;
 
 public class CoralArmSubsystem extends SubsystemBase {
     // Motor(s)
@@ -189,7 +190,6 @@ public class CoralArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Coral Arm Motor position", m_CoralArmMotor.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("Left Coral Arm Intake Power", m_LeftCoralIntakeMotor.getMotorOutputVoltage());
         SmartDashboard.putNumber("Right Coral Arm Intake Power", m_RightCoralIntakeMotor.getMotorOutputVoltage());
-
     }
 
     // public Command CommandsetCoralArmVoltage(double voltage, CoralArmLevels

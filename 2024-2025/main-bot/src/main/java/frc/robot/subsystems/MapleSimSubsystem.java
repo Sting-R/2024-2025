@@ -10,9 +10,12 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants.DriveTrainConstants;;
+import frc.robot.Constants.DriveTrainConstants;
+import frc.robot.CompCommands;
 
 public class MapleSimSubsystem extends SubsystemBase {
 
@@ -50,5 +53,13 @@ public class MapleSimSubsystem extends SubsystemBase {
 
     public void clearGamePieces() {
         SimulatedArena.getInstance().clearGamePieces();
+    }
+
+    // i guess ill add a debugging method here
+    public void debugOrSomething() {
+        SmartDashboard.putString("Yeah this is difficult. Have track length X: ",
+                driveTrainSimulationConfig.trackLengthX().toString());
+        SmartDashboard.putString("Here track width y i guess", driveTrainSimulationConfig.trackWidthY().toString());
+        // To many things to put all things from this class.
     }
 }

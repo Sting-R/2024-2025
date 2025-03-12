@@ -1,3 +1,4 @@
+//Make sure to finish the debugging method cause im most likely not gonna do it
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
@@ -26,6 +27,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.CompCommands;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -315,5 +318,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         this.getModule(1).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(45));
         this.getModule(2).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(45));
         this.getModule(3).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(-45));
+    }
+
+    public void debuggingMethod() {
+        // Yah no dis file to big and im lowkey lazy rn
     }
 }

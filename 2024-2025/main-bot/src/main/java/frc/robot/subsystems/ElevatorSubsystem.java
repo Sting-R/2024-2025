@@ -31,6 +31,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Utility;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
+import frc.robot.CompCommands;
 
 public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsystem into an actual subsystem
     private final Logging elevatorLogger;
@@ -352,6 +353,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     public BooleanSupplier isElevatorAtDesiredState(ElevatorPresets desiredState) {
         return () -> currentElevatorState == desiredState;
     }
+    // nvm public void debuggingMethod() {}
 
     // public void setMotorElevatorSpeed(boolean isGoingUp) {
     // // Placeholder

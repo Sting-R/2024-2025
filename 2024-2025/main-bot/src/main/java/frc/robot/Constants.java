@@ -73,8 +73,8 @@ public class Constants {
   }
 
   public static class ClimberConstants {
-    public static final int kLeftClimberMotorID = 25; // TEMP
-    public static final int kRightClimberMotorID = 26; // TEMP
+    public static final int kClimberMotorID = 25; // TEMP
+    // public static final int kRightClimberMotorID = 26; // yeah we dont need that
     public static final int kClimberLimitSwitchID = 20; // TEMP
   }
 
