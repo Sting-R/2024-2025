@@ -30,7 +30,7 @@ public class Constants {
   public static class ElevatorConstants {
     public static final int kElevatorLeftMotorID = 15;
     public static final int kElevatorRightMotorID = 16;
-    public static final double kMaxMotorElevatorSpeed = 0.05;
+    public static final double kMaxMotorElevatorSpeed = 0.5;
     public static final int kLeftElevatorEncoderID1 = 9;
     public static final int kLeftElevatorEncoderID2 = 8;
     // public static final int kRightElevatorEncoderID1 = 7;
@@ -42,11 +42,11 @@ public class Constants {
 
     public static class ElevatorPreset {
       // PLACEHOLDER VALUES!!!
-      public static final double level1EncoderValue = 0;
-      public static final double level2EncoderValue = 2;
-      public static final double level3EncoderValue = 5;
-      public static final double level4EncoderValue = 7;
-      public static final double intakeEncoderValue = 8;
+      public static final double level1EncoderValue = 2.9785;
+      public static final double level2EncoderValue = 7.844726;
+      public static final double level3EncoderValue = 16.20019;
+      public static final double level4EncoderValue = 11.2700;
+      public static final double intakeEncoderValue = 9.179199;
     }
   }
 
@@ -65,9 +65,12 @@ public class Constants {
     public static final int kCoralLightSensorID = 3;
     public static final double kMaxArmSpeed = 0.75;
     // Positions!!!
-    public static final double kCoralEncoderTopPosition = 10;
-    public static final double kCoralEncoderIntakePosition = 4; // Temp
-    public static final double kCoralEncoderOuttakePosition = 8; // Temp
+    public static final double kCoralEncoderTopPosition = 16.5;
+    public static final double kCoralEncoderIntakePosition = 1.80908; // Temp
+    public static final double kCoralEncoderOuttakelvl1Position = -0.033398; // Temp
+    public static final double kCoralEncoderOuttakelvl2Position = -0.04;
+    public static final double kCoralEncoderOuttakelvl3Position = -0.04;
+    public static final double kCoralEncoderOuttakelvl4Position = 9.82054;
     public static final double kCoralEncoderDefaultPosition = 0.4; // Temp
     public static final double kCoralEncoderBottomPosition = 0.3;
   }
