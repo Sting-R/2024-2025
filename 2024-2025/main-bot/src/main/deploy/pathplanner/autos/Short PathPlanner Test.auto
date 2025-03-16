@@ -7,7 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Fun Short Path"
+            "pathName": "A Path That Pathes Paths Into Pathing Pathed Paths For Other Paths To Path Paths"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "[Put Creative Name Here]"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pathing Paths To Path Pathological Pathing Pathogens For Pathed Pathing Pathers"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "What"
           }
         }
       ]
