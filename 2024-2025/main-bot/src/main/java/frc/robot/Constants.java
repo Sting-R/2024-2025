@@ -36,17 +36,18 @@ public class Constants {
     // public static final int kRightElevatorEncoderID1 = 7;
     // public static final int kRightElevatorEncoderID2 = 6;
     public static final double kLeftElevatorEncoderBottomValue = 0;
-    public static final double kLeftElevatorEncoderTopValue = 15.09;
+    public static final double kLeftElevatorEncoderTopValue = 16.09;
     public static final double kRightElevatorEncoderBottomValue = 0;
     public static final double kRightElevatorEncoderTopValue = 15.13;
 
     public static class ElevatorPreset {
       // PLACEHOLDER VALUES!!!
       public static final double level1EncoderValue = 2.9785;
-      public static final double level2EncoderValue = 7.844726;
-      public static final double level3EncoderValue = 16.20019;
+      public static final double level2EncoderValue = 7.544726;
+      public static final double level3EncoderValue = 15.6208984375;
       public static final double level4EncoderValue = 11.2700;
       public static final double intakeEncoderValue = 9.179199;
+      public static final double defaultStateEncoderValue = 0.6;
     }
   }
 
@@ -66,29 +67,29 @@ public class Constants {
     public static final double kMaxArmSpeed = 0.75;
     // Positions!!!
     public static final double kCoralEncoderTopPosition = 16.5;
-    public static final double kCoralEncoderIntakePosition = 1.80908; // Temp
-    public static final double kCoralEncoderOuttakelvl1Position = -0.033398; // Temp
-    public static final double kCoralEncoderOuttakelvl2Position = -0.04;
-    public static final double kCoralEncoderOuttakelvl3Position = -0.04;
+    public static final double kCoralEncoderIntakePosition = 1.80908;
+    public static final double kCoralEncoderOuttakelvl1Position = -0.033398;
+    public static final double kCoralEncoderOuttakelvl2Position = 0.1;
+    public static final double kCoralEncoderOuttakelvl3Position = 0.80595703125;
     public static final double kCoralEncoderOuttakelvl4Position = 9.82054;
-    public static final double kCoralEncoderDefaultPosition = 0.4; // Temp
+    public static final double kCoralEncoderDefaultPosition = -0.10910156; // Temp
     public static final double kCoralEncoderBottomPosition = 0.3;
   }
 
   public static class ClimberConstants {
-    public static final int kClimberMotorID = 25; // TEMP
+    public static final int kClimberMotorID = 25;
     // public static final int kRightClimberMotorID = 26; // yeah we dont need that
-    public static final int kClimberLimitSwitchID = 20; // TEMP
+    public static final int kClimberLimitSwitchID = 20;
   }
 
   public static class LimelightConstants {
-    public static final String kLeftReefLimelightName = "Left_Reef_Limelight";
-    public static final String kRightReefLimelightName = "Right_Reef_Limelight";
-    public static final String kIntakeLimelightName = "IntakeLimelight";
+    public static final String kLeftReefLimelightName = "limelight-lrll";
+    public static final String kRightReefLimelightName = "limelight-rrll";
+    public static final String kIntakeLimelightName = "limelight-inll";
 
     // Distances
     public static final double desiredIntakeDistance = 0.5; // Placeholder
-    public static final double desiredOuttakeDistanceLvl1 = 0.5; // Placeholder
+    public static final double desiredOuttakeDistanceLvl1 = 0; // Placeholder
     public static final double desiredOuttakeDistanceLvl2 = 0; // Placeholder
     public static final double desiredOuttakeDistanceLvl3 = 0; // Placeholder
     public static final double desiredOuttakeDistanceLvl4 = 0; // Placeholder
@@ -98,9 +99,14 @@ public class Constants {
     // Angle
     public static final double desiredIntakeAngle = 0.5; // Placeholder
     public static final double desiredOuttakeAngle = 0.5; // Placeholder
+
     public static final double desiredIntakeAngleOffset = 0.5; // Placeholder. We also need these because the limelights
                                                                // are not centered
-    public static final double desiredOuttakeAngleOffset = 0.5; // Placeholder
+    public static final double desiredLeftLLOutakeYOffsetLvl123 = -1.308611035346985; // Placeholder
+    public static final double desiredLeftLLOutakeYOffsetLvl4 = 0.5;
+    public static final double desiredRightLLOutakeYOffsetLvl123 = 0.519681692123413; // Placeholder
+    public static final double desiredRightLLOutakeYOffsetLvl4 = 0;
+
   }
 
   public static class DriveTrainConstants {

@@ -1,5 +1,11 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import org.opencv.core.Mat;
+
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.PoseEstimator;
@@ -8,9 +14,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.CoralArmConstants;
 import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.LimelightHelpers.RawFiducial;
+import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.LimelightHelpers;
 // import edu.first.LimelightHelpers;
 // import edu.first.wpilibj.
@@ -140,18 +148,32 @@ public class LimeLightSubsystem extends SubsystemBase {
     // if it is too high, the robot will oscillate around.
     // if it is too low, the robot will never reach its target
     // if the robot never turns in the correct direction, kP should be inverted.
-    double kP = .035;
+    double kP = 35.75;
 
     // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the
     // rightmost edge of your limelight 3 feed, tx should return roughly 31 degrees.
-    double targetingAngularVelocity = LimelightHelpers.getTX(limelightName) * kP;
+    double targetingAngularVelocity = LimelightHelpers.getCameraPose3d_TargetSpace(limelightName).getRotation().getY()
+        * kP;
+
+    // System.out.println(LimelightHelpers.getCameraPose3d_TargetSpace(limelightName).getRotation().getY());
+
+    // targetingAngularVelocity *= DriveTrainConstants.MaxAngularRate;
 
     // convert to radians per second for our drive method
-    targetingAngularVelocity *= DriveTrainConstants.MaxAngularRate;
+    double maxAngularRate = RotationsPerSecond.of(0.10).in(RadiansPerSecond);
+    if (targetingAngularVelocity > maxAngularRate) {
+      targetingAngularVelocity = maxAngularRate;
+    } else if (targetingAngularVelocity < -maxAngularRate) {
+      targetingAngularVelocity = -maxAngularRate;
+    }
 
-    // invert since tx is positive when the target is to the right of the crosshair
-    targetingAngularVelocity *= -1.0;
+    // // invert since tx is positive when the target is to the right of the
+    // crosshair
+    // targetingAngularVelocity *= -1.0;
 
+    System.out.println("limelight_aim_proportional " + targetingAngularVelocity);
+    // System.out.println("lap " + targetingAngularVelocity);
+    SmartDashboard.putNumber("Limelight_aim_porportional", targetingAngularVelocity);
     return targetingAngularVelocity;
   }
 
@@ -169,6 +191,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     double targetingForwardSpeed = LimelightHelpers.getTY(limelightName) * kP;
     targetingForwardSpeed *= DriveTrainConstants.MaxSpeed;
     targetingForwardSpeed *= -1.0;
+    // SmartDashboard.putNumber("Range_porportional", targetingForwardSpeed);
     return targetingForwardSpeed;
   }
 
@@ -191,47 +214,113 @@ public class LimeLightSubsystem extends SubsystemBase {
     return desiredForwardSpeed;
   }
 
-  public double limelight_outtake_forward_speed(int reefLvl) {
-    double kP = 0.1;
+  public double limelight_outtake_forward_speed(CoralArmLevels reefLvl) {
+    double kP = 1.5;
     double distanceFromTarget = getDistanceToTarget();
+    SmartDashboard.putNumber("Distance from apriltag", distanceFromTarget);
     double desiredForwardSpeed = 0;
     switch (reefLvl) {
-    case 1:
+    case lvl1:
       desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) * kP;
       break;
-    case 2:
+    case lvl2:
       desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) * kP;
       break;
-    case 3:
+    case lvl3:
       desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) * kP;
       break;
-    case 4:
+    case lvl4:
       desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) * kP;
       break;
     }
-    SmartDashboard.putNumber(limelightName, desiredForwardSpeed);
+    SmartDashboard.putNumber("Desired forward speed", desiredForwardSpeed);
     return desiredForwardSpeed;
   }
 
-  public boolean isRobotInDesiredReefPosition(int reefLvl) {
+  public double limelight_outtake_side_speed(CoralArmLevels coralArmLevel, Boolean isLeftReef) {
+    double kP = 1.25;
+    double yValueFromTarget = LimelightHelpers.getTY(limelightName);
+    SmartDashboard.putNumber("y-offset from apriltag", yValueFromTarget);
+    double desiredSideSpeed = 0;
+    // Checks if it is going for the lvl 4 on the left side
+    if (coralArmLevel == CoralArmLevels.lvl4 && (isLeftReef)) {
+      desiredSideSpeed = (LimelightConstants.desiredLeftLLOutakeYOffsetLvl4 - yValueFromTarget) * kP;
+    }
+    // Checks if it is going for lvl 4 on the right side
+    else if (coralArmLevel == CoralArmLevels.lvl4 && !isLeftReef) {
+      desiredSideSpeed = (LimelightConstants.desiredRightLLOutakeYOffsetLvl4 - yValueFromTarget) * kP;
+    }
+    // Checks if it is going for lvl 1, 2, or 3 on the left side
+    else if (((coralArmLevel == CoralArmLevels.lvl1) || (coralArmLevel == CoralArmLevels.lvl2)
+        || (coralArmLevel == CoralArmLevels.lvl3)) && (isLeftReef)) {
+      desiredSideSpeed = (LimelightConstants.desiredLeftLLOutakeYOffsetLvl123 - yValueFromTarget) * kP;
+    }
+    // Checks if it is going for lvl 1, 2, or 3 on the right side
+    else if (((coralArmLevel == CoralArmLevels.lvl1) || (coralArmLevel == CoralArmLevels.lvl2)
+        || (coralArmLevel == CoralArmLevels.lvl3)) && (!isLeftReef)) {
+      desiredSideSpeed = (LimelightConstants.desiredRightLLOutakeYOffsetLvl123 - yValueFromTarget) * kP;
+    }
+    SmartDashboard.putNumber("Desired Side Speed", desiredSideSpeed);
+    return desiredSideSpeed;
+  }
+
+  public boolean isRobotInDesiredReefPosition(CoralArmLevels reefLvl, boolean isLeftReef) {
     double distanceFromTarget = getDistanceToTarget();
     double xAngleFromTarget = LimelightHelpers.getTX(limelightName);
-    switch (reefLvl) {
-    case 1:
-      return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) < 0.1)
-          && (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1);
-    case 2:
-      return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) < 0.1)
-          && (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1);
-    case 3:
-      return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) < 0.1
-          && Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1;
-    case 4:
-      return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) < 0.1
-          && Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) < 0.1;
-    default:
-      return false;
+    double yOffsetFromTarget = LimelightHelpers.getTY(limelightName);
+    double bufferValue = 0.2;
+    if (isLeftReef) {
+      switch (reefLvl) {
+      case lvl1:
+        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) < bufferValue)
+            && (Math.abs(LimelightConstants.desiredLeftLLOutakeYOffsetLvl123 - yOffsetFromTarget) < bufferValue);
+      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue);
+      case lvl2:
+        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) < bufferValue)
+            && (Math.abs(LimelightConstants.desiredLeftLLOutakeYOffsetLvl123 - yOffsetFromTarget) < bufferValue);
+      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue);
+      case lvl3:
+        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) < bufferValue
+            && (Math.abs(LimelightConstants.desiredLeftLLOutakeYOffsetLvl123 - yOffsetFromTarget) < bufferValue);
+      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue;
+      case lvl4:
+        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) < bufferValue
+            && (Math.abs(LimelightConstants.desiredLeftLLOutakeYOffsetLvl4 - yOffsetFromTarget) < bufferValue);
+      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue;
+      default:
+        return false;
+      }
+    } else {
+      switch (reefLvl) {
+      case lvl1:
+        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) < bufferValue)
+            && (Math.abs(LimelightConstants.desiredRightLLOutakeYOffsetLvl123 - yOffsetFromTarget) < bufferValue);
+      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue);
+      case lvl2:
+        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) < bufferValue)
+            && (Math.abs(LimelightConstants.desiredRightLLOutakeYOffsetLvl123 - yOffsetFromTarget) < bufferValue);
+      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue);
+      case lvl3:
+        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) < bufferValue
+            && (Math.abs(LimelightConstants.desiredRightLLOutakeYOffsetLvl123 - yOffsetFromTarget) < bufferValue);
+      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue;
+      case lvl4:
+        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) < bufferValue
+            && (Math.abs(LimelightConstants.desiredRightLLOutakeYOffsetLvl4 - yOffsetFromTarget) < bufferValue);
+      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+      // bufferValue;
+      default:
+        return false;
+      }
     }
+
   }
 
   public boolean isRobotInDesiredIntakePosition() {
@@ -248,6 +337,9 @@ public class LimeLightSubsystem extends SubsystemBase {
     double distToCamera = 0;
     double distToRobot = 0;
     double ambiguity = 0;
+
+    // This is just using the last item in the list. If that is desired,
+    // consider doing that more directly rather than looping
     for (RawFiducial thing : fiducials) {
       id = thing.id;
       txnc = thing.txnc;
@@ -275,6 +367,11 @@ public class LimeLightSubsystem extends SubsystemBase {
     } else {
       return 0;
     }
+  }
+
+  public void debuggingMethod() {
+    SmartDashboard.putNumber("y-offset from apriltag", LimelightHelpers.getTY(limelightName));
+    SmartDashboard.putNumber("Distance from apriltag", getDistanceToTarget());
   }
 
 }

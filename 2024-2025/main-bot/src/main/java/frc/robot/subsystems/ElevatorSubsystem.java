@@ -56,6 +56,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     private final double preset3EncoderValue;
     private final double preset4EncoderValue;
     private final double presetIntakeEncoderValue;
+    private final double presetDefaultStateEncoderValue;
 
     // Test values for motion magic
     private MotionMagicVoltage setVoltage;
@@ -103,6 +104,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         preset3EncoderValue = ElevatorConstants.ElevatorPreset.level3EncoderValue;
         preset4EncoderValue = ElevatorConstants.ElevatorPreset.level4EncoderValue;
         presetIntakeEncoderValue = ElevatorConstants.ElevatorPreset.intakeEncoderValue;
+        presetDefaultStateEncoderValue = ElevatorConstants.ElevatorPreset.defaultStateEncoderValue;
 
         SetUpElevatorMotors();
 
@@ -111,7 +113,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     }
 
     public enum ElevatorPresets { // different levels for the coral reef
-        Level1, Level2, Level3, Level4, intake, inbetween,
+        Level1, Level2, Level3, Level4, intake, inbetween, defaultState,
     }
 
     private void SetUpElevatorMotors() {
@@ -221,8 +223,8 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
             // }
             break;
         case Level3:
-            // SmartDashboard.putString("DesiredPreset", "Level3");
-            // SmartDashboard.putNumber("Desired elevator position", preset3EncoderValue);
+            SmartDashboard.putString("DesiredPreset", "Level3");
+            SmartDashboard.putNumber("Desired elevator position", preset3EncoderValue);
             // if ((preset3EncoderValue -
             // m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 &&
             // !isElevatorAtTop())
@@ -263,9 +265,15 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
             // this.elevatorMaintainPositionMM();
             // }
             break;
+        case defaultState:
+            SmartDashboard.putString("DesiredPreset", "DefaultState");
+            SmartDashboard.putNumber("Desired elevator position", presetDefaultStateEncoderValue);
+            m_elevatorLeftMotor.setControl(setVoltage.withPosition(presetDefaultStateEncoderValue).withSlot(0));
+            break;
         case inbetween:
             // Should never be called but just in case
             this.elevatorMaintainPositionMM();
+            break;
         }
     }
 

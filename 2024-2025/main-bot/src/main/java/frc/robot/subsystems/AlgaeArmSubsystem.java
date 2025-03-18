@@ -71,13 +71,13 @@ public class AlgaeArmSubsystem extends SubsystemBase {
 
     // who placed these here? They lowkey clash wittewawy -_-
     public Command commandAlgaeIntake(AlgaeArmSubsystem algaeArmSubsystem) {
-        return Commands.startEnd(() -> m_algaeBarMotor.set(ControlMode.PercentOutput, 0.3), // placeholder
+        return Commands.startEnd(() -> m_algaeBarMotor.set(ControlMode.PercentOutput, 0.6), // placeholder
                 () -> m_algaeBarMotor.set(ControlMode.PercentOutput, 0.1), // placeholder
                 algaeArmSubsystem);
     }
 
     public Command commandAlgaeOuttake(AlgaeArmSubsystem algaeArmSubsystem) {
-        return Commands.startEnd(() -> m_algaeBarMotor.set(ControlMode.PercentOutput, -0.3), // placeholder
+        return Commands.startEnd(() -> m_algaeBarMotor.set(ControlMode.PercentOutput, -0.1), // placeholder
                 () -> m_algaeBarMotor.set(ControlMode.PercentOutput, 0), // placeholder
                 algaeArmSubsystem);
     }

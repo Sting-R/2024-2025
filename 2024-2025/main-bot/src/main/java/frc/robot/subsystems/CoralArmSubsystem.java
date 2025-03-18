@@ -87,7 +87,7 @@ public class CoralArmSubsystem extends SubsystemBase {
         coralArmMotorConfig.Slot1.kD = 0.1;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot1.kV = 0;
         coralArmMotorConfig.Slot1.kA = 0;
-        coralArmMotorConfig.Slot1.kG = 1.5;
+        coralArmMotorConfig.Slot1.kG = 0.1;
 
         coralArmMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         coralArmMotorConfig.MotorOutput.PeakForwardDutyCycle = motorMaxCoralSpeed;
@@ -154,8 +154,8 @@ public class CoralArmSubsystem extends SubsystemBase {
             break;
         }
         if (ejectCoral) {
-            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0.8);
-            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.8);
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
         } else {
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
@@ -163,7 +163,7 @@ public class CoralArmSubsystem extends SubsystemBase {
     }
 
     public void defaultState() {
-        SmartDashboard.putBoolean("Default State Active", true);
+        // SmartDashboard.putBoolean("Default State Active", true);
         SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderDefaultPosition);
         desiredCoralArmState = CoralArmLevels.defaultState;
         m_CoralArmMotor.setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderDefaultPosition).withSlot(1));
