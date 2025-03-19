@@ -84,7 +84,7 @@ public class CoralArmSubsystem extends SubsystemBase {
 
         // Coral arm going down
         coralArmMotorConfig.Slot1.kP = 1; // p pid //4.1
-        coralArmMotorConfig.Slot1.kD = 0.1;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        coralArmMotorConfig.Slot1.kD = 0.15;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot1.kV = 0;
         coralArmMotorConfig.Slot1.kA = 0;
         coralArmMotorConfig.Slot1.kG = 0.1;
@@ -121,8 +121,8 @@ public class CoralArmSubsystem extends SubsystemBase {
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         } else {
             SmartDashboard.putBoolean("Coral grabbed?", false);
-            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, -0.2);
-            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, -0.2);
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, -0.3);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, -0.3);
         }
         // .withLimitReverseMotion(true));
     }
@@ -131,6 +131,7 @@ public class CoralArmSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Default State Active", false);
 
         desiredCoralArmState = desiredLevel;
+        int inversed = 1;
         switch (desiredCoralArmState) {
         case lvl1:
             m_CoralArmMotor.setControl(
@@ -150,12 +151,15 @@ public class CoralArmSubsystem extends SubsystemBase {
         case lvl4:
             m_CoralArmMotor.setControl(
                     setVoltage.withPosition(CoralArmConstants.kCoralEncoderOuttakelvl4Position).withSlot(0));
+            inversed *= -1;
             SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderOuttakelvl2Position);
+
             break;
         }
+        double intakePower = 0.5 * inversed;
         if (ejectCoral) {
-            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
-            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
         } else {
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);

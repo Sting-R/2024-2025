@@ -45,8 +45,8 @@ public class Constants {
       public static final double level1EncoderValue = 2.9785;
       public static final double level2EncoderValue = 7.544726;
       public static final double level3EncoderValue = 15.6208984375;
-      public static final double level4EncoderValue = 11.2700;
-      public static final double intakeEncoderValue = 9.179199;
+      public static final double level4EncoderValue = 11.4700;
+      public static final double intakeEncoderValue = 10.879199;
       public static final double defaultStateEncoderValue = 0.6;
     }
   }
@@ -102,10 +102,10 @@ public class Constants {
 
     public static final double desiredIntakeAngleOffset = 0.5; // Placeholder. We also need these because the limelights
                                                                // are not centered
-    public static final double desiredLeftLLOutakeYOffsetLvl123 = -1.308611035346985; // Placeholder
-    public static final double desiredLeftLLOutakeYOffsetLvl4 = 0.5;
-    public static final double desiredRightLLOutakeYOffsetLvl123 = 0.519681692123413; // Placeholder
-    public static final double desiredRightLLOutakeYOffsetLvl4 = 0;
+    public static final double desiredLeftLLOutakeXOffsetLvl123 = -1.308611035346985; // Placeholder
+    public static final double desiredLeftLLOutakeXOffsetLvl4 = 0.5;
+    public static final double desiredRightLLOutakeXOffsetLvl123 = -13.0792; // Placeholder
+    public static final double desiredRightLLOutakeXOffsetLvl4 = 0;
 
   }
 

@@ -116,7 +116,7 @@ public class RobotContainer {
 
         public final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
         // // The following subsystems must be created after the drivetrain
-        public final LimeLightSubsystem m_LeftReefLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
+        public final LimeLightSubsystem m_LeftReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
                         Constants.LimelightConstants.kLeftReefLimelightName);
         public final LimeLightSubsystem m_RightReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
                         Constants.LimelightConstants.kRightReefLimelightName);
@@ -219,20 +219,20 @@ public class RobotContainer {
                 m_auxillaryController.leftTrigger()
                                 // makes algae bar intake if LT pressed
                                 .whileTrue(new RunCommand(() -> {
-                                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.3);
-                                        SmartDashboard.putBoolean("CoralArmIntake", true);
+                                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.6);
+                                        SmartDashboard.putBoolean("Algae arm Intake", true);
                                 }, m_AlgaeArmSubsystem))
                                 // Interrupts the command, causing motors to SLOWLY SPIN INWARDS (this way
                                 // they
                                 // can maintain control of the algae)
-                                .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.1),
+                                .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0),
                                                 m_AlgaeArmSubsystem));
 
                 m_auxillaryController.rightTrigger().whileTrue(new RunCommand(() -> {
-                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.3);
-                        SmartDashboard.putBoolean("CoralArmIntake", false);
-                }, m_AlgaeArmSubsystem)).onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(random),
-                                m_AlgaeArmSubsystem));
+                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.8);
+                        SmartDashboard.putBoolean("Algae arm Intake", false);
+                }, m_AlgaeArmSubsystem)).onFalse(
+                                new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0), m_AlgaeArmSubsystem));
 
                 // ====================== Climber Subsystem ====================== //
                 // Trigger climberTrigger = new Trigger(() -> climberLimitSwitch.get());
@@ -261,7 +261,7 @@ public class RobotContainer {
 
                 // m_auxillaryController.leftStick().whileTrue(
                 // new RunCommand(() -> m_CoralArmSubsystem.defaultState(),
-                // m_CoralArmSubsystem));
+                //
 
                 // m_auxillaryController.rightStick()
                 // .whileTrue(new RunCommand(() -> m_CoralArmSubsystem.sysIdTest(),
@@ -270,29 +270,34 @@ public class RobotContainer {
                 // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
 
+                // Interrupt command
+                InstantCommand interrupt = new InstantCommand(() -> {
+                        m_DrivetrainSubsystem.applyRequest(
+                                        () -> drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
+                }, m_DrivetrainSubsystem);
+
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
-                m_DrivetrainSubsystem.setDefaultCommand(
-                                // Drivetrain will execute this command periodically
-                                m_DrivetrainSubsystem.applyRequest(() -> drive
-                                                // Drive forward with negative Y (forward)
-                                                .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
-                                                // Drive left with negative X (left)
-                                                .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
-                                                // Drive counterclockwise with negative X (left)
-                                                .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate)));
-                m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> brake));
-                m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> point.withModuleDirection(
-                                new Rotation2d(-m_driverController.getLeftY(), -m_driverController.getLeftX()))));
-                m_driverController.povCenter().onTrue(new InstantCommand(() -> {
-                        m_DrivetrainSubsystem.applyRequest(() -> drive
+                m_DrivetrainSubsystem.setDefaultCommand(m_DrivetrainSubsystem.applyRequest(() -> {
+                        final var modifier = m_driverController.rightBumper().getAsBoolean() ? 4
+                                        : m_driverController.leftBumper().getAsBoolean() ? 2 : 1;
+                        return drive
                                         // Drive forward with negative Y (forward)
-                                        .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                                        .withVelocityX(m_driverController.getLeftY() * MaxSpeed / modifier)
                                         // Drive left with negative X (left)
-                                        .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                                        .withVelocityY(m_driverController.getLeftX() * MaxSpeed / modifier)
                                         // Drive counterclockwise with negative X (left)
-                                        .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate));
-                }, m_DrivetrainSubsystem));
+                                        .withRotationalRate(
+                                                        -m_driverController.getRightX() * MaxAngularRate / modifier);
+                }));
+                m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> brake));
+                m_driverController.y().onTrue(new InstantCommand(() -> m_DrivetrainSubsystem.getPigeon2().reset()));
+                // m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() ->
+                // point.withModuleDirection(
+                // new Rotation2d(-m_driverController.getLeftY(),
+                // -m_driverController.getLeftX()))));
+
+                m_driverController.povCenter().onTrue(interrupt);
                 // // limelight override
                 // m_driverController.rightTrigger().whileTrue(m_DrivetrainSubsystem.applyRequest(()
                 // -> drive
@@ -511,12 +516,13 @@ public class RobotContainer {
                                 // Align with the reef
                                 m_DrivetrainSubsystem.applyRequest(() -> drive
                                                 // Drive forward with negative Y (forward)
-                                                .withVelocityX(m_RightReefLimeLightSubsystem
-                                                                .limelight_outtake_forward_speed(CoralArmLevels.lvl3))
+                                                .withVelocityX(m_LeftReefLimeLightSubsystem
+                                                                .limelight_outtake_forward_speed(CoralArmLevels.lvl3,
+                                                                                m_driverController))
                                                 // Drive left with negative X (left)
-                                                .withVelocityY(m_RightReefLimeLightSubsystem
+                                                .withVelocityY(m_LeftReefLimeLightSubsystem
                                                                 .limelight_outtake_side_speed(CoralArmLevels.lvl3,
-                                                                                true))
+                                                                                false, m_driverController))
                                                 // Drive counterclockwise with negative X (left)
                                                 .withRotationalRate(0
                                                 // m_RightReefLimeLightSubsystem
@@ -525,7 +531,7 @@ public class RobotContainer {
 
                                                 // }
                                                 .until(() -> {
-                                                        return m_RightReefLimeLightSubsystem
+                                                        return m_LeftReefLimeLightSubsystem
                                                                         .isRobotInDesiredReefPosition(
                                                                                         CoralArmLevels.lvl3, false);
 
@@ -563,8 +569,64 @@ public class RobotContainer {
 
                 ));
 
+                // .and(m_auxillaryController.povLeft())
+                m_auxillaryController.y().onTrue(Commands.sequence(
+                                // // Align with the reef
+                                // m_DrivetrainSubsystem.applyRequest(() -> drive
+                                // // Drive forward with negative Y (forward)
+                                // .withVelocityX(m_RightReefLimeLightSubsystem
+                                // .limelight_outtake_forward_speed(CoralArmLevels.lvl3,
+                                // m_driverController))
+                                // // Drive left with negative X (left)
+                                // .withVelocityY(m_RightReefLimeLightSubsystem
+                                // .limelight_outtake_side_speed(CoralArmLevels.lvl3, true,
+                                // m_driverController))
+                                // // Drive counterclockwise with negative X (left)
+                                // .withRotationalRate(0
+                                // // m_RightReefLimeLightSubsystem
+                                // // .limelight_aim_proportional()
+                                // ))
+
+                                // // }
+                                // .until(() -> {
+                                // return m_RightReefLimeLightSubsystem
+                                // .isRobotInDesiredReefPosition(
+                                // CoralArmLevels.lvl3, true);
+
+                                // })
+
+                                // Move elevator to the level 3 preset and coral arm to outtake
+                                new RunCommand(() -> {
+                                        // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
+                                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3);
+                                        // }
+                                        if (m_ElevatorSubsystem
+                                                        .getMotorPosition() > Constants.ElevatorConstants.ElevatorPreset.level1EncoderValue) {
+                                                m_CoralArmSubsystem.outtake(CoralArmLevels.lvl3, false);
+                                        }
+
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> m_ElevatorSubsystem
+                                                .isElevatorAtDesiredState(ElevatorPresets.Level3).getAsBoolean()
+                                                && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl3)
+                                                                // IMPORTANT NOTE!!! SINCE LVL1 AND LVL2 ARE SO SIMILAR
+                                                                // IN POSITION, IT WILL NOT THINK IT IS LEVEL 2 BUT
+                                                                // LEVEL 1, SO WE WILL BE USING LEVEL 1 FOR THIS CHECK
+                                                                .getAsBoolean()),
+
+                                new RunCommand(() -> {
+                                        if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
+                                                m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3);
+                                        }
+                                        if (m_ElevatorSubsystem
+                                                        .getMotorPosition() > Constants.ElevatorConstants.ElevatorPreset.level1EncoderValue) {
+                                                m_CoralArmSubsystem.outtake(CoralArmLevels.lvl3, true);
+                                        }
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem)
+
+                ));
+
                 // level 4 preset
-                m_auxillaryController.x().and(m_auxillaryController.povLeft()).onTrue(Commands.sequence(
+                m_auxillaryController.x().onTrue(Commands.sequence(
                                 // Align with the reef
                                 // new RunCommand(() -> {
                                 // Will have to test to make sure it is actually getting value
@@ -572,65 +634,60 @@ public class RobotContainer {
                                 // NOTE!!! Have to use the RIGHT limelight when trying to go for the
                                 // LEFT side of the reef, just cause when the robot is on the left side,
                                 // the right limelight has a better view
-                                m_DrivetrainSubsystem.applyRequest(() -> drive
-                                                // Drive forward with negative Y (forward)
-                                                .withVelocityX(m_RightReefLimeLightSubsystem
-                                                                .limelight_outtake_forward_speed(CoralArmLevels.lvl4))
-                                                // Drive left with negative X (left)
-                                                .withVelocityY(m_RightReefLimeLightSubsystem
-                                                                .limelight_outtake_side_speed(CoralArmLevels.lvl4,
-                                                                                true))
-                                                // Drive counterclockwise with negative X (left)
-                                                .withRotationalRate(0
-                                                // m_RightReefLimeLightSubsystem
-                                                // .limelight_aim_proportional()
-                                                ))
+                                // m_DrivetrainSubsystem.applyRequest(() -> drive
+                                // // Drive forward with negative Y (forward)
+                                // .withVelocityX(m_RightReefLimeLightSubsystem
+                                // .limelight_outtake_forward_speed(CoralArmLevels.lvl4))
+                                // // Drive left with negative X (left)
+                                // .withVelocityY(m_RightReefLimeLightSubsystem
+                                // .limelight_outtake_side_speed(CoralArmLevels.lvl4,
+                                // true))
+                                // // Drive counterclockwise with negative X (left)
+                                // .withRotationalRate(0
+                                // // m_RightReefLimeLightSubsystem
+                                // // .limelight_aim_proportional()
+                                // ))
 
-                                                // }
-                                                .until(() -> {
-                                                        return m_RightReefLimeLightSubsystem
-                                                                        .isRobotInDesiredReefPosition(
-                                                                                        CoralArmLevels.lvl4, true);
+                                // // }
+                                // .until(() -> {
+                                // return m_RightReefLimeLightSubsystem
+                                // .isRobotInDesiredReefPosition(
+                                // CoralArmLevels.lvl4, true);
 
-                                                })
+                                // })
 
-                // // Move elevator to the level 4 preset and coral arm to outtake
-                // new RunCommand(() -> {
-                // // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
-                // // }
-                // if (m_ElevatorSubsystem
-                // .getMotorPosition() >
-                // Constants.ElevatorConstants.ElevatorPreset.level1EncoderValue) {
-                // m_CoralArmSubsystem.outtake(CoralArmLevels.lvl4, false);
-                // }
+                                // // Move elevator to the level 4 preset and coral arm to outtake
+                                new RunCommand(() -> {
+                                        // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
+                                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
+                                        // }
+                                        if (m_ElevatorSubsystem
+                                                        .getMotorPosition() > Constants.ElevatorConstants.ElevatorPreset.level1EncoderValue) {
+                                                m_CoralArmSubsystem.outtake(CoralArmLevels.lvl4, false);
+                                        }
 
-                // }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> m_ElevatorSubsystem
-                // .isElevatorAtDesiredState(ElevatorPresets.Level4).getAsBoolean()
-                // && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl4)
-                // .getAsBoolean()),
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> (m_ElevatorSubsystem
+                                                .isElevatorAtDesiredState(ElevatorPresets.Level4).getAsBoolean()
+                                                && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl4)
+                                                                .getAsBoolean()
+                                                && m_auxillaryController.getHID().getLeftStickButton())),
 
-                // new RunCommand(() -> {
-                // // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
-                // // }
-                // if (m_ElevatorSubsystem
-                // .getMotorPosition() >
-                // Constants.ElevatorConstants.ElevatorPreset.level1EncoderValue) {
-                // m_CoralArmSubsystem.outtake(CoralArmLevels.lvl4, true);
-                // }
-                // }, m_ElevatorSubsystem, m_CoralArmSubsystem)
-
-                )).onFalse(new InstantCommand(() -> {
-                        System.out.println("Interrupt!");
-                }, m_DrivetrainSubsystem, m_CoralArmSubsystem, m_ElevatorSubsystem));
+                                new RunCommand(() -> {
+                                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
+                                        if (m_ElevatorSubsystem
+                                                        .getMotorPosition() > Constants.ElevatorConstants.ElevatorPreset.level4EncoderValue) {
+                                                m_CoralArmSubsystem.outtake(CoralArmLevels.lvl4, true);
+                                        }
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem)));
 
         }
 
         public void debugMethod() {
                 m_ElevatorSubsystem.debuggingMethod();
                 m_CoralArmSubsystem.debuggingMethod();
-                m_RightReefLimeLightSubsystem.debuggingMethod();
+                m_LeftReefLimeLightSubsystem.debuggingMethod("left");
+                m_RightReefLimeLightSubsystem.debuggingMethod("right");
+
         }
 
         /**
