@@ -46,7 +46,9 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import java.lang.Math;
 import java.nio.file.Path;
+import java.util.jar.Attributes.Name;
 
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -67,6 +69,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -94,7 +97,7 @@ public class RobotContainer {
         private final CommandXboxController m_auxillaryController = new CommandXboxController(
                         Constants.OperatorConstants.kAuxiliaryControllerPort);
 
-        // private final SendableChooser<Command> autoChooser;
+        private final SendableChooser<Command> autoChooser;
 
         DigitalInput climberLimitSwitch = new DigitalInput(Constants.ClimberConstants.kClimberLimitSwitchID);
         /* Swerve drive platform setup */ // From Swerve Project Generator
@@ -136,11 +139,11 @@ public class RobotContainer {
         public RobotContainer() {
 
                 // Build an auto chooser. This will use Commands.none() as the default option.
-                // autoChooser = AutoBuilder.buildAutoChooser();
+                autoChooser = AutoBuilder.buildAutoChooser();
 
-                // SmartDashboard.putData("Auto Chooser", autoChooser);
+                SmartDashboard.putData("Auto Chooser", autoChooser);
 
-                // Register named commands for use in autonomous routines
+                // // Register named commands for use in autonomous routines
                 // NamedCommands.registerCommand("[Put Creative Name Here]",
                 // m_AlgaeArmSubsystem.commandAlgaeIntake(m_AlgaeArmSubsystem));
                 // NamedCommands.registerCommand("What",
@@ -216,22 +219,24 @@ public class RobotContainer {
 
                 // ====================== Algae Arm Subsystem ====================== //
 
+                RunCommand algaeIntakeCommand = new RunCommand(() -> {
+                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.5);
+                        SmartDashboard.putBoolean("Algae arm Intake", true);
+                }, m_AlgaeArmSubsystem);
+
+                RunCommand algaeOuttakeCommand = new RunCommand(() -> {
+                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.7);
+                        SmartDashboard.putBoolean("Algae arm Intake", false);
+                }, m_AlgaeArmSubsystem);
+
                 m_auxillaryController.leftTrigger()
                                 // makes algae bar intake if LT pressed
-                                .whileTrue(new RunCommand(() -> {
-                                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.6);
-                                        SmartDashboard.putBoolean("Algae arm Intake", true);
-                                }, m_AlgaeArmSubsystem))
-                                // Interrupts the command, causing motors to SLOWLY SPIN INWARDS (this way
-                                // they
-                                // can maintain control of the algae)
+                                .whileTrue(algaeIntakeCommand)// Interrupts the command, causing motors to SLOWLY SPIN
+                                                              // INWARDS
                                 .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0),
-                                                m_AlgaeArmSubsystem));
+                                                m_AlgaeArmSubsystem, m_AlgaeArmSubsystem));
 
-                m_auxillaryController.rightTrigger().whileTrue(new RunCommand(() -> {
-                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.8);
-                        SmartDashboard.putBoolean("Algae arm Intake", false);
-                }, m_AlgaeArmSubsystem)).onFalse(
+                m_auxillaryController.rightTrigger().whileTrue(algaeOuttakeCommand).onFalse(
                                 new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0), m_AlgaeArmSubsystem));
 
                 // ====================== Climber Subsystem ====================== //
@@ -263,7 +268,7 @@ public class RobotContainer {
                 // new RunCommand(() -> m_CoralArmSubsystem.defaultState(),
                 //
 
-                // m_auxillaryController.rightStick()
+                // m_auxillaryController.rightStick(2
                 // .whileTrue(new RunCommand(() -> m_CoralArmSubsystem.sysIdTest(),
                 // m_CoralArmSubsystem));
 
@@ -291,7 +296,10 @@ public class RobotContainer {
                                                         -m_driverController.getRightX() * MaxAngularRate / modifier);
                 }));
                 m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> brake));
-                m_driverController.y().onTrue(new InstantCommand(() -> m_DrivetrainSubsystem.getPigeon2().reset()));
+                m_driverController.y().onTrue(new InstantCommand(() -> {
+                        SmartDashboard.putBoolean("Gyro Reset Occured", true);
+                        m_DrivetrainSubsystem.getPigeon2().reset();
+                }));
                 // m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() ->
                 // point.withModuleDirection(
                 // new Rotation2d(-m_driverController.getLeftY(),
@@ -328,8 +336,18 @@ public class RobotContainer {
 
                 // ====================== Command Compositions ====================== //
 
+                // Default state function
+
+                SequentialCommandGroup elevatorDefaultPosition = new SequentialCommandGroup(new RunCommand(() -> {
+                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.defaultState);
+                        m_CoralArmSubsystem.defaultState();
+                }, m_ElevatorSubsystem, m_CoralArmSubsystem));
+                m_auxillaryController.rightBumper().onTrue(elevatorDefaultPosition);
+                NamedCommands.registerCommand("Elevator default position", elevatorDefaultPosition);
+
                 // // Intake Function
-                m_auxillaryController.leftBumper().onTrue(Commands.sequence(
+
+                SequentialCommandGroup intakeCommand = new SequentialCommandGroup(
                                 // Align with the intake station
                                 // new RunCommand(() -> m_DrivetrainSubsystem.applyRequest(() -> drive
                                 // // Drive forward with negative Y (forward)
@@ -346,32 +364,32 @@ public class RobotContainer {
                                         m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.intake);
                                         // }
                                         m_CoralArmSubsystem.intake();
-                                        // SmartDashboard.putBoolean("Until method test",
-                                        // (m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.intake).getAsBoolean()&&
-                                        // m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.intake).getAsBoolean()));
-                                        // SmartDashboard.putBoolean("Elevator
-                                        // Check",m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.intake).getAsBoolean());
-                                        // SmartDashboard.putBoolean("Coral Arm
-                                        // Check",m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.intake).getAsBoolean());
                                 }, m_ElevatorSubsystem).until(() -> {
                                         return m_CoralArmSubsystem.coralGrabbed();
                                 }), new RunCommand(() -> {
                                         m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.defaultState);
                                         m_CoralArmSubsystem.defaultState();
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem)));
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem));
+                m_auxillaryController.leftBumper().onTrue(intakeCommand);
+                NamedCommands.registerCommand("Intake command", intakeCommand);
 
                 // Note for future self, if I want to make the coral arm go up at the same time
                 // as the elevator, I could make it so one command makes the elevator just go up
                 // for a second, then another command makes the elevator and the coral arm go up
                 // at the same time
 
-                // Default state function
+                // Knock Algae off
 
-                m_auxillaryController.rightBumper().onTrue(Commands.sequence(new RunCommand(() -> {
-                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.defaultState);
-                        m_CoralArmSubsystem.defaultState();
-                }, m_ElevatorSubsystem, m_CoralArmSubsystem)));
-                m_auxillaryController.a().onTrue(Commands.sequence(
+                // SequentialCommandGroup knockAlgaeOffCommand = new SequentialCommandGroup(new
+                // RunCommand(() -> {
+                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.knockAlgaeOff);
+                // }, m_AlgaeArmSubsystem, m_ElevatorSubsystem).until(() -> m_ElevatorSubsystem
+                // .isElevatorAtDesiredState(ElevatorPresets.knockAlgaeOff).getAsBoolean());
+                // new RunCommand(() -> {
+                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.knockAlgaeOff);
+                // }, null));
+
+                SequentialCommandGroup levelOneCommand = new SequentialCommandGroup(
                                 // Align with the reef
                                 // new RunCommand(() -> {
                                 // // Will have to test to make sure it is actually getting value
@@ -435,9 +453,11 @@ public class RobotContainer {
                                         }
                                 }, m_ElevatorSubsystem, m_CoralArmSubsystem)
 
-                ));
+                );
+                m_auxillaryController.a().onTrue(levelOneCommand);
+                NamedCommands.registerCommand("Level 1 preset Command", levelOneCommand);
 
-                m_auxillaryController.b().onTrue(Commands.sequence(
+                SequentialCommandGroup levelTwoCommand = new SequentialCommandGroup(
                                 // Align with the reef
                                 // new RunCommand(() -> {
                                 // // Will have to test to make sure it is actually getting value
@@ -510,32 +530,35 @@ public class RobotContainer {
                                         }
                                 }, m_ElevatorSubsystem, m_CoralArmSubsystem)
 
-                ));
+                );
+                m_auxillaryController.b().onTrue(Commands.sequence(levelTwoCommand));
 
-                m_auxillaryController.y().and(m_auxillaryController.povRight()).onTrue(Commands.sequence(
-                                // Align with the reef
-                                m_DrivetrainSubsystem.applyRequest(() -> drive
-                                                // Drive forward with negative Y (forward)
-                                                .withVelocityX(m_LeftReefLimeLightSubsystem
-                                                                .limelight_outtake_forward_speed(CoralArmLevels.lvl3,
-                                                                                m_driverController))
-                                                // Drive left with negative X (left)
-                                                .withVelocityY(m_LeftReefLimeLightSubsystem
-                                                                .limelight_outtake_side_speed(CoralArmLevels.lvl3,
-                                                                                false, m_driverController))
-                                                // Drive counterclockwise with negative X (left)
-                                                .withRotationalRate(0
-                                                // m_RightReefLimeLightSubsystem
-                                                // .limelight_aim_proportional()
-                                                ))
+                NamedCommands.registerCommand("Level 2 preset Command", levelTwoCommand);
 
-                                                // }
-                                                .until(() -> {
-                                                        return m_LeftReefLimeLightSubsystem
-                                                                        .isRobotInDesiredReefPosition(
-                                                                                        CoralArmLevels.lvl3, false);
+                // m_auxillaryController.y().and(m_auxillaryController.povRight()).onTrue(Commands.sequence(
+                // // Align with the reef
+                // m_DrivetrainSubsystem.applyRequest(() -> drive
+                // // Drive forward with negative Y (forward)
+                // .withVelocityX(m_LeftReefLimeLightSubsystem
+                // .limelight_outtake_forward_speed(CoralArmLevels.lvl3,
+                // m_driverController))
+                // // Drive left with negative X (left)
+                // .withVelocityY(m_LeftReefLimeLightSubsystem
+                // .limelight_outtake_side_speed(CoralArmLevels.lvl3,
+                // false, m_driverController))
+                // // Drive counterclockwise with negative X (left)
+                // .withRotationalRate(0
+                // // m_RightReefLimeLightSubsystem
+                // // .limelight_aim_proportional()
+                // ))
 
-                                                })
+                // // }
+                // .until(() -> {
+                // return m_LeftReefLimeLightSubsystem
+                // .isRobotInDesiredReefPosition(
+                // CoralArmLevels.lvl3, false);
+
+                // })
 
                 // Move elevator to the level 3 preset and coral arm to outtake
                 // new RunCommand(() -> {
@@ -567,11 +590,9 @@ public class RobotContainer {
                 // }
                 // }, m_ElevatorSubsystem, m_CoralArmSubsystem)
 
-                ));
+                // ));
 
-                // .and(m_auxillaryController.povLeft())
-                m_auxillaryController.y().onTrue(Commands.sequence(
-                                // // Align with the reef
+                SequentialCommandGroup levelThreeCommand = new SequentialCommandGroup(// // Align with the reef
                                 // m_DrivetrainSubsystem.applyRequest(() -> drive
                                 // // Drive forward with negative Y (forward)
                                 // .withVelocityX(m_RightReefLimeLightSubsystem
@@ -623,10 +644,13 @@ public class RobotContainer {
                                         }
                                 }, m_ElevatorSubsystem, m_CoralArmSubsystem)
 
-                ));
+                );
+                // .and(m_auxillaryController.povLeft())
+                m_auxillaryController.y().onTrue(levelThreeCommand);
 
-                // level 4 preset
-                m_auxillaryController.x().onTrue(Commands.sequence(
+                NamedCommands.registerCommand("Level 3 preset Command", levelThreeCommand);
+
+                SequentialCommandGroup levelFourCommand = new SequentialCommandGroup(
                                 // Align with the reef
                                 // new RunCommand(() -> {
                                 // Will have to test to make sure it is actually getting value
@@ -678,8 +702,11 @@ public class RobotContainer {
                                                         .getMotorPosition() > Constants.ElevatorConstants.ElevatorPreset.level4EncoderValue) {
                                                 m_CoralArmSubsystem.outtake(CoralArmLevels.lvl4, true);
                                         }
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem)));
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem));
+                // level 4 preset
+                m_auxillaryController.x().onTrue(levelFourCommand);
 
+                NamedCommands.registerCommand("Level 4 Preset Command", levelFourCommand);
         }
 
         public void debugMethod() {
@@ -695,9 +722,9 @@ public class RobotContainer {
          *
          * @return the command to run in autonomous
          */
-        // public Command getAutonomousCommand() {
-        // return autoChooser.getSelected();
-        // }
+        public Command getAutonomousCommand() {
+                return autoChooser.getSelected();
+        }
 
 }
 // another why not comment :)
