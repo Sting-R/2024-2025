@@ -49,6 +49,7 @@ import java.nio.file.Path;
 import java.util.jar.Attributes.Name;
 
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -60,6 +61,7 @@ import frc.robot.subsystems.AlgaeArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralArmSubsystem;
+import frc.robot.commands.LockOnAprilTag;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -138,19 +140,20 @@ public class RobotContainer {
          */
         public RobotContainer() {
 
+                // Configure the trigger bindings
+                configureBindings(Math.random());
+
                 // Build an auto chooser. This will use Commands.none() as the default option.
                 autoChooser = AutoBuilder.buildAutoChooser();
 
                 SmartDashboard.putData("Auto Chooser", autoChooser);
 
                 // // Register named commands for use in autonomous routines
-                // NamedCommands.registerCommand("[Put Creative Name Here]",
+                // NamedCommands.registerCommand("[New Command test]",
                 // m_AlgaeArmSubsystem.commandAlgaeIntake(m_AlgaeArmSubsystem));
                 // NamedCommands.registerCommand("What",
                 // m_AlgaeArmSubsystem.commandAlgaeOuttake(m_AlgaeArmSubsystem));
 
-                // Configure the trigger bindings
-                configureBindings(Math.random());
         }
 
         /**
@@ -220,13 +223,13 @@ public class RobotContainer {
                 // ====================== Algae Arm Subsystem ====================== //
 
                 RunCommand algaeIntakeCommand = new RunCommand(() -> {
-                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.5);
-                        SmartDashboard.putBoolean("Algae arm Intake", true);
+                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.6);
+                        SmartDashboard.putBoolean("Algae Arm Intake", true);
                 }, m_AlgaeArmSubsystem);
 
                 RunCommand algaeOuttakeCommand = new RunCommand(() -> {
                         m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.7);
-                        SmartDashboard.putBoolean("Algae arm Intake", false);
+                        SmartDashboard.putBoolean("Algae Arm Outtake", false);
                 }, m_AlgaeArmSubsystem);
 
                 m_auxillaryController.leftTrigger()
@@ -295,7 +298,21 @@ public class RobotContainer {
                                         .withRotationalRate(
                                                         -m_driverController.getRightX() * MaxAngularRate / modifier);
                 }));
-                m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() -> brake));
+                // m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() ->
+                // brake));
+                // Align to left reef side
+                // HAVE TO USE RIGHT LIMELIGHT!!!, that will be the side that actually sees the
+                // limelight
+                m_driverController.x().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_LeftReefLimeLightSubsystem,
+                                0, m_driverController, false, LimelightConstants.desiredLeftLLOutakeXOffsetLvl123));
+                // Align to Right reef side
+                // HAVE TO USE Left LIMELIGHT!!!, that will be the side that actually sees the
+                // limelight
+                m_driverController.b()
+                                .whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0,
+                                                m_driverController, false,
+                                                LimelightConstants.desiredRightLLOutakeXOffsetLvl123));
+
                 m_driverController.y().onTrue(new InstantCommand(() -> {
                         SmartDashboard.putBoolean("Gyro Reset Occured", true);
                         m_DrivetrainSubsystem.getPigeon2().reset();
@@ -455,7 +472,7 @@ public class RobotContainer {
 
                 );
                 m_auxillaryController.a().onTrue(levelOneCommand);
-                NamedCommands.registerCommand("Level 1 preset Command", levelOneCommand);
+                NamedCommands.registerCommand("Level 1 Preset Command", levelOneCommand);
 
                 SequentialCommandGroup levelTwoCommand = new SequentialCommandGroup(
                                 // Align with the reef
@@ -533,7 +550,7 @@ public class RobotContainer {
                 );
                 m_auxillaryController.b().onTrue(Commands.sequence(levelTwoCommand));
 
-                NamedCommands.registerCommand("Level 2 preset Command", levelTwoCommand);
+                NamedCommands.registerCommand("Level 2 Preset Command", levelTwoCommand);
 
                 // m_auxillaryController.y().and(m_auxillaryController.povRight()).onTrue(Commands.sequence(
                 // // Align with the reef
@@ -648,7 +665,7 @@ public class RobotContainer {
                 // .and(m_auxillaryController.povLeft())
                 m_auxillaryController.y().onTrue(levelThreeCommand);
 
-                NamedCommands.registerCommand("Level 3 preset Command", levelThreeCommand);
+                NamedCommands.registerCommand("Level 3 Preset Command", levelThreeCommand);
 
                 SequentialCommandGroup levelFourCommand = new SequentialCommandGroup(
                                 // Align with the reef
@@ -723,6 +740,7 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
+                SmartDashboard.putString("Auto Chosen????????", "" + autoChooser.getSelected());
                 return autoChooser.getSelected();
         }
 

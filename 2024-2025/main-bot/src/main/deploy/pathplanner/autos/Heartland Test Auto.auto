@@ -9,6 +9,18 @@
           "data": {
             "pathName": "Move to Center"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Level 1 Preset Command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Algae Arm Outtake"
+          }
         }
       ]
     }

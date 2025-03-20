@@ -402,5 +402,35 @@ public class LimeLightSubsystem extends SubsystemBase {
     SmartDashboard.putNumber(name + ": Distance", getDistanceToTarget());
   }
 
+  // Code courtesy of team 1764
+
+  public void setPipeline(int pipe) {
+    LimelightHelpers.setPipelineIndex(limelightName, pipe);
+  }
+
+  public int getID() {
+    return (int) LimelightHelpers.getFiducialID(limelightName);
+  }
+
+  public boolean hasTarget() {
+    return LimelightHelpers.getTV(limelightName);
+  }
+
+  public double getTx() {
+    return LimelightHelpers.getTX(limelightName);
+  }
+
+  public double getTy() {
+    return LimelightHelpers.getTY(limelightName);
+  }
+
+  public double getHorizontalAngleOfErrorDegrees() {
+    return getTx();
+  }
+
+  public double getVerticalAngleOfErrorDegrees() {
+    return getTy() + 0;
+  }
+
 }
 // This is line 281

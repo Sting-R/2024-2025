@@ -43,10 +43,12 @@ public class Constants {
     public static class ElevatorPreset {
       // PLACEHOLDER VALUES!!!
       public static final double level1EncoderValue = 2.9785;
-      public static final double level2EncoderValue = 7.544726;
+      public static final double level2EncoderValue = 7.844726;
       public static final double level3EncoderValue = 15.6208984375;
       public static final double level4EncoderValue = 11.4700;
       public static final double intakeEncoderValue = 10.879199;
+      public static final double kickLowerAlgaeOff = 4; // Temp
+      public static final double kickUpperAlgaeOff = 5; // Temp
       public static final double defaultStateEncoderValue = 0.6;
     }
   }
