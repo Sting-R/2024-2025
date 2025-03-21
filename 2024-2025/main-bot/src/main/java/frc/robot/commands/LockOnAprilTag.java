@@ -90,7 +90,7 @@ public class LockOnAprilTag extends Command {
     } else {
       System.out.println("NO TARGET");
     }
-    m_Drivetrain.setControl(drive.withVelocityX(-xOutput * MaxSpeed).withVelocityY(-yOutput * MaxSpeed)
+    m_Drivetrain.setControl(drive.withVelocityX(xOutput * MaxSpeed).withVelocityY(-yOutput * MaxSpeed)
         .withRotationalRate(thetaOutput * MaxAngularRate));
   }
 

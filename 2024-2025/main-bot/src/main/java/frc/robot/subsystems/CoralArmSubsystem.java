@@ -107,7 +107,7 @@ public class CoralArmSubsystem extends SubsystemBase {
     }
 
     public enum CoralArmLevels {
-        intake, lvl1, lvl2, lvl3, lvl4, defaultState
+        intake, lvl1, lvl2, lvl3, lvl4, kickLowerAlgaeOff, kickUpperAlgaeOff, defaultState
     }
 
     public void intake() {
@@ -121,8 +121,8 @@ public class CoralArmSubsystem extends SubsystemBase {
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         } else {
             SmartDashboard.putBoolean("Coral grabbed?", false);
-            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, -0.3);
-            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, -0.3);
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, -0.5);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, -0.5);
         }
         // .withLimitReverseMotion(true));
     }
@@ -153,7 +153,6 @@ public class CoralArmSubsystem extends SubsystemBase {
                     setVoltage.withPosition(CoralArmConstants.kCoralEncoderOuttakelvl4Position).withSlot(0));
             inversed *= -1;
             SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderOuttakelvl2Position);
-
             break;
         }
         double intakePower = 0.5 * inversed;
@@ -164,6 +163,19 @@ public class CoralArmSubsystem extends SubsystemBase {
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         }
+    }
+
+    public void kickCoralOff(boolean kickUpperAlgaeOff) {
+        if (kickUpperAlgaeOff) {
+            m_CoralArmMotor
+                    .setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderKickUpperCoralOff).withSlot(0));
+        } else {
+            m_CoralArmMotor
+                    .setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderKickLowerCoralOff).withSlot(0));
+        }
+        m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
+        m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
+
     }
 
     public void defaultState() {

@@ -55,7 +55,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     private final double preset2EncoderValue;
     private final double preset3EncoderValue;
     private final double preset4EncoderValue;
-    private final double presetIntakeEncoderValue;
+    private double presetIntakeEncoderValue;
     private final double presetDefaultStateEncoderValue;
 
     // Test values for motion magic
@@ -122,8 +122,8 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
-        leftConfig.Slot0.kP = 10; // p pid //4.1
-        leftConfig.Slot0.kD = 0.1;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        leftConfig.Slot0.kP = 11; // p pid //4.1
+        leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
         leftConfig.Slot0.kG = 1.5;
@@ -290,6 +290,14 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         }
     }
 
+    public void increaseIntakeEncoderPosition() {
+        presetIntakeEncoderValue += 0.1;
+    }
+
+    public void decreaseIntakeEncoderPosition() {
+        presetIntakeEncoderValue -= 0.1;
+    }
+
     Double m_maintainElevatorPositionValue;
 
     public void elevatorMaintainPositionMM() {
@@ -389,7 +397,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     public ElevatorPresets getElevatorState() {
         // ElevatorPresets currentElevatorState;
         double currentElevatorPosition = m_elevatorLeftMotor.getPosition().getValueAsDouble();
-        double bufferValue = 0.1;
+        double bufferValue = 0.2;
         if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.level1EncoderValue - bufferValue
                 && currentElevatorPosition < ElevatorConstants.ElevatorPreset.level1EncoderValue + bufferValue) {
             currentElevatorState = ElevatorPresets.Level1;

@@ -36,6 +36,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -89,7 +90,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
         // The robot's subsystems and commands are defined here...ElevatorConstants
         private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
-        private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new AlgaeArmSubsystem();
+        // private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new
+        // AlgaeArmSubsystem();
         private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem();
         // private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
@@ -222,26 +224,37 @@ public class RobotContainer {
 
                 // ====================== Algae Arm Subsystem ====================== //
 
-                RunCommand algaeIntakeCommand = new RunCommand(() -> {
-                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.6);
-                        SmartDashboard.putBoolean("Algae Arm Intake", true);
-                }, m_AlgaeArmSubsystem);
+                // RunCommand algaeIntakeCommand = new RunCommand(() -> {
+                // m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.6);
+                // SmartDashboard.putBoolean("Algae Arm Intake", true);
+                // }, m_AlgaeArmSubsystem);
 
-                RunCommand algaeOuttakeCommand = new RunCommand(() -> {
-                        m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.7);
-                        SmartDashboard.putBoolean("Algae Arm Outtake", false);
-                }, m_AlgaeArmSubsystem);
+                // RunCommand algaeOuttakeCommand = new RunCommand(() -> {
+                // m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.7);
+                // SmartDashboard.putBoolean("Algae Arm Intake", false);
+                // }, m_AlgaeArmSubsystem);
 
-                m_auxillaryController.leftTrigger()
-                                // makes algae bar intake if LT pressed
-                                .whileTrue(algaeIntakeCommand)// Interrupts the command, causing motors to SLOWLY SPIN
-                                                              // INWARDS
-                                .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0),
-                                                m_AlgaeArmSubsystem, m_AlgaeArmSubsystem));
+                // InstantCommand algaeOuttakeAutoCommand = new InstantCommand(() -> {
+                // m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.7);
+                // SmartDashboard.putBoolean("Algae Arm Auto Outtake", false);
+                // }, m_AlgaeArmSubsystem);
 
-                m_auxillaryController.rightTrigger().whileTrue(algaeOuttakeCommand).onFalse(
-                                new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0), m_AlgaeArmSubsystem));
+                // m_auxillaryController.leftTrigger()
+                // // makes algae bar intake if LT pressed
+                // .whileTrue(algaeIntakeCommand)// Interrupts the command, causing motors to
+                // SLOWLY SPIN
+                // // INWARDS
+                // .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0),
+                // m_AlgaeArmSubsystem, m_AlgaeArmSubsystem));
 
+                // m_auxillaryController.rightTrigger().whileTrue(algaeOuttakeCommand).onFalse(
+                // new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0),
+                // m_AlgaeArmSubsystem));
+
+                // NamedCommands.registerCommand("Algae Arm Intake", algaeIntakeCommand);
+                // NamedCommands.registerCommand("Algae Arm Outtake", algaeOuttakeCommand);
+                // NamedCommands.registerCommand("Algae Arm Auto Outtake",
+                // algaeOuttakeAutoCommand);
                 // ====================== Climber Subsystem ====================== //
                 // Trigger climberTrigger = new Trigger(() -> climberLimitSwitch.get());
                 // climberTrigger.onTrue(m_ClimberSubsystem.runOnce(() ->
@@ -303,15 +316,17 @@ public class RobotContainer {
                 // Align to left reef side
                 // HAVE TO USE RIGHT LIMELIGHT!!!, that will be the side that actually sees the
                 // limelight
-                m_driverController.x().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_LeftReefLimeLightSubsystem,
-                                0, m_driverController, false, LimelightConstants.desiredLeftLLOutakeXOffsetLvl123));
+                m_driverController.x().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem,
+                                m_RightReefLimeLightSubsystem, 0, m_driverController, false
+                // , LimelightConstants.desiredLeftLLOutakeXOffsetLvl123
+                ));
                 // Align to Right reef side
                 // HAVE TO USE Left LIMELIGHT!!!, that will be the side that actually sees the
                 // limelight
-                m_driverController.b()
-                                .whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0,
-                                                m_driverController, false,
-                                                LimelightConstants.desiredRightLLOutakeXOffsetLvl123));
+                m_driverController.b().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_LeftReefLimeLightSubsystem,
+                                0, m_driverController, false
+                // , LimelightConstants.desiredRightLLOutakeXOffsetLvl123
+                ));
 
                 m_driverController.y().onTrue(new InstantCommand(() -> {
                         SmartDashboard.putBoolean("Gyro Reset Occured", true);
@@ -381,12 +396,15 @@ public class RobotContainer {
                                         m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.intake);
                                         // }
                                         m_CoralArmSubsystem.intake();
-                                }, m_ElevatorSubsystem).until(() -> {
-                                        return m_CoralArmSubsystem.coralGrabbed();
-                                }), new RunCommand(() -> {
-                                        m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.defaultState);
-                                        m_CoralArmSubsystem.defaultState();
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem));
+                                }, m_ElevatorSubsystem)
+
+                // .until(() -> {
+                // return m_CoralArmSubsystem.coralGrabbed();
+                // }), new RunCommand(() -> {
+                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.defaultState);
+                // m_CoralArmSubsystem.defaultState();
+                // }, m_ElevatorSubsystem, m_CoralArmSubsystem)
+                );
                 m_auxillaryController.leftBumper().onTrue(intakeCommand);
                 NamedCommands.registerCommand("Intake command", intakeCommand);
 
@@ -405,6 +423,10 @@ public class RobotContainer {
                 // new RunCommand(() -> {
                 // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.knockAlgaeOff);
                 // }, null));
+                m_driverController.leftTrigger()
+                                .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.increaseIntakeEncoderPosition()));
+                m_driverController.rightTrigger()
+                                .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.decreaseIntakeEncoderPosition()));
 
                 SequentialCommandGroup levelOneCommand = new SequentialCommandGroup(
                                 // Align with the reef
@@ -458,7 +480,8 @@ public class RobotContainer {
                                 }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> m_ElevatorSubsystem
                                                 .isElevatorAtDesiredState(ElevatorPresets.Level1).getAsBoolean()
                                                 && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl1)
-                                                                .getAsBoolean()),
+                                                                .getAsBoolean()
+                                                && m_auxillaryController.getHID().getLeftStickButton()),
 
                                 new RunCommand(() -> {
                                         // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
@@ -529,13 +552,16 @@ public class RobotContainer {
                                                                 // IMPORTANT NOTE!!! SINCE LVL1 AND LVL2 ARE SO SIMILAR
                                                                 // IN POSITION, IT WILL NOT THINK IT IS LEVEL 2 BUT
                                                                 // LEVEL 1, SO WE WILL BE USING LEVEL 1 FOR THIS CHECK
-                                                                .getAsBoolean())
+                                                                .getAsBoolean()
+                                                && m_auxillaryController.getHID().getLeftStickButton())
                                                 || (m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Level2)
                                                                 .getAsBoolean()
                                                                 && m_CoralArmSubsystem
                                                                                 .isCoralArmAtDesiredState(
                                                                                                 CoralArmLevels.lvl2)
-                                                                                .getAsBoolean())),
+                                                                                .getAsBoolean()
+                                                                && m_auxillaryController.getHID()
+                                                                                .getLeftStickButton())),
 
                                 new RunCommand(() -> {
                                         // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
@@ -649,7 +675,8 @@ public class RobotContainer {
                                                                 // IMPORTANT NOTE!!! SINCE LVL1 AND LVL2 ARE SO SIMILAR
                                                                 // IN POSITION, IT WILL NOT THINK IT IS LEVEL 2 BUT
                                                                 // LEVEL 1, SO WE WILL BE USING LEVEL 1 FOR THIS CHECK
-                                                                .getAsBoolean()),
+                                                                .getAsBoolean()
+                                                && m_auxillaryController.getHID().getLeftStickButton()),
 
                                 new RunCommand(() -> {
                                         if (!m_ElevatorSubsystem.isElevatorAtBottom()) {

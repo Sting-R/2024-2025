@@ -5,21 +5,27 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Move to Center"
+            "pathName": "L4 Top Move to Center"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Level 1 Preset Command"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Algae Arm Outtake"
+            "name": "Level 2 Preset Command"
           }
         }
       ]

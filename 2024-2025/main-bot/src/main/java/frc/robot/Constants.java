@@ -44,11 +44,12 @@ public class Constants {
       // PLACEHOLDER VALUES!!!
       public static final double level1EncoderValue = 2.9785;
       public static final double level2EncoderValue = 7.844726;
-      public static final double level3EncoderValue = 15.6208984375;
+      public static final double level3EncoderValue = 15.8208984375;
       public static final double level4EncoderValue = 11.4700;
       public static final double intakeEncoderValue = 10.879199;
-      public static final double kickLowerAlgaeOff = 4; // Temp
-      public static final double kickUpperAlgaeOff = 5; // Temp
+      public static final double kickLowerAlgaeOff = 2.773925; // Temp
+      public static final double kickUpperAlgaeOff = 15.370605; // Temp
+
       public static final double defaultStateEncoderValue = 0.6;
     }
   }
@@ -74,6 +75,9 @@ public class Constants {
     public static final double kCoralEncoderOuttakelvl2Position = 0.1;
     public static final double kCoralEncoderOuttakelvl3Position = 0.80595703125;
     public static final double kCoralEncoderOuttakelvl4Position = 9.82054;
+    public static final double kCoralEncoderKickUpperCoralOff = 6;
+    public static final double kCoralEncoderKickLowerCoralOff = 4.309;
+
     public static final double kCoralEncoderDefaultPosition = -0.10910156; // Temp
     public static final double kCoralEncoderBottomPosition = 0.3;
   }
