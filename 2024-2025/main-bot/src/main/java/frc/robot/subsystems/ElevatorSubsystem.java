@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Logging;
 import frc.robot.Robot;
@@ -57,6 +58,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     private final double preset4EncoderValue;
     private double presetIntakeEncoderValue;
     private final double presetDefaultStateEncoderValue;
+    private Timer elevatorResetTimer;
 
     // Test values for motion magic
     private MotionMagicVoltage setVoltage;
@@ -113,7 +115,9 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     }
 
     public enum ElevatorPresets { // different levels for the coral reef
-        Level1, Level2, Level3, Level4, intake, inbetween, kickLowerAlgaeOff, kickUpperAlgaeOff, defaultState,
+        Level1, Level2, Level3, Level4, intake, inbetween,
+        // kickLowerAlgaeOff, kickUpperAlgaeOff,
+        defaultState,
     }
 
     private void SetUpElevatorMotors() {
@@ -122,11 +126,12 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
-        leftConfig.Slot0.kP = 11; // p pid //4.1
+        leftConfig.Slot0.kP = 13; // p pid //4.1
+        leftConfig.Slot0.kI = 10;
         leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
-        leftConfig.Slot0.kG = 1.5;
+        leftConfig.Slot0.kG = 1.7;
 
         leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         leftConfig.MotorOutput.PeakForwardDutyCycle = motorMaxElevatorSpeed;
@@ -136,11 +141,12 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         leftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         leftConfig.CurrentLimits.StatorCurrentLimit = 60;
 
-        rightConfig.Slot0.kP = 10; // p pid //4.1
-        rightConfig.Slot0.kD = 0.1;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        rightConfig.Slot0.kP = 13; // p pid //4.1
+        rightConfig.Slot0.kI = 10;
+        rightConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot0.kV = 0;
         rightConfig.Slot0.kA = 0;
-        rightConfig.Slot0.kG = 1.5;
+        rightConfig.Slot0.kG = 1.7;
 
         rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         rightConfig.MotorOutput.PeakForwardDutyCycle = motorMaxElevatorSpeed;
@@ -192,6 +198,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // m_leftElevatorEncoder.get());
         // SmartDashboard.putNumber("Right Elevator Encoder Bottom Value",
         // m_rightElevatorEncoder.get());
+
         m_maintainElevatorPositionValue = null;
         switch (desiredPreset) {
         case Level1:
@@ -265,23 +272,35 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
             // this.elevatorMaintainPositionMM();
             // }
             break;
-        case kickLowerAlgaeOff:
-            SmartDashboard.putString("DesiredPreset", "kickLowerAlgaeOff");
-            SmartDashboard.putNumber("Desired elevator position", ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff);
-            m_elevatorLeftMotor.setControl(
-                    setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff).withSlot(0));
-            break;
+        // case kickLowerAlgaeOff:
+        // SmartDashboard.putString("DesiredPreset", "kickLowerAlgaeOff");
+        // SmartDashboard.putNumber("Desired elevator position",
+        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff);
+        // m_elevatorLeftMotor.setControl(
+        // setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff).withSlot(0));
+        // break;
 
-        case kickUpperAlgaeOff:
-            SmartDashboard.putString("DesiredPreset", "kickUpperAlgaeOff");
-            SmartDashboard.putNumber("Desired elevator position", ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff);
-            m_elevatorLeftMotor.setControl(
-                    setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff).withSlot(0));
-            break;
+        // case kickUpperAlgaeOff:
+        // SmartDashboard.putString("DesiredPreset", "kickUpperAlgaeOff");
+        // SmartDashboard.putNumber("Desired elevator position",
+        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff);
+        // m_elevatorLeftMotor.setControl(
+        // setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff).withSlot(0));
+        // break;
         case defaultState:
             SmartDashboard.putString("DesiredPreset", "DefaultState");
             SmartDashboard.putNumber("Desired elevator position", presetDefaultStateEncoderValue);
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(presetDefaultStateEncoderValue).withSlot(0));
+            // if (m_elevatorLeftMotor.getVelocity().getValueAsDouble() == 0 &&
+            // elevatorResetTimer == null) {
+            // elevatorResetTimer = new Timer();
+            // elevatorResetTimer.start();
+            // } else if (m_elevatorLeftMotor.getVelocity().getValueAsDouble() == 0
+            // && elevatorResetTimer.hasElapsed(0.1)) {
+            // // m_elevatorLeftMotor.reset
+            // elevatorResetTimer = null;
+            // }
+
             break;
         case inbetween:
             // Should never be called but just in case
@@ -291,11 +310,11 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     }
 
     public void increaseIntakeEncoderPosition() {
-        presetIntakeEncoderValue += 0.1;
+        presetIntakeEncoderValue += 0.3;
     }
 
     public void decreaseIntakeEncoderPosition() {
-        presetIntakeEncoderValue -= 0.1;
+        presetIntakeEncoderValue -= 0.3;
     }
 
     Double m_maintainElevatorPositionValue;
@@ -338,9 +357,23 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // m_rightElevatorEncoder.get());
         SmartDashboard.putBoolean("Elevator Top Limit Switch", m_elevatorTopLimitSwitch.get());
         SmartDashboard.putBoolean("Elevator Bottom Limit Switch", m_elevatorBottomLimitSwitch.get());
-        SmartDashboard.putNumber("Left Motor Position", m_elevatorLeftMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Elevator Motor Position", m_elevatorLeftMotor.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("Right Motor Position", m_elevatorRightMotor.getPosition().getValueAsDouble());
         SmartDashboard.putString("Current Elevator State", "" + getElevatorState());
+        SmartDashboard.putNumber("Left Elevator Motor Device Temp",
+                m_elevatorLeftMotor.getDeviceTemp().getValueAsDouble());
+        SmartDashboard.putNumber("Right Elevator Motor Device Temp",
+                m_elevatorRightMotor.getDeviceTemp().getValueAsDouble());
+        if (m_elevatorLeftMotor.getFault_DeviceTemp().getValue()) {
+            SmartDashboard.putBoolean("Left Elevator Motor Overheating", true);
+        } else {
+            SmartDashboard.putBoolean("Left Elevator Motor Overheating", false);
+        }
+        if (m_elevatorLeftMotor.getFault_DeviceTemp().getValue()) {
+            SmartDashboard.putBoolean("Right Elevator Motor Overheating", true);
+        } else {
+            SmartDashboard.putBoolean("Right Elevator Motor Overheating", false);
+        }
     }
 
     public boolean isElevatorAtTop() {
@@ -413,13 +446,19 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.intakeEncoderValue - bufferValue
                 && currentElevatorPosition < ElevatorConstants.ElevatorPreset.intakeEncoderValue + bufferValue) {
             currentElevatorState = ElevatorPresets.intake;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff + bufferValue) {
-            currentElevatorState = ElevatorPresets.kickLowerAlgaeOff;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff + bufferValue) {
-            currentElevatorState = ElevatorPresets.kickUpperAlgaeOff;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.defaultStateEncoderValue - bufferValue
+        }
+        // else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff + bufferValue) {
+        // currentElevatorState = ElevatorPresets.kickLowerAlgaeOff;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff + bufferValue) {
+        // currentElevatorState = ElevatorPresets.kickUpperAlgaeOff;
+        // }
+        else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.defaultStateEncoderValue - bufferValue
                 && currentElevatorPosition < ElevatorConstants.ElevatorPreset.defaultStateEncoderValue + bufferValue) {
             currentElevatorState = ElevatorPresets.defaultState;
         } else {
@@ -435,6 +474,9 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     public double getMotorPosition() {
         return m_elevatorLeftMotor.getPosition().getValueAsDouble();
     }
+
+    // public void isElevatorPosition
+
     // nvm public void debuggingMethod() {}
 
     // public void setMotorElevatorSpeed(boolean isGoingUp) {

@@ -13,19 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
+            "pathName": "Red Middle "
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Level 2 Preset Command"
+            "name": "Level 4 Preset Command"
           }
         }
       ]

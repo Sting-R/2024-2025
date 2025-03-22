@@ -34,51 +34,34 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.fasterxml.jackson.databind.util.Named;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import java.lang.Math;
-import java.nio.file.Path;
-import java.util.jar.Attributes.Name;
 
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.LimelightConstants;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.LimeLightSubsystem;
-import frc.robot.subsystems.MapleSimSubsystem;
-import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
-import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
-import frc.robot.subsystems.AlgaeArmSubsystem;
-import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.CoralArmSubsystem;
-import frc.robot.commands.LockOnAprilTag;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.LockOnAprilTag;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.CoralArmSubsystem;
+import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import frc.robot.subsystems.LimeLightSubsystem;
 
 /**
  * little secret comment OwO This class is where the bulk of the robot should be
@@ -423,9 +406,9 @@ public class RobotContainer {
                 // new RunCommand(() -> {
                 // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.knockAlgaeOff);
                 // }, null));
-                m_driverController.leftTrigger()
+                m_auxillaryController.pov(0)
                                 .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.increaseIntakeEncoderPosition()));
-                m_driverController.rightTrigger()
+                m_auxillaryController.pov(180)
                                 .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.decreaseIntakeEncoderPosition()));
 
                 SequentialCommandGroup levelOneCommand = new SequentialCommandGroup(
@@ -477,11 +460,17 @@ public class RobotContainer {
                                                 m_CoralArmSubsystem.outtake(CoralArmLevels.lvl1, false);
                                         }
 
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> m_ElevatorSubsystem
-                                                .isElevatorAtDesiredState(ElevatorPresets.Level1).getAsBoolean()
-                                                && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl1)
-                                                                .getAsBoolean()
-                                                && m_auxillaryController.getHID().getLeftStickButton()),
+                                        // }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> m_ElevatorSubsystem
+                                        // .isElevatorAtDesiredState(ElevatorPresets.Level1).getAsBoolean()
+                                        // && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl1)
+                                        // .getAsBoolean()
+                                        // && m_auxillaryController.getHID().getLeftStickButton()),
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> (isInDesiredState(
+                                                ElevatorPresets.Level1, CoralArmLevels.lvl1)
+                                                && m_auxillaryController.getHID().getLeftStickButton())
+                                                || (m_auxillaryController.getHID().getLeftStickButton()
+                                                                && m_auxillaryController.getHID()
+                                                                                .getRightStickButton())),
 
                                 new RunCommand(() -> {
                                         // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
@@ -546,22 +535,30 @@ public class RobotContainer {
                                                 m_CoralArmSubsystem.outtake(CoralArmLevels.lvl2, false);
                                         }
 
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> (m_ElevatorSubsystem
-                                                .isElevatorAtDesiredState(ElevatorPresets.Level2).getAsBoolean()
-                                                && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl1)
-                                                                // IMPORTANT NOTE!!! SINCE LVL1 AND LVL2 ARE SO SIMILAR
-                                                                // IN POSITION, IT WILL NOT THINK IT IS LEVEL 2 BUT
-                                                                // LEVEL 1, SO WE WILL BE USING LEVEL 1 FOR THIS CHECK
-                                                                .getAsBoolean()
+                                        // }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> (m_ElevatorSubsystem
+                                        // .isElevatorAtDesiredState(ElevatorPresets.Level2).getAsBoolean()
+                                        // && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl1)
+                                        // // IMPORTANT NOTE!!! SINCE LVL1 AND LVL2 ARE SO SIMILAR
+                                        // // IN POSITION, IT WILL NOT THINK IT IS LEVEL 2 BUT
+                                        // // LEVEL 1, SO WE WILL BE USING LEVEL 1 FOR THIS CHECK
+                                        // .getAsBoolean()
+                                        // && m_auxillaryController.getHID().getLeftStickButton())
+                                        // || (m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Level2)
+                                        // .getAsBoolean()
+                                        // && m_CoralArmSubsystem
+                                        // .isCoralArmAtDesiredState(
+                                        // CoralArmLevels.lvl2)
+                                        // .getAsBoolean()
+                                        // && m_auxillaryController.getHID()
+                                        // .getLeftStickButton())),
+
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> ((isInDesiredState(
+                                                ElevatorPresets.Level2, CoralArmLevels.lvl2)
+                                                || (isInDesiredState(ElevatorPresets.Level1, CoralArmLevels.lvl2)))
                                                 && m_auxillaryController.getHID().getLeftStickButton())
-                                                || (m_ElevatorSubsystem.isElevatorAtDesiredState(ElevatorPresets.Level2)
-                                                                .getAsBoolean()
-                                                                && m_CoralArmSubsystem
-                                                                                .isCoralArmAtDesiredState(
-                                                                                                CoralArmLevels.lvl2)
-                                                                                .getAsBoolean()
+                                                || (m_auxillaryController.getHID().getLeftStickButton()
                                                                 && m_auxillaryController.getHID()
-                                                                                .getLeftStickButton())),
+                                                                                .getRightStickButton())),
 
                                 new RunCommand(() -> {
                                         // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
@@ -571,9 +568,7 @@ public class RobotContainer {
                                                         .getMotorPosition() > Constants.ElevatorConstants.ElevatorPreset.level1EncoderValue) {
                                                 m_CoralArmSubsystem.outtake(CoralArmLevels.lvl2, true);
                                         }
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem)
-
-                );
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem));
                 m_auxillaryController.b().onTrue(Commands.sequence(levelTwoCommand));
 
                 NamedCommands.registerCommand("Level 2 Preset Command", levelTwoCommand);
@@ -669,14 +664,18 @@ public class RobotContainer {
                                                 m_CoralArmSubsystem.outtake(CoralArmLevels.lvl3, false);
                                         }
 
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> m_ElevatorSubsystem
-                                                .isElevatorAtDesiredState(ElevatorPresets.Level3).getAsBoolean()
-                                                && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl3)
-                                                                // IMPORTANT NOTE!!! SINCE LVL1 AND LVL2 ARE SO SIMILAR
-                                                                // IN POSITION, IT WILL NOT THINK IT IS LEVEL 2 BUT
-                                                                // LEVEL 1, SO WE WILL BE USING LEVEL 1 FOR THIS CHECK
-                                                                .getAsBoolean()
-                                                && m_auxillaryController.getHID().getLeftStickButton()),
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> (isInDesiredState(
+                                                ElevatorPresets.Level3, CoralArmLevels.lvl3)
+                                                && m_auxillaryController.getHID().getLeftStickButton())
+                                                || (m_auxillaryController.getHID().getLeftStickButton()
+                                                                && m_auxillaryController.getHID()
+                                                                                .getRightStickButton())),
+                                // m_ElevatorSubsystem, m_CoralArmSubsystem).until(() ->
+                                // m_ElevatorSubsystem
+                                // .isElevatorAtDesiredState(ElevatorPresets.Level3).getAsBoolean()
+                                // && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl3)
+                                // .getAsBoolean()
+                                // && m_auxillaryController.getHID().getLeftStickButton()),
 
                                 new RunCommand(() -> {
                                         if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
@@ -734,11 +733,12 @@ public class RobotContainer {
                                                 m_CoralArmSubsystem.outtake(CoralArmLevels.lvl4, false);
                                         }
 
-                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> (m_ElevatorSubsystem
-                                                .isElevatorAtDesiredState(ElevatorPresets.Level4).getAsBoolean()
-                                                && m_CoralArmSubsystem.isCoralArmAtDesiredState(CoralArmLevels.lvl4)
-                                                                .getAsBoolean()
-                                                && m_auxillaryController.getHID().getLeftStickButton())),
+                                }, m_ElevatorSubsystem, m_CoralArmSubsystem).until(() -> (isInDesiredState(
+                                                ElevatorPresets.Level4, CoralArmLevels.lvl4)
+                                                && m_auxillaryController.getHID().getLeftStickButton())
+                                                || (m_auxillaryController.getHID().getLeftStickButton()
+                                                                && m_auxillaryController.getHID()
+                                                                                .getRightStickButton())),
 
                                 new RunCommand(() -> {
                                         m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
@@ -751,6 +751,12 @@ public class RobotContainer {
                 m_auxillaryController.x().onTrue(levelFourCommand);
 
                 NamedCommands.registerCommand("Level 4 Preset Command", levelFourCommand);
+        }
+
+        public boolean isInDesiredState(ElevatorPresets elevatorPreset, CoralArmLevels coralArmLevel) {
+                return m_ElevatorSubsystem.isElevatorAtDesiredState(elevatorPreset).getAsBoolean()
+                                && m_CoralArmSubsystem.isCoralArmAtDesiredState(coralArmLevel).getAsBoolean();
+
         }
 
         public void debugMethod() {

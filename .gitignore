@@ -186,3 +186,6 @@ replay_pid*
 *.dat
 *.hoot
 *.lock
+
+# -----=====[ Files To Keep ]=====-----
+!gradle-wrapper.jar

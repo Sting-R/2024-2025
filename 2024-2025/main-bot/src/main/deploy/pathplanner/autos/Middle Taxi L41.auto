@@ -5,27 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 5.0
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": null
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
+            "pathName": "Taxi"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Level 2 Preset Command"
+            "name": "Level 4 Preset Command"
           }
         }
       ]
