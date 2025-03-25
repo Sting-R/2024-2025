@@ -155,89 +155,6 @@ public class RobotContainer {
          */
         private void configureBindings(double random) {
 
-                // ============================ Elevator Subsystem ============================
-
-                // Actual elevator commands
-                // new Trigger(() -> -m_auxillaryController.getLeftY() > 0.1).whileTrue(new
-                // RunCommand(() -> {
-                // if (!m_ElevatorSubsystem.isElevatorAtTop()) {
-                // m_ElevatorSubsystem.elevatorVoltageMM(
-                // Constants.ElevatorConstants.kLeftElevatorEncoderTopValue);
-                // } else {
-                // m_ElevatorSubsystem.elevatorMaintainPositionMM();
-                // }
-
-                // }, m_ElevatorSubsystem)).onFalse(new InstantCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMaintainPositionMM();
-                // }));
-
-                // new Trigger(() -> -m_auxillaryController.getLeftY() < -0.1).whileTrue(new
-                // RunCommand(() -> {
-                // if (!m_ElevatorSubsystem.isElevatorAtBottom()) {
-                // m_ElevatorSubsystem.elevatorVoltageMM(
-                // Constants.ElevatorConstants.kLeftElevatorEncoderBottomValue);
-                // } else {
-                // m_ElevatorSubsystem.elevatorMaintainPositionMM();
-                // }
-                // })).onFalse(new InstantCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMaintainPositionMM();
-                // }));
-
-                // // The commands below make the elevator go to certain levels
-                // // If a pressed and elevator is not at level 1 currently, go to level 1
-                // m_auxillaryController.a().whileTrue(new RunCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM((ElevatorPresets.Level1));
-                // }, m_ElevatorSubsystem));
-                // // If b pressed and the method getElevatorState() does not return level 2, go
-                // to
-                // // level 2
-                // m_auxillaryController.b().whileTrue(new RunCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level2);
-                // }, m_ElevatorSubsystem));
-                // // If y pressed and the method getElevatorState() doesn't return level 3, go
-                // to
-                // // level 3
-                // m_auxillaryController.y().whileTrue(new RunCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level3);
-                // }));
-                // // If x pressed and the elevator is not currently at level 4, go to level 4
-                // m_auxillaryController.x().whileTrue(new RunCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.Level4);
-                // }));
-
-                // ====================== Algae Arm Subsystem ====================== //
-
-                // RunCommand algaeIntakeCommand = new RunCommand(() -> {
-                // m_AlgaeArmSubsystem.setAlgaeArmVoltage(0.6);
-                // SmartDashboard.putBoolean("Algae Arm Intake", true);
-                // }, m_AlgaeArmSubsystem);
-
-                // RunCommand algaeOuttakeCommand = new RunCommand(() -> {
-                // m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.7);
-                // SmartDashboard.putBoolean("Algae Arm Intake", false);
-                // }, m_AlgaeArmSubsystem);
-
-                // InstantCommand algaeOuttakeAutoCommand = new InstantCommand(() -> {
-                // m_AlgaeArmSubsystem.setAlgaeArmVoltage(-0.7);
-                // SmartDashboard.putBoolean("Algae Arm Auto Outtake", false);
-                // }, m_AlgaeArmSubsystem);
-
-                // m_auxillaryController.leftTrigger()
-                // // makes algae bar intake if LT pressed
-                // .whileTrue(algaeIntakeCommand)// Interrupts the command, causing motors to
-                // SLOWLY SPIN
-                // // INWARDS
-                // .onFalse(new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0),
-                // m_AlgaeArmSubsystem, m_AlgaeArmSubsystem));
-
-                // m_auxillaryController.rightTrigger().whileTrue(algaeOuttakeCommand).onFalse(
-                // new RunCommand(() -> m_AlgaeArmSubsystem.setAlgaeArmVoltage(0),
-                // m_AlgaeArmSubsystem));
-
-                // NamedCommands.registerCommand("Algae Arm Intake", algaeIntakeCommand);
-                // NamedCommands.registerCommand("Algae Arm Outtake", algaeOuttakeCommand);
-                // NamedCommands.registerCommand("Algae Arm Auto Outtake",
-                // algaeOuttakeAutoCommand);
                 // ====================== Climber Subsystem ====================== //
                 // Trigger climberTrigger = new Trigger(() -> climberLimitSwitch.get());
                 // climberTrigger.onTrue(m_ClimberSubsystem.runOnce(() ->
@@ -245,31 +162,6 @@ public class RobotContainer {
                 // m_auxillaryController.povCenter()
                 // .onTrue(m_ClimberSubsystem.runOnce(() ->
                 // m_ClimberSubsystem.engageClimber()));
-
-                // ====================== Coral Arm Subsystem ====================== //
-                // // makes coral arm go up
-
-                // Motion magic code for Coral Arm!!!
-
-                // m_auxillaryController.leftBumper().whileTrue(new RunCommand(() -> {
-                // m_CoralArmSubsystem.intake();
-                // }, m_CoralArmSubsystem)).whileFalse(new RunCommand(() -> {
-                // m_CoralArmSubsystem.defaultState();
-                // }, m_CoralArmSubsystem));
-
-                // m_auxillaryController.rightBumper().whileTrue(new RunCommand(() -> {
-                // m_CoralArmSubsystem.outtake();
-                // }, m_CoralArmSubsystem)).whileFalse(new RunCommand(() -> {
-                // m_CoralArmSubsystem.defaultState();
-                // }, m_CoralArmSubsystem));
-
-                // m_auxillaryController.leftStick().whileTrue(
-                // new RunCommand(() -> m_CoralArmSubsystem.defaultState(),
-                //
-
-                // m_auxillaryController.rightStick(2
-                // .whileTrue(new RunCommand(() -> m_CoralArmSubsystem.sysIdTest(),
-                // m_CoralArmSubsystem));
 
                 // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
