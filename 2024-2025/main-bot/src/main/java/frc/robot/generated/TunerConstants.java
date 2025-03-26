@@ -9,7 +9,9 @@ import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
+import data.Length;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.*;
@@ -50,6 +52,24 @@ public class TunerConstants {
         // The stator current at which the wheels start to slip;
         // This needs to be tuned to your individual robot
         private static final Current kSlipCurrent = Amps.of(120.0);
+
+        // Theoretical free speed (m/s) at 12v applied output;
+        // This needs to be tuned to your individual robot
+        public static final LinearVelocity SPEED_12V_MPS = MetersPerSecond.of(4.48056);
+
+        public static final Length WHEEL_BASE = Length.fromInches(22.5); // Front to back
+        public static final Length TRACK_WIDTH = Length.fromInches(22.5); // Side to side
+
+        public static final Translation2d FRONT_LEFT_POSITION = new Translation2d(WHEEL_BASE.getMeters() / 2.0,
+                        TRACK_WIDTH.getMeters() / 2.0);
+        public static final Translation2d FRONT_RIGHT_POSITION = new Translation2d(WHEEL_BASE.getMeters() / 2.0,
+                        -TRACK_WIDTH.getMeters() / 2.0);
+        public static final Translation2d BACK_LEFT_POSITION = new Translation2d(-WHEEL_BASE.getMeters() / 2.0,
+                        TRACK_WIDTH.getMeters() / 2.0);
+        public static final Translation2d BACK_RIGHT_POSITION = new Translation2d(-WHEEL_BASE.getMeters() / 2.0,
+                        -TRACK_WIDTH.getMeters() / 2.0);
+
+        public static final double DRIVE_BASE_RADIUS = FRONT_LEFT_POSITION.getNorm();
 
         // Initial configs for the drive and steer motors and the azimuth encoder; these
         // cannot be null.
