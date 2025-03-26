@@ -286,16 +286,19 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         case defaultState:
             SmartDashboard.putString("DesiredPreset", "DefaultState");
             SmartDashboard.putNumber("Desired elevator position", presetDefaultStateEncoderValue);
+            double velocity = m_elevatorLeftMotor.getVelocity().getValueAsDouble();
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(presetDefaultStateEncoderValue).withSlot(0));
-            // if (m_elevatorLeftMotor.getVelocity().getValueAsDouble() == 0 &&
-            // elevatorResetTimer == null) {
-            // elevatorResetTimer = new Timer();
-            // elevatorResetTimer.start();
-            // } else if (m_elevatorLeftMotor.getVelocity().getValueAsDouble() == 0
-            // && elevatorResetTimer.hasElapsed(0.1)) {
-            // // m_elevatorLeftMotor.reset
-            // elevatorResetTimer = null;
-            // }
+
+            // check to see if elevator is at the bottom
+            if (Math.abs(velocity) < 0.05 && elevatorResetTimer == null) {
+                elevatorResetTimer = new Timer();
+                elevatorResetTimer.start();
+            } else if (Math.abs(velocity) < 0.05 && elevatorResetTimer.hasElapsed(0.1)) {
+                // m_elevatorLeftMotor.reset
+                elevatorResetTimer = null;
+            } else if (Math.abs(velocity) > 0.05) {
+                elevatorResetTimer = null;
+            }
 
             break;
         case inbetween:
@@ -349,8 +352,6 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
     public void debuggingMethod() {
         SmartDashboard.putNumber("Left Elevator Encoder", m_leftElevatorEncoder.get());
-        // SmartDashboard.putNumber("Right Elevator Encoder",
-        // m_rightElevatorEncoder.get());
         SmartDashboard.putBoolean("Elevator Top Limit Switch", m_elevatorTopLimitSwitch.get());
         SmartDashboard.putBoolean("Elevator Bottom Limit Switch", m_elevatorBottomLimitSwitch.get());
         SmartDashboard.putNumber("Elevator Motor Position", m_elevatorLeftMotor.getPosition().getValueAsDouble());

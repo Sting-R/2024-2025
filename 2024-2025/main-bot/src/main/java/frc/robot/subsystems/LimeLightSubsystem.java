@@ -140,6 +140,10 @@ public class LimeLightSubsystem extends SubsystemBase {
     return m_poseEstimator;
   }
 
+  public double getTa() {
+    return LimelightHelpers.getTA(limelightName);
+  }
+
   /**
    * simple proportional turning control with Limelight. "proportional control" is
    * a control algorithm in which the output is proportional to the error. in this

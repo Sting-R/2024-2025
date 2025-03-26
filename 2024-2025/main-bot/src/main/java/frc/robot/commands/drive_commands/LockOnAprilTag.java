@@ -93,9 +93,9 @@ public class LockOnAprilTag extends Command {
     m_Drivetrain.setControl(drive.withVelocityX(xOutput * MaxSpeed).withVelocityY(-yOutput * MaxSpeed)
         .withRotationalRate(thetaOutput * MaxAngularRate));
     SmartDashboard.putNumberArray("Apriltag X Velocity, Y Velocity, and Rotation",
-        new double[] { xOutput * MaxSpeed, -yOutput * MaxSpeed, thetaOutput * MaxAngularRate });
+        new double[] { -xOutput * MaxSpeed, yOutput * MaxSpeed, thetaOutput * MaxAngularRate });
     SmartDashboard.putNumber("X velocity", xOutput * MaxSpeed);
-    SmartDashboard.putNumber("y velocity", -yOutput * MaxSpeed);
+    SmartDashboard.putNumber("y velocity", yOutput * MaxSpeed);
     SmartDashboard.putNumber("theta output", thetaOutput * MaxAngularRate);
   }
 

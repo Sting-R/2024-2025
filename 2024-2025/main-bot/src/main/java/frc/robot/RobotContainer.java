@@ -70,7 +70,8 @@ import frc.robot.commands.preset_commands.moveToPreset;
 import frc.robot.commands.preset_commands.intakePreset;
 import frc.robot.commands.preset_commands.defaultState;
 import frc.robot.commands.drive_commands.MoveToAprilTagPosition;
-import frc.robot.commands.preset_commands.knockAlgaeOff;;
+import frc.robot.commands.preset_commands.knockAlgaeOff;
+import frc.robot.commands.drive_commands.DriveToTargetOffset;
 
 /**
  * little secret comment OwO This class is where the bulk of the robot should be
@@ -131,7 +132,7 @@ public class RobotContainer {
         // MapleSimSubsystem(m_DrivetrainSubsystem);
 
         // limelight constants
-        public boolean usingLeftLimelightForAlignment = true;
+        // public boolean usingLeftLimelightForAlignment = true;
 
         // Commands
         moveToPreset m_MoveToPresetLvl1 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem, m_driverController,
@@ -240,12 +241,14 @@ public class RobotContainer {
                                 m_RightReefLimeLightSubsystem, 0, m_driverController, false,
                                 LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeftXOffset,
                                 LimelightConstants.desiredLeftYOffset));
+                m_driverController.pov(0).whileTrue(new DriveToTargetOffset(m_DrivetrainSubsystem,
+                                m_LeftReefLimeLightSubsystem, 0, 0, 3, 3));
 
                 // reset the field-centric heading on y press
                 m_driverController.y()
                                 .onTrue(m_DrivetrainSubsystem.runOnce(() -> m_DrivetrainSubsystem.seedFieldCentric()));
 
-                m_driverController.povCenter().onTrue(interrupt);
+                // m_driverController.povCenter().onTrue(interrupt);
                 // m_driverController.b().whileTrue(m_DrivetrainSubsystem.applyRequest(() ->
                 // point.withModuleDirection(
                 // new Rotation2d(-m_driverController.getLeftY(),
@@ -263,6 +266,10 @@ public class RobotContainer {
                 // .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kReverse));
 
                 m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
+
+                // ====================== Limelight Subsystems ======================
+                // m_LeftReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
+                // m_RightReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
 
                 // ====================== Command Compositions ====================== //
 
