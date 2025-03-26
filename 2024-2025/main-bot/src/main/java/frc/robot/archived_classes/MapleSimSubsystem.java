@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.archived_classes;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.COTS;
@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.DriveTrainConstants;
-import frc.robot.CompCommands;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class MapleSimSubsystem extends SubsystemBase {
 
