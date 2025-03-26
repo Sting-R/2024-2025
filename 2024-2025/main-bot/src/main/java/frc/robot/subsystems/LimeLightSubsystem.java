@@ -455,6 +455,14 @@ public class LimeLightSubsystem extends SubsystemBase {
     return getTy() + 0;
   }
 
+  public double get3dXPosition() {
+    return LimelightHelpers.getBotPose3d_TargetSpace(limelightName).getX();
+  }
+
+  public double getAprilTagArea() {
+    return LimelightHelpers.getTA(limelightName);
+  }
+
   public int getTargetAprilTagID() {
     RawFiducial[] temp = LimelightHelpers.getRawFiducials(limelightName);
     int id = -1;

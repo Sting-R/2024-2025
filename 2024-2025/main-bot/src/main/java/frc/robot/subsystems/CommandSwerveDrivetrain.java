@@ -348,7 +348,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     double cumalativeAcceleration = 0;
 
     public void debuggingMethod() {
-        // Yah no dis file to big and im lowkey lazy rn
         double velocity = this.getPigeon2().getAccelerationX().getValueAsDouble();
 
         cumalativeAcceleration += velocity;
