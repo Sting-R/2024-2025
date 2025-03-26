@@ -68,6 +68,8 @@ import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.commands.preset_commands.moveToPreset;
 import frc.robot.commands.preset_commands.intakePreset;
 import frc.robot.commands.preset_commands.defaultState;
+import frc.robot.commands.drive_commands.MoveToAprilTagPosition;
+import frc.robot.commands.preset_commands.knockAlgaeOff;;
 
 /**
  * little secret comment OwO This class is where the bulk of the robot should be
@@ -121,8 +123,9 @@ public class RobotContainer {
                         Constants.LimelightConstants.kLeftReefLimelightName);
         public final LimeLightSubsystem m_RightReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
                         Constants.LimelightConstants.kRightReefLimelightName);
-        public final LimeLightSubsystem m_IntakeLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
-                        Constants.LimelightConstants.kIntakeLimelightName);
+        // public final LimeLightSubsystem m_IntakeLimeLightSubsystem = new
+        // LimeLightSubsystem(m_DrivetrainSubsystem,
+        // Constants.LimelightConstants.kIntakeLimelightName);
         // public final MapleSimSubsystem m_MapleSimSubsystem = new
         // MapleSimSubsystem(m_DrivetrainSubsystem);
 
@@ -142,6 +145,8 @@ public class RobotContainer {
                         m_driverController, m_auxillaryController);
         intakePreset m_IntakePreset = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem, m_driverController,
                         m_auxillaryController);
+        knockAlgaeOff m_KnockLowerAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem, true);
+        knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem, false);
         // End of Swerve Drive Platform setup
 
         /**
@@ -218,10 +223,13 @@ public class RobotContainer {
                 // HAVE TO USE Left LIMELIGHT!!!, that will be the side that actually sees
                 // the
                 // limelight
-                m_driverController.b().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_LeftReefLimeLightSubsystem,
-                                0, m_driverController, false
+                m_driverController.b().whileTrue(new MoveToAprilTagPosition(m_DrivetrainSubsystem,
+                                m_RightReefLimeLightSubsystem, 0, m_driverController, false));
+                // m_driverController.b().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem,
+                // m_LeftReefLimeLightSubsystem,
+                // 0, m_driverController, false
                 // , LimelightConstants.desiredRightLLOutakeXOffsetLvl123
-                ));
+                // ));
 
                 m_driverController.a().whileTrue(new TurnToAngle(m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem));
 
@@ -269,9 +277,10 @@ public class RobotContainer {
                 m_auxillaryController.b().onTrue(m_MoveToPresetLvl2);
                 m_auxillaryController.y().onTrue(m_MoveToPresetLvl3);
                 m_auxillaryController.x().onTrue(m_MoveToPresetLvl4);
+                m_auxillaryController.leftTrigger().onTrue(m_KnockLowerAlgaeOff);
+                m_auxillaryController.rightTrigger().onTrue(m_KnockUpperAlgaeOff);
                 m_auxillaryController.leftBumper().onTrue(m_IntakePreset);
                 m_auxillaryController.rightBumper().onTrue(m_DefaultStateCommand);
-                NamedCommands.registerCommand("Intake Command", m_IntakePreset);
                 moveToPreset m_MoveToPresetLvl1Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                                 m_driverController, m_auxillaryController, 1, true);
                 moveToPreset m_MoveToPresetLvl2Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,

@@ -165,14 +165,10 @@ public class CoralArmSubsystem extends SubsystemBase {
         }
     }
 
-    public void kickCoralOff(boolean kickUpperAlgaeOff) {
-        if (kickUpperAlgaeOff) {
-            m_CoralArmMotor
-                    .setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderKickUpperCoralOff).withSlot(0));
-        } else {
-            m_CoralArmMotor
-                    .setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderKickLowerCoralOff).withSlot(0));
-        }
+    public void kickAlgaeOff() {
+        // I'm just using level 4 as a placeholder for the kickUpperAlgaeOff position
+        m_CoralArmMotor
+                .setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderOuttakelvl4Position).withSlot(0));
         m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
 

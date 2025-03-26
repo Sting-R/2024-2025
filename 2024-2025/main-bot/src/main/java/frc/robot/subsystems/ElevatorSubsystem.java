@@ -115,9 +115,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     }
 
     public enum ElevatorPresets { // different levels for the coral reef
-        Level1, Level2, Level3, Level4, intake, inbetween,
-        // kickLowerAlgaeOff, kickUpperAlgaeOff,
-        defaultState,
+        Level1, Level2, Level3, Level4, intake, inbetween, kickLowerAlgaeOff, kickUpperAlgaeOff, defaultState,
     }
 
     private void SetUpElevatorMotors() {
@@ -272,21 +270,19 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
             // this.elevatorMaintainPositionMM();
             // }
             break;
-        // case kickLowerAlgaeOff:
-        // SmartDashboard.putString("DesiredPreset", "kickLowerAlgaeOff");
-        // SmartDashboard.putNumber("Desired elevator position",
-        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff);
-        // m_elevatorLeftMotor.setControl(
-        // setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff).withSlot(0));
-        // break;
+        case kickLowerAlgaeOff:
+            SmartDashboard.putString("DesiredPreset", "kickLowerAlgaeOff");
+            SmartDashboard.putNumber("Desired elevator position", ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff);
+            m_elevatorLeftMotor.setControl(
+                    setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff).withSlot(0));
+            break;
 
-        // case kickUpperAlgaeOff:
-        // SmartDashboard.putString("DesiredPreset", "kickUpperAlgaeOff");
-        // SmartDashboard.putNumber("Desired elevator position",
-        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff);
-        // m_elevatorLeftMotor.setControl(
-        // setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff).withSlot(0));
-        // break;
+        case kickUpperAlgaeOff:
+            SmartDashboard.putString("DesiredPreset", "kickUpperAlgaeOff");
+            SmartDashboard.putNumber("Desired elevator position", ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff);
+            m_elevatorLeftMotor.setControl(
+                    setVoltage.withPosition(ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff).withSlot(0));
+            break;
         case defaultState:
             SmartDashboard.putString("DesiredPreset", "DefaultState");
             SmartDashboard.putNumber("Desired elevator position", presetDefaultStateEncoderValue);
@@ -446,19 +442,13 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.intakeEncoderValue - bufferValue
                 && currentElevatorPosition < ElevatorConstants.ElevatorPreset.intakeEncoderValue + bufferValue) {
             currentElevatorState = ElevatorPresets.intake;
-        }
-        // else if (currentElevatorPosition >
-        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff - bufferValue
-        // && currentElevatorPosition <
-        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff + bufferValue) {
-        // currentElevatorState = ElevatorPresets.kickLowerAlgaeOff;
-        // } else if (currentElevatorPosition >
-        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff - bufferValue
-        // && currentElevatorPosition <
-        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff + bufferValue) {
-        // currentElevatorState = ElevatorPresets.kickUpperAlgaeOff;
-        // }
-        else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.defaultStateEncoderValue - bufferValue
+        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff - bufferValue
+                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff + bufferValue) {
+            currentElevatorState = ElevatorPresets.kickLowerAlgaeOff;
+        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff - bufferValue
+                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff + bufferValue) {
+            currentElevatorState = ElevatorPresets.kickUpperAlgaeOff;
+        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.defaultStateEncoderValue - bufferValue
                 && currentElevatorPosition < ElevatorConstants.ElevatorPreset.defaultStateEncoderValue + bufferValue) {
             currentElevatorState = ElevatorPresets.defaultState;
         } else {
