@@ -5,16 +5,10 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.CoralArmConstants;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.archived_classes.CompCommands;
 import frc.robot.archived_classes.Logging;
 
 import java.util.function.BooleanSupplier;
@@ -26,16 +20,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VoltageOut;
-//import com.ctre.phoenix.Util;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import frc.robot.Utility;
-import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
-
 public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsystem into an actual subsystem
-    private final Logging elevatorLogger;
     // Motors
     private final TalonFX m_elevatorLeftMotor;
     private final TalonFX m_elevatorRightMotor;
@@ -94,7 +83,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // ElevatorConstants.kRightElevatorEncoderID2);
         // Current State Initialization
         currentElevatorState = ElevatorPresets.Level1;
-        elevatorLogger = new Logging("ElevatorSubsystem");
+        new Logging("ElevatorSubsystem");
         // Constants Initialization
         motorMaxElevatorSpeed = ElevatorConstants.kMaxMotorElevatorSpeed;
         leftElevatorEncoderTopValue = ElevatorConstants.kLeftElevatorEncoderTopValue;

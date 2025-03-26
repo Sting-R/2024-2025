@@ -9,23 +9,12 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.generated.DrivetrainConstants;
 import frc.robot.generated.TunerConstants;
-// import frc.robot.libraries.external.drivers.Limelight;
-// import frc.robot.constants.CommandConstants;
-// import frc.robot.constants.DrivetrainConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimeLightSubsystem;
 
@@ -68,10 +57,6 @@ public class TurnToAngle extends Command {
 
 	/** Creates a new TurnToAngle. */
 	private CommandSwerveDrivetrain m_drivetrain;
-	private CommandXboxController m_gamepad;
-	private SlewRateLimiter xLimiter = new SlewRateLimiter(2.5);
-	private SlewRateLimiter yLimiter = new SlewRateLimiter(2.5);
-	private SlewRateLimiter rotationLimiter = new SlewRateLimiter(3);
 	private PIDController thetaController = new PIDController(1, 0, 0.1);
 	private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 	private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second

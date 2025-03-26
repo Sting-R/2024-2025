@@ -4,10 +4,6 @@
 
 package frc.robot.commands.drive_commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -18,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimeLightSubsystem;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -28,7 +26,6 @@ public class AltMoveToAprilTagPosition extends Command {
   private PIDController thetaController = new PIDController(.03, 0, 0.0015);
   private PIDController sideController = new PIDController(0.03, 0, 0.0015);
   private PIDController forwardController = new PIDController(0.03, 0, 0.0015);
-  private boolean targeting = false;
   private CommandXboxController controller;
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private double offsetOfDesired = 0;
@@ -67,14 +64,11 @@ public class AltMoveToAprilTagPosition extends Command {
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1);
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_Limelight.setPipeline(m_pipeline);
-    targeting = false;
     thetaController.reset();
     sideController.reset();
     forwardController.reset();
@@ -102,7 +96,6 @@ public class AltMoveToAprilTagPosition extends Command {
       sideController.setSetpoint(sideSetpoint);
       forwardController.setSetpoint(forwardSetpoint);
 
-      targeting = true;
       // Theta (angle)
       if (!thetaController.atSetpoint()) {
         SmartDashboard.putNumber("Theta setpoint", rotationSetpoint);

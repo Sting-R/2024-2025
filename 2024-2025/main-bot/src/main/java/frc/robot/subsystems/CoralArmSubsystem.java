@@ -4,9 +4,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.CoralArmConstants;
-import frc.robot.Constants.ElevatorConstants;
-import frc.robot.archived_classes.CompCommands;
-
 import java.util.function.BooleanSupplier;
 
 import static edu.wpi.first.units.Units.Volts;
@@ -17,15 +14,12 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CoralArmSubsystem extends SubsystemBase {
@@ -33,10 +27,6 @@ public class CoralArmSubsystem extends SubsystemBase {
     private final TalonFX m_CoralArmMotor;
     private final TalonSRX m_LeftCoralIntakeMotor;
     private final TalonSRX m_RightCoralIntakeMotor;
-    // Encoder
-    private final Encoder m_CoralArmEncoder;
-    private final Encoder m_CoralIntakeEncoder;
-
     // Light Sensor
     private final DigitalInput m_CoralArmLightSensor;
     // Current state
@@ -54,10 +44,6 @@ public class CoralArmSubsystem extends SubsystemBase {
     private VoltageOut voltageOut = new VoltageOut(0.0);
 
     public CoralArmSubsystem() {
-        // Initialized Stuff
-        m_CoralArmEncoder = new Encoder(CoralArmConstants.kCoralArmEncoderID1, CoralArmConstants.kCoralArmEncoderID2);
-        m_CoralIntakeEncoder = new Encoder(CoralArmConstants.kCoramIntakeEncoderID1,
-                CoralArmConstants.kCoralIntakeEncoderID2);
         m_CoralArmMotor = new TalonFX(CoralArmConstants.coralArmMotorID);
         m_LeftCoralIntakeMotor = new TalonSRX(CoralArmConstants.kLeftCoralIntakeMotorID);
         m_RightCoralIntakeMotor = new TalonSRX(CoralArmConstants.kRightCoralIntakeMotorID);

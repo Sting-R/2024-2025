@@ -47,18 +47,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.drive_commands.AltMoveToAprilTagPosition;
 import frc.robot.commands.drive_commands.LockOnAprilTag;
-import frc.robot.commands.drive_commands.TurnToAngle;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralArmSubsystem;
@@ -113,10 +108,6 @@ public class RobotContainer {
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1)
                         .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
-                                                                                 // motors
-        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
         private final Telemetry logger = new Telemetry(MaxSpeed);
 
         public final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
@@ -135,20 +126,37 @@ public class RobotContainer {
         // public boolean usingLeftLimelightForAlignment = true;
 
         // Commands
-        moveToPreset m_MoveToPresetLvl1 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem, m_driverController,
-                        m_auxillaryController, 1, false);
-        moveToPreset m_MoveToPresetLvl2 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem, m_driverController,
-                        m_auxillaryController, 2, false);
-        moveToPreset m_MoveToPresetLvl3 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem, m_driverController,
-                        m_auxillaryController, 3, false);
-        moveToPreset m_MoveToPresetLvl4 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem, m_driverController,
-                        m_auxillaryController, 4, false);
-        defaultState m_DefaultStateCommand = new defaultState(m_ElevatorSubsystem, m_CoralArmSubsystem,
+        private final LockOnAprilTag m_LockOnAprilTag = new LockOnAprilTag(m_DrivetrainSubsystem,
+                        m_RightReefLimeLightSubsystem, 0, m_driverController, false,
+                        LimelightConstants.desiredLeftRotationOffset);
+        private final MoveToAprilTagPosition m_MoveToAprilTagPosition = new MoveToAprilTagPosition(
+                        m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0, m_driverController, false,
+                        LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeft3DXOffset,
+                        LimelightConstants.desiredLeftArea);
+        private final AltMoveToAprilTagPosition m_AltMoveToAprilTagPosition = new AltMoveToAprilTagPosition(
+                        m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0, m_driverController, false,
+                        LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeftXOffset,
+                        LimelightConstants.desiredLeftYOffset);
+
+        private final DriveToTargetOffset m_DriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
+                        m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
+
+        private final moveToPreset m_MoveToPresetLvl1 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 1, false);
+        private final moveToPreset m_MoveToPresetLvl2 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 2, false);
+        private final moveToPreset m_MoveToPresetLvl3 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 3, false);
+        private final moveToPreset m_MoveToPresetLvl4 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 4, false);
+        private final defaultState m_DefaultStateCommand = new defaultState(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController);
-        intakePreset m_IntakePreset = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem, m_driverController,
-                        m_auxillaryController);
-        knockAlgaeOff m_KnockLowerAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem, true);
-        knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem, false);
+        private final intakePreset m_IntakePreset = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController);
+        private final knockAlgaeOff m_KnockLowerAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        true);
+        private final knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        false);
         // End of Swerve Drive Platform setup
 
         /**
@@ -164,6 +172,25 @@ public class RobotContainer {
 
                 SmartDashboard.putData("Auto Chooser", autoChooser);
 
+        }
+
+        private SwerveRequest.FieldCentric defaultDriveLogic() {
+                // Note that X is defined as forward according to WPILib convention,
+                // and Y is defined as to the left according to WPILib convention.
+
+                final var modifier = m_driverController.rightBumper().getAsBoolean() ? 4
+                                : m_driverController.leftBumper().getAsBoolean() ? 2 : 1;
+
+                final var modifiedMaxSpeed = MaxSpeed / modifier;
+                final var modifiedMaxAngularRate = MaxAngularRate / modifier;
+
+                return drive
+                                // Drive forward with negative Y (forward)
+                                .withVelocityX(m_driverController.getLeftY() * modifiedMaxSpeed)
+                                // Drive left with negative X (left)
+                                .withVelocityY(m_driverController.getLeftX() * modifiedMaxSpeed)
+                                // Drive counterclockwise with negative X (left)
+                                .withRotationalRate(-m_driverController.getRightX() * modifiedMaxAngularRate);
         }
 
         /**
@@ -191,58 +218,16 @@ public class RobotContainer {
                 // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
 
-                // Interrupt command
-                InstantCommand interrupt = new InstantCommand(() -> {
-                        m_DrivetrainSubsystem.applyRequest(
-                                        () -> drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
-                }, m_DrivetrainSubsystem);
+                m_DrivetrainSubsystem.setDefaultCommand(m_DrivetrainSubsystem.applyRequest(this::defaultDriveLogic));
 
-                // Note that X is defined as forward according to WPILib convention,
-                // and Y is defined as to the left according to WPILib convention.
-                m_DrivetrainSubsystem.setDefaultCommand(m_DrivetrainSubsystem.applyRequest(() -> {
-                        final var modifier = m_driverController.rightBumper().getAsBoolean() ? 4
-                                        : m_driverController.leftBumper().getAsBoolean() ? 2 : 1;
-                        return drive
-                                        // Drive forward with negative Y (forward)
-                                        .withVelocityX(m_driverController.getLeftY() * MaxSpeed / modifier)
-                                        // Drive left with negative X (left)
-                                        .withVelocityY(m_driverController.getLeftX() * MaxSpeed / modifier)
-                                        // Drive counterclockwise with negative X (left)
-                                        .withRotationalRate(
-                                                        -m_driverController.getRightX() * MaxAngularRate / modifier);
-                }));
-                // m_driverController.a().whileTrue(m_DrivetrainSubsystem.applyRequest(() ->
-                // brake));
+                m_driverController.x().whileTrue(m_LockOnAprilTag);
+
                 // Align to left reef side
-                // HAVE TO USE RIGHT LIMELIGHT!!!, that will be the side that actually sees the
-                // limelight
-
-                m_driverController.x()
-                                .whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0,
-                                                m_driverController, false,
-                                                LimelightConstants.desiredLeftRotationOffset));
+                m_driverController.b().whileTrue(m_MoveToAprilTagPosition);
                 // Align to Right reef side
-                // HAVE TO USE Left LIMELIGHT!!!, that will be the side that actually sees
-                // the
-                // limelight
-                m_driverController.b().whileTrue(new MoveToAprilTagPosition(m_DrivetrainSubsystem,
-                                m_RightReefLimeLightSubsystem, 0, m_driverController, false,
-                                LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeft3DXOffset,
-                                LimelightConstants.desiredLeftArea));
-                // m_driverController.b().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem,
-                // m_LeftReefLimeLightSubsystem,
-                // 0, m_driverController, false
-                // , LimelightConstants.desiredRightLLOutakeXOffsetLvl123
-                // ));
+                m_driverController.a().whileTrue(m_AltMoveToAprilTagPosition);
 
-                // m_driverController.a().whileTrue(new TurnToAngle(m_DrivetrainSubsystem,
-                // m_RightReefLimeLightSubsystem));
-                m_driverController.a().whileTrue(new AltMoveToAprilTagPosition(m_DrivetrainSubsystem,
-                                m_RightReefLimeLightSubsystem, 0, m_driverController, false,
-                                LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeftXOffset,
-                                LimelightConstants.desiredLeftYOffset));
-                m_driverController.pov(0).whileTrue(new DriveToTargetOffset(m_DrivetrainSubsystem,
-                                m_LeftReefLimeLightSubsystem, 0, 0, 3, 3));
+                m_driverController.pov(0).whileTrue(m_DriveToTargetOffset);
 
                 // reset the field-centric heading on y press
                 m_driverController.y()

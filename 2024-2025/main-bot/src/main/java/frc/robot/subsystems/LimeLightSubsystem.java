@@ -1,38 +1,24 @@
 package frc.robot.subsystems;
 
-import org.opencv.core.Mat;
-
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.CoralArmConstants;
 import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.LimelightHelpers.RawFiducial;
-import frc.robot.archived_classes.CompCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.LimelightHelpers;
-// import edu.first.LimelightHelpers;
-// import edu.first.wpilibj.
 
 // bunch of random imports 
 
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLightSubsystem extends SubsystemBase {
@@ -49,11 +35,6 @@ public class LimeLightSubsystem extends SubsystemBase {
   private String limelightName;
 
   private final SwerveDrivePoseEstimator m_poseEstimator;
-
-  // kSpeedAt12Volts Desired Top speed←
-  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  // 3/4 of a rotation per second max angular velocity
-  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 
   public LimeLightSubsystem(CommandSwerveDrivetrain swerveDriveTrain, String LimelightName) {
 

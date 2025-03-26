@@ -4,10 +4,6 @@
 
 package frc.robot.commands.drive_commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -18,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimeLightSubsystem;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -26,7 +24,6 @@ public class LockOnAprilTag extends Command {
   private frc.robot.subsystems.CommandSwerveDrivetrain m_Drivetrain;
   private int m_pipeline;
   private PIDController thetaController = new PIDController(.03, 0, 0.0015);
-  private boolean targeting = false;
   private CommandXboxController controller;
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private double offsetOfDesired = 0;
@@ -57,14 +54,11 @@ public class LockOnAprilTag extends Command {
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1);
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     m_Limelight.setPipeline(m_pipeline);
-    targeting = false;
     thetaController.reset();
     thetaController.setTolerance(Math.toRadians(1.5));
   }
@@ -81,7 +75,6 @@ public class LockOnAprilTag extends Command {
       double horizontal_angle = m_Limelight.getHorizontalAngleOfErrorDegrees();
       double setpoint = offsetOfDesired;// + Math.toRadians(m_skew.get());
       thetaController.setSetpoint(setpoint);
-      targeting = true;
       if (!thetaController.atSetpoint()) {
         SmartDashboard.putNumber("setpoint", setpoint);
         thetaOutput = thetaController.calculate(horizontal_angle, setpoint);
