@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move to Center"
+            "pathName": "Blue Move to Center"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Algae Arm Auto Outtake"
+            "name": null
           }
         },
         {
@@ -32,6 +32,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Blue Middle Alliance",
   "choreoAuto": false
 }
