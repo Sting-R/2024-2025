@@ -27,7 +27,7 @@
     "###DIO": {
       "Collapsed": "0",
       "Pos": "209,290",
-      "Size": "162,238"
+      "Size": "168,261"
     },
     "###Encoders": {
       "Collapsed": "0",
@@ -37,12 +37,12 @@
     "###FMS": {
       "Collapsed": "0",
       "Pos": "10,346",
-      "Size": "169,184"
+      "Size": "175,184"
     },
     "###Joysticks": {
       "Collapsed": "0",
       "Pos": "149,27",
-      "Size": "796,234"
+      "Size": "796,90"
     },
     "###NetworkTables": {
       "Collapsed": "1",
