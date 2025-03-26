@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Logging;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.CoralArmConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.archived_classes.CompCommands;
+import frc.robot.archived_classes.Logging;
 
 import java.util.function.BooleanSupplier;
 
@@ -32,7 +33,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Utility;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
-import frc.robot.CompCommands;
 
 public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsystem into an actual subsystem
     private final Logging elevatorLogger;
@@ -127,7 +127,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
         leftConfig.Slot0.kP = 13; // p pid //4.1
-        leftConfig.Slot0.kI = 10;
+        leftConfig.Slot0.kI = 15;
         leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
@@ -142,7 +142,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         leftConfig.CurrentLimits.StatorCurrentLimit = 60;
 
         rightConfig.Slot0.kP = 13; // p pid //4.1
-        rightConfig.Slot0.kI = 10;
+        rightConfig.Slot0.kI = 15;
         rightConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot0.kV = 0;
         rightConfig.Slot0.kA = 0;

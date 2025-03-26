@@ -22,9 +22,12 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,9 +36,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.archived_classes.CompCommands;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.CompCommands;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -320,7 +322,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         this.getModule(3).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(-45));
     }
 
+    public Pose2d getEstimatedPose() {
+        return getState().Pose;
+    }
+
+    public Rotation2d getHeading() {
+        return getEstimatedPose().getRotation();
+    }
+
+    public Translation2d getLinearVelocity() {
+        return new Translation2d(getState().Speeds.vxMetersPerSecond, getState().Speeds.vyMetersPerSecond)
+                .rotateBy(getHeading());
+    }
+
+    public Rotation2d getYawRate() {
+        return Rotation2d
+                .fromDegrees(getPigeon2().getAngularVelocityZWorld().asSupplier().get().in(Units.DegreesPerSecond));
+    }
+
+    public Twist2d getFieldVelocity() {
+        return new Twist2d(getLinearVelocity().getX(), getLinearVelocity().getY(),
+                getState().Speeds.omegaRadiansPerSecond);
+    }
+
+    double cumalativeAcceleration = 0;
+
     public void debuggingMethod() {
         // Yah no dis file to big and im lowkey lazy rn
+        double velocity = this.getPigeon2().getAccelerationX().getValueAsDouble();
+
+        cumalativeAcceleration += velocity;
+        SmartDashboard.putNumber("Max Velocity", cumalativeAcceleration);
     }
 }

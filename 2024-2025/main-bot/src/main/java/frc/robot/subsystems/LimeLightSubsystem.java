@@ -17,6 +17,7 @@ import frc.robot.Constants.CoralArmConstants;
 import frc.robot.Constants.DriveTrainConstants;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.LimelightHelpers.RawFiducial;
+import frc.robot.archived_classes.CompCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.LimelightHelpers;
@@ -33,7 +34,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.CompCommands;
 
 public class LimeLightSubsystem extends SubsystemBase {
 
@@ -211,41 +211,47 @@ public class LimeLightSubsystem extends SubsystemBase {
    * be used to determine whether the distance from the target is too far or too
    * close
    */
-  public double limelight_intake_forward_speed() {
-    double kP = 0.1;
-    double distanceFromTarget = getDistanceToTarget();
-    double desiredForwardSpeed = (LimelightConstants.desiredIntakeDistance - distanceFromTarget) * kP;
-    SmartDashboard.putNumber(limelightName, desiredForwardSpeed);
-    return desiredForwardSpeed;
-  }
+  // public double limelight_intake_forward_speed() {
+  // double kP = 0.1;
+  // double distanceFromTarget = getDistanceToTarget();
+  // double desiredForwardSpeed = (LimelightConstants.desiredIntakeDistance -
+  // distanceFromTarget) * kP;
+  // SmartDashboard.putNumber(limelightName, desiredForwardSpeed);
+  // return desiredForwardSpeed;
+  // }
 
-  public double limelight_outtake_forward_speed(CoralArmLevels reefLvl, CommandXboxController driveController) {
-    double kP = 1.6;
-    double distanceFromTarget = getDistanceToTarget();
-    SmartDashboard.putNumber("Distance from apriltag", distanceFromTarget);
-    double desiredForwardSpeed = 0;
-    // if (LimelightHelpers.getTargetCount(limelightName) == 0) {
-    // desiredForwardSpeed = driveController.getLeftY() * MaxSpeed;
-    // } else {
+  // public double limelight_outtake_forward_speed(CoralArmLevels reefLvl,
+  // CommandXboxController driveController) {
+  // double kP = 1.6;
+  // double distanceFromTarget = getDistanceToTarget();
+  // SmartDashboard.putNumber("Distance from apriltag", distanceFromTarget);
+  // double desiredForwardSpeed = 0;
+  // // if (LimelightHelpers.getTargetCount(limelightName) == 0) {
+  // // desiredForwardSpeed = driveController.getLeftY() * MaxSpeed;
+  // // } else {
 
-    switch (reefLvl) {
-    case lvl1:
-      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) * kP;
-      break;
-    case lvl2:
-      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) * kP;
-      break;
-    case lvl3:
-      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) * kP;
-      break;
-    case lvl4:
-      desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) * kP;
-      break;
-    }
-    // }
-    SmartDashboard.putNumber("Desired forward speed", desiredForwardSpeed);
-    return desiredForwardSpeed;
-  }
+  // switch (reefLvl) {
+  // case lvl1:
+  // desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl1 -
+  // distanceFromTarget) * kP;
+  // break;
+  // case lvl2:
+  // desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl2 -
+  // distanceFromTarget) * kP;
+  // break;
+  // case lvl3:
+  // desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl3 -
+  // distanceFromTarget) * kP;
+  // break;
+  // case lvl4:
+  // desiredForwardSpeed = (LimelightConstants.desiredOuttakeDistanceLvl4 -
+  // distanceFromTarget) * kP;
+  // break;
+  // }
+  // // }
+  // SmartDashboard.putNumber("Desired forward speed", desiredForwardSpeed);
+  // return desiredForwardSpeed;
+  // }
 
   public double limelight_outtake_side_speed(CoralArmLevels coralArmLevel, Boolean isLeftReef,
       CommandXboxController driveController) {
@@ -287,69 +293,86 @@ public class LimeLightSubsystem extends SubsystemBase {
     return desiredSideSpeed;
   }
 
-  public boolean isRobotInDesiredReefPosition(CoralArmLevels reefLvl, boolean isLeftReef) {
-    double distanceFromTarget = getDistanceToTarget();
-    double xAngleFromTarget = LimelightHelpers.getTX(limelightName);
-    double yOffsetFromTarget = LimelightHelpers.getTY(limelightName);
-    double bufferValue = 0.05;
-    if (isLeftReef) {
-      switch (reefLvl) {
-      case lvl1:
-        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) < bufferValue)
-            && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl123 - yOffsetFromTarget) < bufferValue);
-      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue);
-      case lvl2:
-        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) < bufferValue)
-            && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl123 - yOffsetFromTarget) < bufferValue);
-      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue);
-      case lvl3:
-        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) < bufferValue
-            && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl123 - yOffsetFromTarget) < bufferValue);
-      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue;
-      case lvl4:
-        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) < bufferValue
-            && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl4 - yOffsetFromTarget) < bufferValue);
-      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue;
-      default:
-        return false;
-      }
-    } else {
-      switch (reefLvl) {
-      case lvl1:
-        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 - distanceFromTarget) < bufferValue)
-            && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl123 - yOffsetFromTarget) < bufferValue);
-      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue);
-      case lvl2:
-        return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 - distanceFromTarget) < bufferValue)
-            && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl123 - yOffsetFromTarget) < bufferValue);
-      // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue);
-      case lvl3:
-        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 - distanceFromTarget) < bufferValue
-            && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl123 - yOffsetFromTarget) < bufferValue);
-      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue;
-      case lvl4:
-        return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 - distanceFromTarget) < bufferValue
-            && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl4 - yOffsetFromTarget) < bufferValue);
-      // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
-      // bufferValue;
-      default:
-        return false;
-      }
-    }
+  // public boolean isRobotInDesiredReefPosition(CoralArmLevels reefLvl, boolean
+  // isLeftReef) {
+  // double distanceFromTarget = getDistanceToTarget();
+  // double xAngleFromTarget = LimelightHelpers.getTX(limelightName);
+  // double yOffsetFromTarget = LimelightHelpers.getTY(limelightName);
+  // double bufferValue = 0.05;
+  // if (isLeftReef) {
+  // switch (reefLvl) {
+  // case lvl1:
+  // return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 -
+  // distanceFromTarget) < bufferValue)
+  // && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl123 -
+  // yOffsetFromTarget) < bufferValue);
+  // // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue);
+  // case lvl2:
+  // return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 -
+  // distanceFromTarget) < bufferValue)
+  // && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl123 -
+  // yOffsetFromTarget) < bufferValue);
+  // // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue);
+  // case lvl3:
+  // return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 -
+  // distanceFromTarget) < bufferValue
+  // && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl123 -
+  // yOffsetFromTarget) < bufferValue);
+  // // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue;
+  // case lvl4:
+  // return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 -
+  // distanceFromTarget) < bufferValue
+  // && (Math.abs(LimelightConstants.desiredLeftLLOutakeXOffsetLvl4 -
+  // yOffsetFromTarget) < bufferValue);
+  // // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue;
+  // default:
+  // return false;
+  // }
+  // } else {
+  // switch (reefLvl) {
+  // case lvl1:
+  // return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl1 -
+  // distanceFromTarget) < bufferValue)
+  // && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl123 -
+  // yOffsetFromTarget) < bufferValue);
+  // // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue);
+  // case lvl2:
+  // return (Math.abs(LimelightConstants.desiredOuttakeDistanceLvl2 -
+  // distanceFromTarget) < bufferValue)
+  // && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl123 -
+  // yOffsetFromTarget) < bufferValue);
+  // // (Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue);
+  // case lvl3:
+  // return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl3 -
+  // distanceFromTarget) < bufferValue
+  // && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl123 -
+  // yOffsetFromTarget) < bufferValue);
+  // // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue;
+  // case lvl4:
+  // return Math.abs(LimelightConstants.desiredOuttakeDistanceLvl4 -
+  // distanceFromTarget) < bufferValue
+  // && (Math.abs(LimelightConstants.desiredRightLLOutakeXOffsetLvl4 -
+  // yOffsetFromTarget) < bufferValue);
+  // // Math.abs(LimelightConstants.desiredLeftReefOffset - xAngleFromTarget) <
+  // // bufferValue;
+  // default:
+  // return false;
+  // }
+  // }
+  // }
 
-  }
-
-  public boolean isRobotInDesiredIntakePosition() {
-    double distanceFromTarget = getDistanceToTarget();
-    return Math.abs(LimelightConstants.desiredIntakeDistance - distanceFromTarget) < 0.1;
-  }
+  // public boolean isRobotInDesiredIntakePosition() {
+  // double distanceFromTarget = getDistanceToTarget();
+  // return Math.abs(LimelightConstants.desiredIntakeDistance -
+  // distanceFromTarget) < 0.1;
+  // }
 
   public double getAprilTagInfo(String dataToReturn) {
     RawFiducial[] fiducials = LimelightHelpers.getRawFiducials(limelightName);
@@ -430,6 +453,25 @@ public class LimeLightSubsystem extends SubsystemBase {
 
   public double getVerticalAngleOfErrorDegrees() {
     return getTy() + 0;
+  }
+
+  public int getTargetAprilTagID() {
+    RawFiducial[] temp = LimelightHelpers.getRawFiducials(limelightName);
+    int id = -1;
+    for (RawFiducial fiducial : temp) {
+
+      id = fiducial.id;
+      break;
+      // TODO: ADD LOGIC LATER TO GET BEST APRILTAG TX OFFSET WISE
+      // double txnc = fiducial.txnc; // X offset (no crosshair)
+      // double tync = fiducial.tync; // Y offset (no crosshair)
+      // double ta = fiducial.ta; // Target area
+      // double distToCamera = fiducial.distToCamera; // Distance to camera
+      // double distToRobot = fiducial.distToRobot; // Distance to robot
+      // double ambiguity = fiducial.ambiguity; // Tag pose ambiguity
+    }
+
+    return id;
   }
 
 }
