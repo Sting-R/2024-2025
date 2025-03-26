@@ -56,6 +56,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.drive_commands.AltMoveToAprilTagPosition;
 import frc.robot.commands.drive_commands.LockOnAprilTag;
 import frc.robot.commands.drive_commands.TurnToAngle;
 import frc.robot.generated.TunerConstants;
@@ -218,20 +219,27 @@ public class RobotContainer {
                 m_driverController.x()
                                 .whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0,
                                                 m_driverController, false,
-                                                LimelightConstants.desiredLeftLLOutakeXOffsetLvl123));
+                                                LimelightConstants.desiredLeftRotationOffset));
                 // Align to Right reef side
                 // HAVE TO USE Left LIMELIGHT!!!, that will be the side that actually sees
                 // the
                 // limelight
                 m_driverController.b().whileTrue(new MoveToAprilTagPosition(m_DrivetrainSubsystem,
-                                m_RightReefLimeLightSubsystem, 0, m_driverController, false));
+                                m_RightReefLimeLightSubsystem, 0, m_driverController, false,
+                                LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeft3DXOffset,
+                                LimelightConstants.desiredLeftArea));
                 // m_driverController.b().whileTrue(new LockOnAprilTag(m_DrivetrainSubsystem,
                 // m_LeftReefLimeLightSubsystem,
                 // 0, m_driverController, false
                 // , LimelightConstants.desiredRightLLOutakeXOffsetLvl123
                 // ));
 
-                m_driverController.a().whileTrue(new TurnToAngle(m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem));
+                // m_driverController.a().whileTrue(new TurnToAngle(m_DrivetrainSubsystem,
+                // m_RightReefLimeLightSubsystem));
+                m_driverController.a().whileTrue(new AltMoveToAprilTagPosition(m_DrivetrainSubsystem,
+                                m_RightReefLimeLightSubsystem, 0, m_driverController, false,
+                                LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeftXOffset,
+                                LimelightConstants.desiredLeftYOffset));
 
                 // reset the field-centric heading on y press
                 m_driverController.y()

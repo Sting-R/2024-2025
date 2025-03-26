@@ -263,21 +263,21 @@ public class LimeLightSubsystem extends SubsystemBase {
     // } else {
     // Checks if it is going for the lvl 4 on the left side
     if (coralArmLevel == CoralArmLevels.lvl4 && (isLeftReef)) {
-      desiredSideSpeed = (LimelightConstants.desiredLeftLLOutakeXOffsetLvl4 - yValueFromTarget) * kP;
+      desiredSideSpeed = (LimelightConstants.desiredLeftRotationOffset - yValueFromTarget) * kP;
     }
     // Checks if it is going for lvl 4 on the right side
     else if (coralArmLevel == CoralArmLevels.lvl4 && !isLeftReef) {
-      desiredSideSpeed = (LimelightConstants.desiredRightLLOutakeXOffsetLvl4 - yValueFromTarget) * kP;
+      desiredSideSpeed = (LimelightConstants.desiredRightXOffset - yValueFromTarget) * kP;
     }
     // Checks if it is going for lvl 1, 2, or 3 on the left side
     else if (((coralArmLevel == CoralArmLevels.lvl1) || (coralArmLevel == CoralArmLevels.lvl2)
         || (coralArmLevel == CoralArmLevels.lvl3)) && (isLeftReef)) {
-      desiredSideSpeed = (LimelightConstants.desiredLeftLLOutakeXOffsetLvl123 - yValueFromTarget) * kP;
+      desiredSideSpeed = (LimelightConstants.desiredLeftRotationOffset - yValueFromTarget) * kP;
     }
     // Checks if it is going for lvl 1, 2, or 3 on the right side
     else if (((coralArmLevel == CoralArmLevels.lvl1) || (coralArmLevel == CoralArmLevels.lvl2)
         || (coralArmLevel == CoralArmLevels.lvl3)) && (!isLeftReef)) {
-      desiredSideSpeed = (LimelightConstants.desiredRightLLOutakeXOffsetLvl123 - yValueFromTarget) * kP;
+      desiredSideSpeed = (LimelightConstants.desiredRightXOffset - yValueFromTarget) * kP;
     }
     // }
 
@@ -457,6 +457,14 @@ public class LimeLightSubsystem extends SubsystemBase {
 
   public double get3dXPosition() {
     return LimelightHelpers.getBotPose3d_TargetSpace(limelightName).getX();
+  }
+
+  public double getTXNC() {
+    return LimelightHelpers.getTXNC(limelightName);
+  }
+
+  public double getTYNC() {
+    return LimelightHelpers.getTYNC(limelightName);
   }
 
   public double getAprilTagArea() {

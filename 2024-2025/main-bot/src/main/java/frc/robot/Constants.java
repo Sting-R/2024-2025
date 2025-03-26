@@ -101,10 +101,17 @@ public class Constants {
     // Offsets For Reef
     public static final double desiredLeftReefOffset = 0.5; // Placeholder
     public static final double desiredRightReefOffset = 0.5; // Placeholder
-    public static final double desiredLeftLLOutakeXOffsetLvl123 = -1.308611035346985; // Placeholder
-    public static final double desiredLeftLLOutakeXOffsetLvl4 = 0.5;
-    public static final double desiredRightLLOutakeXOffsetLvl123 = -13.0792; // Placeholder
-    public static final double desiredRightLLOutakeXOffsetLvl4 = 0;
+    // Left Reef side
+    public static final double desiredLeftRotationOffset = -1.308611035346985; // Placeholder
+    public static final double desiredLeftYOffset = 0.5; // Placeholder
+    public static final double desiredLeftXOffset = 0.5;
+    public static final double desiredLeft3DXOffset = 0.5; // Placeholder
+    public static final double desiredLeftArea = 0.5; // Placeholder
+
+    // Right Reef side
+    public static final double desiredRightRotationOffset = 0.5; // Placeholder
+    public static final double desiredRightXOffset = -13.0792; // Placeholder
+    public static final double desiredRightYOffset = 0;
 
   }
 
