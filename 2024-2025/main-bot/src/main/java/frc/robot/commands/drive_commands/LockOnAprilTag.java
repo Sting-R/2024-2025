@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.drive_commands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
@@ -77,7 +77,7 @@ public class LockOnAprilTag extends Command {
     double xOutput = controller.getLeftY();
     double yOutput = controller.getLeftX();
     if (m_Limelight.hasTarget()) {
-      double vertical_angle = m_Limelight.getHorizontalAngleOfErrorDegrees();
+      // double vertical_angle = m_Limelight.getHorizontalAngleOfErrorDegrees();
       double horizontal_angle = m_Limelight.getHorizontalAngleOfErrorDegrees();
       double setpoint = offsetOfDesired;// + Math.toRadians(m_skew.get());
       thetaController.setSetpoint(setpoint);
@@ -92,6 +92,11 @@ public class LockOnAprilTag extends Command {
     }
     m_Drivetrain.setControl(drive.withVelocityX(xOutput * MaxSpeed).withVelocityY(-yOutput * MaxSpeed)
         .withRotationalRate(thetaOutput * MaxAngularRate));
+    SmartDashboard.putNumberArray("Apriltag X Velocity, Y Velocity, and Rotation",
+        new double[] { xOutput * MaxSpeed, -yOutput * MaxSpeed, thetaOutput * MaxAngularRate });
+    SmartDashboard.putNumber("X velocity", xOutput * MaxSpeed);
+    SmartDashboard.putNumber("y velocity", -yOutput * MaxSpeed);
+    SmartDashboard.putNumber("theta output", thetaOutput * MaxAngularRate);
   }
 
   // Called once the command ends or is interrupted.
