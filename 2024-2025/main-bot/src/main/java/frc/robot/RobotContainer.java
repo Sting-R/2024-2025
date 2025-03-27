@@ -38,12 +38,25 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,6 +73,7 @@ import frc.robot.subsystems.CoralArmSubsystem;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.commands.preset_commands.moveToPreset;
 import frc.robot.commands.preset_commands.intakePreset;
@@ -86,7 +100,7 @@ public class RobotContainer {
         // private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new
         // AlgaeArmSubsystem();
         private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem();
-        // private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
+        private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
         // Controllers
         private final CommandXboxController m_driverController = new CommandXboxController(
@@ -96,8 +110,10 @@ public class RobotContainer {
 
         private final SendableChooser<Command> autoChooser;
 
-        DigitalInput climberLimitSwitch = new DigitalInput(Constants.ClimberConstants.kClimberLimitSwitchID);
         /* Swerve drive platform setup */ // From Swerve Project Generator
+
+        StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
+                        .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
 
         // kSpeedAt12Volts Desired Top speed←
         private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -122,8 +138,9 @@ public class RobotContainer {
         // public final MapleSimSubsystem m_MapleSimSubsystem = new
         // MapleSimSubsystem(m_DrivetrainSubsystem);
 
-        // limelight constants
-        // public boolean usingLeftLimelightForAlignment = true;
+        private final Field2d m_field;
+
+        Trajectory m_trajectory;
 
         // Commands
         private final LockOnAprilTag m_LockOnAprilTag = new LockOnAprilTag(m_DrivetrainSubsystem,
@@ -157,12 +174,23 @@ public class RobotContainer {
                         true);
         private final knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         false);
-        // End of Swerve Drive Platform setup
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+
+                // Create the trajectory to follow in autonomous. It is best to initialize
+                // trajectories here to avoid wasting time in autonomous.
+                m_trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
+                                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                                new Pose2d(3, 0, Rotation2d.fromDegrees(0)),
+                                new TrajectoryConfig(Units.feetToMeters(3.0), Units.feetToMeters(3.0)));
+                // Create and push Field2d to SmartDashboard.
+                m_field = new Field2d();
+                SmartDashboard.putData(m_field);
+                // Push the trajectory to Field2d.
+                m_field.getObject("traj").setTrajectory(m_trajectory);
 
                 // Configure the trigger bindings
                 configureBindings(Math.random());
@@ -183,6 +211,9 @@ public class RobotContainer {
 
                 final var modifiedMaxSpeed = MaxSpeed / modifier;
                 final var modifiedMaxAngularRate = MaxAngularRate / modifier;
+
+                // Do this in either robot periodic or subsystem periodic
+                m_field.setRobotPose(m_DrivetrainSubsystem.getEstimatedPose());
 
                 return drive
                                 // Drive forward with negative Y (forward)
@@ -208,12 +239,21 @@ public class RobotContainer {
         private void configureBindings(double random) {
 
                 // ====================== Climber Subsystem ====================== //
-                // Trigger climberTrigger = new Trigger(() -> climberLimitSwitch.get());
-                // climberTrigger.onTrue(m_ClimberSubsystem.runOnce(() ->
-                // m_ClimberSubsystem.climberSwitchTriggered()));
-                // m_auxillaryController.povCenter()
-                // .onTrue(m_ClimberSubsystem.runOnce(() ->
-                // m_ClimberSubsystem.engageClimber()));
+                // m_driverController.leftTrigger().whileTrue(
+                // new InstantCommand(m_ClimberSubsystem::setToActivePosition,
+                // m_ClimberSubsystem));
+                // m_driverController.rightTrigger()
+                // .whileTrue(new InstantCommand(m_ClimberSubsystem::engageClimber,
+                // m_ClimberSubsystem));
+
+                m_driverController.leftTrigger()
+                                .whileTrue(new InstantCommand(m_ClimberSubsystem::climberForward, m_ClimberSubsystem))
+                                .onFalse(new InstantCommand(() -> m_ClimberSubsystem.climberStop(),
+                                                m_ClimberSubsystem));
+                m_driverController.rightTrigger()
+                                .whileTrue(new InstantCommand(m_ClimberSubsystem::climberBackward, m_ClimberSubsystem))
+                                .onFalse(new InstantCommand(() -> m_ClimberSubsystem.climberStop(),
+                                                m_ClimberSubsystem));
 
                 // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
@@ -227,7 +267,7 @@ public class RobotContainer {
                 // Align to Right reef side
                 m_driverController.a().whileTrue(m_AltMoveToAprilTagPosition);
 
-                m_driverController.pov(0).whileTrue(m_DriveToTargetOffset);
+                // m_driverController.pov(0).whileTrue(m_DriveToTargetOffset);
 
                 // reset the field-centric heading on y press
                 m_driverController.y()
@@ -252,35 +292,20 @@ public class RobotContainer {
 
                 m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
 
-                // ====================== Limelight Subsystems ======================
+                // Do this in either robot or subsystem init
+                SmartDashboard.putData("Field", m_field);
+
+                // ====================== Limelight Subsystems ====================== //
                 // m_LeftReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
                 // m_RightReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
 
                 // ====================== Command Compositions ====================== //
 
-                // Knock Algae off
-
-                // SequentialCommandGroup knockAlgaeOffCommand = new SequentialCommandGroup(new
-                // RunCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.knockAlgaeOff);
-                // }, m_AlgaeArmSubsystem, m_ElevatorSubsystem).until(() -> m_ElevatorSubsystem
-                // .isElevatorAtDesiredState(ElevatorPresets.knockAlgaeOff).getAsBoolean());
-                // new RunCommand(() -> {
-                // m_ElevatorSubsystem.elevatorMoveToPresetMM(ElevatorPresets.knockAlgaeOff);
-                // }, null));
                 m_auxillaryController.pov(0)
                                 .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.increaseIntakeEncoderPosition()));
                 m_auxillaryController.pov(180)
                                 .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.decreaseIntakeEncoderPosition()));
 
-                m_auxillaryController.a().onTrue(m_MoveToPresetLvl1);
-                m_auxillaryController.b().onTrue(m_MoveToPresetLvl2);
-                m_auxillaryController.y().onTrue(m_MoveToPresetLvl3);
-                m_auxillaryController.x().onTrue(m_MoveToPresetLvl4);
-                m_auxillaryController.leftTrigger().onTrue(m_KnockLowerAlgaeOff);
-                m_auxillaryController.rightTrigger().onTrue(m_KnockUpperAlgaeOff);
-                m_auxillaryController.leftBumper().onTrue(m_IntakePreset);
-                m_auxillaryController.rightBumper().onTrue(m_DefaultStateCommand);
                 moveToPreset m_MoveToPresetLvl1Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                                 m_driverController, m_auxillaryController, 1, true);
                 moveToPreset m_MoveToPresetLvl2Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
@@ -289,6 +314,16 @@ public class RobotContainer {
                                 m_driverController, m_auxillaryController, 3, true);
                 moveToPreset m_MoveToPresetLvl4Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                                 m_driverController, m_auxillaryController, 4, true);
+
+                m_auxillaryController.a().onTrue(m_MoveToPresetLvl1Auto);
+                m_auxillaryController.b().onTrue(m_IntakePreset);
+                m_auxillaryController.y().onTrue(m_MoveToPresetLvl3);
+                m_auxillaryController.x().onTrue(m_MoveToPresetLvl4);
+                m_auxillaryController.leftTrigger().onTrue(m_KnockLowerAlgaeOff);
+                m_auxillaryController.rightTrigger().onTrue(m_KnockUpperAlgaeOff);
+                m_auxillaryController.leftBumper().onTrue(m_IntakePreset);
+                m_auxillaryController.rightBumper().onTrue(m_DefaultStateCommand);
+
                 NamedCommands.registerCommand("Level 1 Preset Command", m_MoveToPresetLvl1Auto);
                 NamedCommands.registerCommand("Level 2 Preset Command", m_MoveToPresetLvl2Auto);
                 NamedCommands.registerCommand("Level 3 Preset Command", m_MoveToPresetLvl3Auto);

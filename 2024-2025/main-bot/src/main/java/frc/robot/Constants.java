@@ -32,7 +32,7 @@ public class Constants {
   public static class ElevatorConstants {
     public static final int kElevatorLeftMotorID = 15;
     public static final int kElevatorRightMotorID = 16;
-    public static final double kMaxMotorElevatorSpeed = 0.5;
+    public static final double kMaxMotorElevatorSpeed = 0.7;
     public static final int kLeftElevatorEncoderID1 = 9;
     public static final int kLeftElevatorEncoderID2 = 8;
     public static final double kLeftElevatorEncoderBottomValue = 0;
@@ -91,6 +91,8 @@ public class Constants {
     public static final int kClimberMotorID = 25;
     // public static final int kRightClimberMotorID = 26; // yeah we dont need that
     public static final int kClimberLimitSwitchID = 20;
+    public static final double kCoralEncoderActivePosition = 5;
+    public static final double kCoralEncoderEngagedPosition = 0;
   }
 
   public static class LimelightConstants {

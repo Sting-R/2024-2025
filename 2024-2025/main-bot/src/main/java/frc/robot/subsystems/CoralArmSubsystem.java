@@ -152,6 +152,7 @@ public class CoralArmSubsystem extends SubsystemBase {
     }
 
     public void kickAlgaeOff() {
+        SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderOuttakelvl4Position);
         // I'm just using level 4 as a placeholder for the kickUpperAlgaeOff position
         m_CoralArmMotor
                 .setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderOuttakelvl4Position).withSlot(0));

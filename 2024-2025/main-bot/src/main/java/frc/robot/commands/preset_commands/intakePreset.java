@@ -27,7 +27,6 @@ public class intakePreset extends Command {
         this.operatorController = operatorController;
         coralLevel = CoralArmLevels.intake;
         elevatorLevel = ElevatorPresets.intake;
-        System.out.println("Intake Preset reached");
     }
 
     public void execute() {

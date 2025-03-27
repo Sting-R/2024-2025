@@ -113,12 +113,19 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
-        leftConfig.Slot0.kP = 13; // p pid //4.1
-        leftConfig.Slot0.kI = 15;
+        leftConfig.Slot0.kP = 15; // p pid //4.1
+        leftConfig.Slot0.kI = 22;
         leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
         leftConfig.Slot0.kG = 1.7;
+
+        leftConfig.Slot1.kP = 15; // p pid //4.1
+        leftConfig.Slot1.kI = 22;
+        leftConfig.Slot1.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        leftConfig.Slot1.kV = 0;
+        leftConfig.Slot1.kA = 0;
+        leftConfig.Slot1.kG = 1.7;
 
         leftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         leftConfig.MotorOutput.PeakForwardDutyCycle = motorMaxElevatorSpeed;
@@ -128,12 +135,19 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         leftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         leftConfig.CurrentLimits.StatorCurrentLimit = 60;
 
-        rightConfig.Slot0.kP = 13; // p pid //4.1
-        rightConfig.Slot0.kI = 15;
+        rightConfig.Slot0.kP = 15; // p pid //4.1
+        rightConfig.Slot0.kI = 22;
         rightConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot0.kV = 0;
         rightConfig.Slot0.kA = 0;
         rightConfig.Slot0.kG = 1.7;
+
+        rightConfig.Slot1.kP = 15; // p pid //4.1
+        rightConfig.Slot1.kI = 22;
+        rightConfig.Slot1.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        rightConfig.Slot1.kV = 0;
+        rightConfig.Slot1.kA = 0;
+        rightConfig.Slot1.kG = 1.7;
 
         rightConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         rightConfig.MotorOutput.PeakForwardDutyCycle = motorMaxElevatorSpeed;

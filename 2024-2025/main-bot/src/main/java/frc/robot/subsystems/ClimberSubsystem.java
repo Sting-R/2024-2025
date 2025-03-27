@@ -64,6 +64,22 @@ public class ClimberSubsystem extends SubsystemBase {
 
    double climberPosition = 0;
 
+   public void setToActivePosition() {
+      climberMotor.setControl(setVoltage.withPosition(ClimberConstants.kCoralEncoderActivePosition).withSlot(0));
+   }
+
+   public void climberForward() {
+      climberMotor.set(0.1);
+   }
+
+   public void climberBackward() {
+      climberMotor.set(-1);
+   }
+
+   public void climberStop() {
+      climberMotor.set(0);
+   }
+
    public void engageClimber() {
       if (climberLimitSwitch.get()) {
          if (climberPosition == 0) {
