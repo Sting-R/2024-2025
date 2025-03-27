@@ -40,6 +40,9 @@ public class SimulationSubsystem extends SubsystemBase {
         // Push the trajectory to Field2d.
         m_field.getObject("traj").setTrajectory(m_trajectory);
 
+        // Do this in either robot or subsystem init
+        SmartDashboard.putData("Field", m_field);
+
     }
 
     public void SimulationOutput(CommandSwerveDrivetrain drivetrainSubsystem) {
