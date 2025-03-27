@@ -112,9 +112,6 @@ public class RobotContainer {
 
         /* Swerve drive platform setup */ // From Swerve Project Generator
 
-        StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
-                        .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
-
         // kSpeedAt12Volts Desired Top speed←
         private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         // 3/4 of a rotation per second max angular velocity
@@ -138,10 +135,6 @@ public class RobotContainer {
         // public final MapleSimSubsystem m_MapleSimSubsystem = new
         // MapleSimSubsystem(m_DrivetrainSubsystem);
 
-        private final Field2d m_field;
-
-        Trajectory m_trajectory;
-
         // Commands
         private final LockOnAprilTag m_LockOnAprilTag = new LockOnAprilTag(m_DrivetrainSubsystem,
                         m_RightReefLimeLightSubsystem, 0, m_driverController, false,
@@ -155,7 +148,9 @@ public class RobotContainer {
                         LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeftXOffset,
                         LimelightConstants.desiredLeftYOffset);
 
-        private final DriveToTargetOffset m_DriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
+        private final DriveToTargetOffset m_RightDriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
+                        m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
+        private final DriveToTargetOffset m_LeftDriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
                         m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
 
         private final moveToPreset m_MoveToPresetLvl1 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
@@ -180,18 +175,6 @@ public class RobotContainer {
          */
         public RobotContainer() {
 
-                // Create the trajectory to follow in autonomous. It is best to initialize
-                // trajectories here to avoid wasting time in autonomous.
-                m_trajectory = TrajectoryGenerator.generateTrajectory(new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-                                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                                new Pose2d(3, 0, Rotation2d.fromDegrees(0)),
-                                new TrajectoryConfig(Units.feetToMeters(3.0), Units.feetToMeters(3.0)));
-                // Create and push Field2d to SmartDashboard.
-                m_field = new Field2d();
-                SmartDashboard.putData(m_field);
-                // Push the trajectory to Field2d.
-                m_field.getObject("traj").setTrajectory(m_trajectory);
-
                 // Configure the trigger bindings
                 configureBindings(Math.random());
 
@@ -211,9 +194,6 @@ public class RobotContainer {
 
                 final var modifiedMaxSpeed = MaxSpeed / modifier;
                 final var modifiedMaxAngularRate = MaxAngularRate / modifier;
-
-                // Do this in either robot periodic or subsystem periodic
-                m_field.setRobotPose(m_DrivetrainSubsystem.getEstimatedPose());
 
                 return drive
                                 // Drive forward with negative Y (forward)
@@ -260,10 +240,10 @@ public class RobotContainer {
 
                 m_DrivetrainSubsystem.setDefaultCommand(m_DrivetrainSubsystem.applyRequest(this::defaultDriveLogic));
 
-                m_driverController.x().whileTrue(m_LockOnAprilTag);
+                m_driverController.x().whileTrue(m_RightDriveToTargetOffset);
 
                 // Align to left reef side
-                m_driverController.b().whileTrue(m_MoveToAprilTagPosition);
+                m_driverController.b().whileTrue(m_LeftDriveToTargetOffset);
                 // Align to Right reef side
                 m_driverController.a().whileTrue(m_AltMoveToAprilTagPosition);
 
@@ -291,9 +271,6 @@ public class RobotContainer {
                 // .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kReverse));
 
                 m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
-
-                // Do this in either robot or subsystem init
-                SmartDashboard.putData("Field", m_field);
 
                 // ====================== Limelight Subsystems ====================== //
                 // m_LeftReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
