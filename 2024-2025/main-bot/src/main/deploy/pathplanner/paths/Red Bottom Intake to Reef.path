@@ -4,15 +4,15 @@
     {
       "anchor": {
         "x": 16.408,
-        "y": 1.065
+        "y": 1.0649400684931505
       },
       "prevControl": null,
       "nextControl": {
         "x": 14.574914383561643,
-        "y": 1.6960188356164383
+        "y": 1.6959589041095888
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Bottom Intake"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Reef - B"
     }
   ],
   "rotationTargets": [],
@@ -48,7 +48,7 @@
   "folder": "Red Bottom",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -55.88490772756475
+    "rotation": -55.531
   },
   "useDefaultConstraints": true
 }

@@ -49,34 +49,39 @@
       "/Pose": "Field2d",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Module 0": "Mechanism2d",
       "/SmartDashboard/Module 1": "Mechanism2d",
       "/SmartDashboard/Module 2": "Mechanism2d",
       "/SmartDashboard/Module 3": "Mechanism2d",
       "/SmartDashboard/PathPlanner": "Alerts"
+    },
+    "windows": {
+      "/SmartDashboard/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
-    "Retained Values": {
-      "open": false
-    },
-    "Transitory Values": {
-      "open": false
-    },
     "transitory": {
       "DriveState": {
         "ChassisSpeeds##v_/DriveState/Speeds": {
           "open": true
         }
       },
+      "LiveWindow": {
+        ".status": {
+          "open": true
+        },
+        "open": true
+      },
       "SmartDashboard": {
         "Alerts": {
           "open": true
         },
-        "Auto Chooser": {
+        "Field": {
           "open": true
         },
         "Module 0": {
@@ -90,7 +95,8 @@
         },
         "Module 3": {
           "open": true
-        }
+        },
+        "open": true
       }
     }
   },

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 9.82679794520548,
-        "y": 1.801198630136986
+        "x": 9.811772260273973,
+        "y": 1.891352739726027
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.569777397260275,
-        "y": 1.5607876712328765
+        "x": 11.554751712328768,
+        "y": 1.6509417808219176
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Bottom Barge - Middle"
     },
     {
       "anchor": {
-        "x": 13.824,
-        "y": 2.913
+        "x": 13.598244863013699,
+        "y": 2.807919520547945
       },
       "prevControl": {
-        "x": 13.358203767123287,
-        "y": 1.6508424657534242
+        "x": 13.132448630136986,
+        "y": 1.5457619863013692
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Reef - D"
     }
   ],
   "rotationTargets": [],

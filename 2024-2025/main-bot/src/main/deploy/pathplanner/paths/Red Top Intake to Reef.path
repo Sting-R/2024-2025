@@ -3,42 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 9.82376644736842,
-        "y": 1.8793585526315792
+        "x": 16.36297089041096,
+        "y": 7.0151113013698625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.1515625,
-        "y": 2.4951480263157895
+        "x": 14.54486301369863,
+        "y": 6.955008561643836
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Top Intake"
     },
     {
       "anchor": {
-        "x": 12.286924342105262,
-        "y": 2.966611842105263
+        "x": 14.379580479452054,
+        "y": 4.160231164383561
       },
       "prevControl": {
-        "x": 11.093832236842104,
-        "y": 2.4085526315789467
+        "x": 15.701840753424658,
+        "y": 4.265410958904109
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Reef - A"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Level 4 Preset Command",
-      "waypointRelativePos": 0.4968652037617557,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -49,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 58.8150253412618
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Red Top",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 54.0
   },
   "useDefaultConstraints": true
 }

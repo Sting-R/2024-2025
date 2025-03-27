@@ -3,42 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.723202054794521,
-        "y": 6.158647260273973
+        "x": 9.82679794520548,
+        "y": 6.173672945205479
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.6864297945205475,
-        "y": 6.684546232876712
+        "x": 11.885316780821917,
+        "y": 6.74464897260274
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.424272260273973,
-        "y": 5.392337328767123
+        "x": 13.88373287671233,
+        "y": 5.076797945205479
       },
       "prevControl": {
-        "x": 6.160530821917808,
-        "y": 6.384032534246575
+        "x": 12.426241438356165,
+        "y": 6.534289383561643
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Reef - L"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Level 4 Preset Command",
-      "waypointRelativePos": 0.7442528735632193,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -49,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -118.07248693585304
+    "rotation": -120.56500000000001
   },
   "reversed": false,
-  "folder": "Blue Top",
+  "folder": "Red Top",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

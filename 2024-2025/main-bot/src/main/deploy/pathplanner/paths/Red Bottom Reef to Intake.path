@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.824,
-        "y": 2.9134
+        "x": 13.598244863013699,
+        "y": 2.807919520547945
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.515654109589041,
-        "y": 2.207192808219178
+        "x": 14.28989897260274,
+        "y": 2.1017123287671224
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Reef - D"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Bottom Intake"
     }
   ],
   "rotationTargets": [],

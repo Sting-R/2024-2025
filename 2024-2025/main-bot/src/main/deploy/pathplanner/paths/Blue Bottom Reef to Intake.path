@@ -3,42 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 9.82376644736842,
-        "y": 1.8793585526315792
+        "x": 3.982,
+        "y": 2.792893835616438
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.1515625,
-        "y": 2.4951480263157895
+        "x": 2.7647260273897816,
+        "y": 1.425450342465437
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue Reef - D"
     },
     {
       "anchor": {
-        "x": 12.286924342105262,
-        "y": 2.966611842105263
+        "x": 1.097,
+        "y": 1.079965753424342
       },
       "prevControl": {
-        "x": 11.093832236842104,
-        "y": 2.4085526315789467
+        "x": 2.3591575342465747,
+        "y": 1.140068493150369
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue Bottom Intake"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Level 4 Preset Command",
-      "waypointRelativePos": 0.4968652037617557,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -49,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 58.8150253412618
+    "rotation": -125.00000000000001
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Blue Bottom",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 61.38954033403478
   },
   "useDefaultConstraints": true
 }
