@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Command Test Path"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Level 1 Preset Command"

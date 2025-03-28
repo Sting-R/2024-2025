@@ -9,12 +9,6 @@
           "data": {
             "pathName": "Taxi"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Level 4 Preset Command"
-          }
         }
       ]
     }

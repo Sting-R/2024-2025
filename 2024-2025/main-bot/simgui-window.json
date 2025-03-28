@@ -26,8 +26,13 @@
   "Window": {
     "###/SmartDashboard/Auto Chooser": {
       "Collapsed": "0",
-      "Pos": "408,298",
+      "Pos": "408,299",
       "Size": "254,54"
+    },
+    "###/SmartDashboard/Field": {
+      "Collapsed": "0",
+      "Pos": "243,499",
+      "Size": "654,375"
     },
     "###DIO": {
       "Collapsed": "0",
