@@ -83,7 +83,7 @@ public class DriveToTargetOffset extends Command {
     }
 
     m_Drivetrain.setControl(drive.withVelocityX(ySpeed * (DriveTrainConstants.MaxSpeed / 2))
-        .withVelocityY(xSpeed * (DriveTrainConstants.MaxSpeed / 2)).withRotationalRate(0));
+        .withVelocityY(-xSpeed * (DriveTrainConstants.MaxSpeed / 2)).withRotationalRate(0));
   }
 
   // Called once the command ends or is interrupted.

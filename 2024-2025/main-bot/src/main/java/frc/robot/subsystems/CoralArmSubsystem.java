@@ -35,6 +35,7 @@ public class CoralArmSubsystem extends SubsystemBase {
 
     // Constants
     private double motorMaxCoralSpeed;
+    private double intakePosition = CoralArmConstants.kCoralEncoderIntakePosition;
 
     // Test values for motion magic
     private MotionMagicVoltage setVoltage;
@@ -63,6 +64,7 @@ public class CoralArmSubsystem extends SubsystemBase {
 
         // Coral Arm Going up
         coralArmMotorConfig.Slot0.kP = 3; // p pid //4.1
+        coralArmMotorConfig.Slot0.kI = 0.1;
         coralArmMotorConfig.Slot0.kD = 0.15;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot0.kV = 0;
         coralArmMotorConfig.Slot0.kA = 0;
@@ -93,26 +95,32 @@ public class CoralArmSubsystem extends SubsystemBase {
     }
 
     public enum CoralArmLevels {
-        intake, lvl1, lvl2, lvl3, lvl4, kickLowerAlgaeOff, kickUpperAlgaeOff, defaultState
+        intake, lvl1, lvl2, lvl3, lvl4, kickLowerAlgaeOff, kickUpperAlgaeOff, defaultState, inbetween
     }
 
     public void intake() {
         SmartDashboard.putBoolean("Default State Active", false);
-        SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderIntakePosition);
+        SmartDashboard.putNumber("Desired Coral Arm Position", intakePosition);
         desiredCoralArmState = CoralArmLevels.intake;
-        m_CoralArmMotor.setControl(setVoltage.withPosition(CoralArmConstants.kCoralEncoderIntakePosition).withSlot(0));
+        m_CoralArmMotor.setControl(setVoltage.withPosition(intakePosition).withSlot(0));
         if (coralGrabbed()) {
             SmartDashboard.putBoolean("Coral grabbed?", true);
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         } else {
             SmartDashboard.putBoolean("Coral grabbed?", false);
-            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, -0.5);
-            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, -0.5);
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
         }
         // .withLimitReverseMotion(true));
     }
 
+    /**
+     * Outtake method going to a desired preset
+     * 
+     * @param desiredLevel
+     * @param ejectCoral
+     */
     public void outtake(CoralArmLevels desiredLevel, boolean ejectCoral) {
         SmartDashboard.putBoolean("Default State Active", false);
 
@@ -132,16 +140,16 @@ public class CoralArmSubsystem extends SubsystemBase {
         case lvl3:
             m_CoralArmMotor.setControl(
                     setVoltage.withPosition(CoralArmConstants.kCoralEncoderOuttakelvl3Position).withSlot(0));
-            SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderOuttakelvl2Position);
+            SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderOuttakelvl3Position);
             break;
         case lvl4:
             m_CoralArmMotor.setControl(
                     setVoltage.withPosition(CoralArmConstants.kCoralEncoderOuttakelvl4Position).withSlot(0));
             inversed *= -1;
-            SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderOuttakelvl2Position);
+            SmartDashboard.putNumber("Desired Coral Arm Position", CoralArmConstants.kCoralEncoderOuttakelvl4Position);
             break;
         }
-        double intakePower = 0.5 * inversed;
+        double intakePower = -0.5 * inversed;
         if (ejectCoral) {
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
@@ -149,6 +157,29 @@ public class CoralArmSubsystem extends SubsystemBase {
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         }
+    }
+
+    /**
+     * Outtake method going to a desired position WARNING!!! Assumes that the coral
+     * will be ejected in the opposite way
+     * 
+     * @param desiredPosition
+     */
+    public void outtake(double desiredPosition, boolean ejectCoral) {
+        m_CoralArmMotor.setControl(setVoltage.withPosition(desiredPosition).withSlot(0));
+
+        SmartDashboard.putNumber("Desired Coral Arm Position", desiredPosition);
+        double inversed = 1;
+        double intakePower = 0.5 * inversed;
+
+        if (ejectCoral) {
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
+        } else {
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
+        }
+
     }
 
     public void kickAlgaeOff() {
@@ -175,36 +206,68 @@ public class CoralArmSubsystem extends SubsystemBase {
         return m_CoralArmLightSensor.get();
     }
 
+    public void changeCoralIntakeEncoderPosition(double change) {
+        intakePosition += change;
+        System.out.println("new coral arm encoder intake position " + intakePosition);
+
+    }
+
     public CoralArmLevels getCurrentCoralArmState() {
-        double bufferValue = 0.1;
-        if (m_CoralArmMotor.getPosition().getValueAsDouble() > CoralArmConstants.kCoralEncoderIntakePosition
-                - bufferValue
-                && m_CoralArmMotor.getPosition().getValueAsDouble() < CoralArmConstants.kCoralEncoderIntakePosition
-                        + bufferValue) {
-            currentCoralArmState = CoralArmLevels.intake;
-        } else if (m_CoralArmMotor.getPosition().getValueAsDouble() > CoralArmConstants.kCoralEncoderOuttakelvl1Position
-                - bufferValue
-                && m_CoralArmMotor.getPosition().getValueAsDouble() < CoralArmConstants.kCoralEncoderOuttakelvl1Position
-                        + bufferValue) {
+        double bufferValue = 0.2;
+        double currentPosition = m_CoralArmMotor.getPosition().getValueAsDouble();
+        SmartDashboard.putNumber("TEST CURRENT POSITION VALUE", currentPosition);
+
+        if (Math.abs(currentPosition - CoralArmConstants.kCoralEncoderOuttakelvl1Position) < bufferValue) {
             currentCoralArmState = CoralArmLevels.lvl1;
-        } else if (m_CoralArmMotor.getPosition().getValueAsDouble() > CoralArmConstants.kCoralEncoderOuttakelvl2Position
-                - bufferValue
-                && m_CoralArmMotor.getPosition().getValueAsDouble() < CoralArmConstants.kCoralEncoderOuttakelvl2Position
-                        + bufferValue) {
+        } else if (Math.abs(currentPosition - CoralArmConstants.kCoralEncoderOuttakelvl2Position) < bufferValue) {
             currentCoralArmState = CoralArmLevels.lvl2;
-        } else if (m_CoralArmMotor.getPosition().getValueAsDouble() > CoralArmConstants.kCoralEncoderOuttakelvl3Position
-                - bufferValue
-                && m_CoralArmMotor.getPosition().getValueAsDouble() < CoralArmConstants.kCoralEncoderOuttakelvl3Position
-                        + bufferValue) {
+        } else if (Math.abs(currentPosition - CoralArmConstants.kCoralEncoderOuttakelvl3Position) < bufferValue) {
             currentCoralArmState = CoralArmLevels.lvl3;
-        } else if (m_CoralArmMotor.getPosition().getValueAsDouble() > CoralArmConstants.kCoralEncoderOuttakelvl4Position
-                - bufferValue
-                && m_CoralArmMotor.getPosition().getValueAsDouble() < CoralArmConstants.kCoralEncoderOuttakelvl4Position
-                        + bufferValue) {
+        } else if (Math.abs(currentPosition - CoralArmConstants.kCoralEncoderOuttakelvl4Position) < bufferValue) {
             currentCoralArmState = CoralArmLevels.lvl4;
-        } else {
+        } else if (Math.abs(currentPosition - intakePosition) < bufferValue) {
+            currentCoralArmState = CoralArmLevels.intake;
+        } else if (Math.abs(currentPosition - CoralArmConstants.kCoralEncoderDefaultPosition) < bufferValue) {
             currentCoralArmState = CoralArmLevels.defaultState;
+        } else {
+            currentCoralArmState = CoralArmLevels.inbetween;
         }
+        // else if (Math.abs(currentPosition -
+        // CoralArmConstants.kCoralEncoderKickLowerAlgaeOff) < bufferValue) {
+        // currentCoralArmState = CoralArmLevels.kickLowerAlgaeOff;
+        // } else if (Math.abs(currentPosition -
+        // CoralArmConstants.kCoralEncoderKickUpperAlgaeOff) < bufferValue) {
+        // currentCoralArmState = CoralArmLevels.kickUpperAlgaeOff;
+        // }
+
+        // if (currentPosition > CoralArmConstants.kCoralEncoderIntakePosition -
+        // bufferValue
+        // && currentPosition < CoralArmConstants.kCoralEncoderIntakePosition +
+        // bufferValue) {
+        // currentCoralArmState = CoralArmLevels.intake;
+        // } else if (currentPosition >
+        // CoralArmConstants.kCoralEncoderOuttakelvl1Position - bufferValue
+        // && currentPosition < CoralArmConstants.kCoralEncoderOuttakelvl1Position +
+        // bufferValue) {
+        // currentCoralArmState = CoralArmLevels.lvl1;
+        // } else if (currentPosition >
+        // CoralArmConstants.kCoralEncoderOuttakelvl2Position - bufferValue
+        // && currentPosition < CoralArmConstants.kCoralEncoderOuttakelvl2Position +
+        // bufferValue) {
+        // currentCoralArmState = CoralArmLevels.lvl2;
+        // } else if (currentPosition >
+        // CoralArmConstants.kCoralEncoderOuttakelvl3Position - bufferValue
+        // && currentPosition < CoralArmConstants.kCoralEncoderOuttakelvl3Position +
+        // bufferValue) {
+        // currentCoralArmState = CoralArmLevels.lvl3;
+        // } else if (currentPosition >
+        // CoralArmConstants.kCoralEncoderOuttakelvl4Position - bufferValue
+        // && currentPosition < CoralArmConstants.kCoralEncoderOuttakelvl4Position +
+        // bufferValue) {
+        // currentCoralArmState = CoralArmLevels.lvl4;
+        // } else {
+        // currentCoralArmState = CoralArmLevels.defaultState;
+        // }
         return currentCoralArmState;
     }
 
@@ -232,8 +295,10 @@ public class CoralArmSubsystem extends SubsystemBase {
         SmartDashboard.putString("Current Coral Arm State", " " + getCurrentCoralArmState());
         SmartDashboard.putString("Desired Coral Arm State", " " + desiredCoralArmState);
         SmartDashboard.putNumber("Coral Arm Motor position", m_CoralArmMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Left Coral Arm Intake Power", m_LeftCoralIntakeMotor.getMotorOutputVoltage());
-        SmartDashboard.putNumber("Right Coral Arm Intake Power", m_RightCoralIntakeMotor.getMotorOutputVoltage());
+        // SmartDashboard.putNumber("Left Coral Arm Intake Power",
+        // m_LeftCoralIntakeMotor.getMotorOutputVoltage());
+        // SmartDashboard.putNumber("Right Coral Arm Intake Power",
+        // m_RightCoralIntakeMotor.getMotorOutputVoltage());
     }
 
     // public Command CommandsetCoralArmVoltage(double voltage, CoralArmLevels

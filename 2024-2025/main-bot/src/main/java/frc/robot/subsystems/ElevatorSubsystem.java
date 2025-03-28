@@ -113,15 +113,15 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
-        leftConfig.Slot0.kP = 15; // p pid //4.1
-        leftConfig.Slot0.kI = 30;
+        leftConfig.Slot0.kP = 18; // p pid //4.1
+        leftConfig.Slot0.kI = 50;
         leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
         leftConfig.Slot0.kG = 1.7;
 
         leftConfig.Slot1.kP = 15; // p pid //4.1
-        leftConfig.Slot1.kI = 30;
+        leftConfig.Slot1.kI = 20;
         leftConfig.Slot1.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot1.kV = 0;
         leftConfig.Slot1.kA = 0;
@@ -135,15 +135,15 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         leftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         leftConfig.CurrentLimits.StatorCurrentLimit = 60;
 
-        rightConfig.Slot0.kP = 15; // p pid //4.1
-        rightConfig.Slot0.kI = 22;
+        rightConfig.Slot0.kP = 18; // p pid //4.1
+        rightConfig.Slot0.kI = 50;
         rightConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot0.kV = 0;
         rightConfig.Slot0.kA = 0;
         rightConfig.Slot0.kG = 1.7;
 
         rightConfig.Slot1.kP = 15; // p pid //4.1
-        rightConfig.Slot1.kI = 22;
+        rightConfig.Slot1.kI = 25;
         rightConfig.Slot1.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot1.kV = 0;
         rightConfig.Slot1.kA = 0;
@@ -311,11 +311,14 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         }
     }
 
-    public void increaseIntakeEncoderPosition() {
+    public void increaseElevatorIntakeEncoderPosition() {
+
         presetIntakeEncoderValue += 0.3;
+        System.out.println("new Elevator Encoder Position " + presetIntakeEncoderValue);
     }
 
-    public void decreaseIntakeEncoderPosition() {
+    public void decreaseElevatorIntakeEncoderPosition() {
+        System.out.println("new Elevator Encoder Position " + presetIntakeEncoderValue);
         presetIntakeEncoderValue -= 0.3;
     }
 
@@ -431,33 +434,78 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         // ElevatorPresets currentElevatorState;
         double currentElevatorPosition = m_elevatorLeftMotor.getPosition().getValueAsDouble();
         double bufferValue = 0.2;
-        if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.level1EncoderValue - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.level1EncoderValue + bufferValue) {
+
+        // we are going to redo the things below into using math abs values
+
+        if (Math.abs(currentElevatorPosition - ElevatorConstants.ElevatorPreset.level1EncoderValue) < bufferValue) {
             currentElevatorState = ElevatorPresets.Level1;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.level2EncoderValue - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.level2EncoderValue + bufferValue) {
+        } else if (Math
+                .abs(currentElevatorPosition - ElevatorConstants.ElevatorPreset.level2EncoderValue) < bufferValue) {
             currentElevatorState = ElevatorPresets.Level2;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.level3EncoderValue - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.level3EncoderValue + bufferValue) {
+        } else if (Math
+                .abs(currentElevatorPosition - ElevatorConstants.ElevatorPreset.level3EncoderValue) < bufferValue) {
             currentElevatorState = ElevatorPresets.Level3;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.level4EncoderValue - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.level4EncoderValue + bufferValue) {
+        } else if (Math
+                .abs(currentElevatorPosition - ElevatorConstants.ElevatorPreset.level4EncoderValue) < bufferValue) {
             currentElevatorState = ElevatorPresets.Level4;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.intakeEncoderValue - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.intakeEncoderValue + bufferValue) {
+        } else if (Math
+                .abs(currentElevatorPosition - ElevatorConstants.ElevatorPreset.intakeEncoderValue) < bufferValue) {
             currentElevatorState = ElevatorPresets.intake;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff + bufferValue) {
+        } else if (Math
+                .abs(currentElevatorPosition - ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff) < bufferValue) {
             currentElevatorState = ElevatorPresets.kickLowerAlgaeOff;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff + bufferValue) {
+        } else if (Math
+                .abs(currentElevatorPosition - ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff) < bufferValue) {
             currentElevatorState = ElevatorPresets.kickUpperAlgaeOff;
-        } else if (currentElevatorPosition > ElevatorConstants.ElevatorPreset.defaultStateEncoderValue - bufferValue
-                && currentElevatorPosition < ElevatorConstants.ElevatorPreset.defaultStateEncoderValue + bufferValue) {
+        } else if (Math.abs(
+                currentElevatorPosition - ElevatorConstants.ElevatorPreset.defaultStateEncoderValue) < bufferValue) {
             currentElevatorState = ElevatorPresets.defaultState;
         } else {
             currentElevatorState = ElevatorPresets.inbetween;
         }
+        // if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.level1EncoderValue - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.level1EncoderValue + bufferValue) {
+        // currentElevatorState = ElevatorPresets.Level1;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.level2EncoderValue - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.level2EncoderValue + bufferValue) {
+        // currentElevatorState = ElevatorPresets.Level2;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.level3EncoderValue - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.level3EncoderValue + bufferValue) {
+        // currentElevatorState = ElevatorPresets.Level3;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.level4EncoderValue - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.level4EncoderValue + bufferValue) {
+        // currentElevatorState = ElevatorPresets.Level4;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.intakeEncoderValue - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.intakeEncoderValue + bufferValue) {
+        // currentElevatorState = ElevatorPresets.intake;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.kickLowerAlgaeOff + bufferValue) {
+        // currentElevatorState = ElevatorPresets.kickLowerAlgaeOff;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.kickUpperAlgaeOff + bufferValue) {
+        // currentElevatorState = ElevatorPresets.kickUpperAlgaeOff;
+        // } else if (currentElevatorPosition >
+        // ElevatorConstants.ElevatorPreset.defaultStateEncoderValue - bufferValue
+        // && currentElevatorPosition <
+        // ElevatorConstants.ElevatorPreset.defaultStateEncoderValue + bufferValue) {
+        // currentElevatorState = ElevatorPresets.defaultState;
+        // } else {
+        // currentElevatorState = ElevatorPresets.inbetween;
+        // }
         return currentElevatorState;
     }
 

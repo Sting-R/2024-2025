@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
-import data.Length;
+// import data.Length;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -57,19 +57,25 @@ public class TunerConstants {
         // This needs to be tuned to your individual robot
         public static final LinearVelocity SPEED_12V_MPS = MetersPerSecond.of(4.48056);
 
-        public static final Length WHEEL_BASE = Length.fromInches(22.5); // Front to back
-        public static final Length TRACK_WIDTH = Length.fromInches(22.5); // Side to side
+        // public static final Length WHEEL_BASE = Length.fromInches(22.5); // Front to
+        // back
+        // public static final Length TRACK_WIDTH = Length.fromInches(22.5); // Side to
+        // side
 
-        public static final Translation2d FRONT_LEFT_POSITION = new Translation2d(WHEEL_BASE.getMeters() / 2.0,
-                        TRACK_WIDTH.getMeters() / 2.0);
-        public static final Translation2d FRONT_RIGHT_POSITION = new Translation2d(WHEEL_BASE.getMeters() / 2.0,
-                        -TRACK_WIDTH.getMeters() / 2.0);
-        public static final Translation2d BACK_LEFT_POSITION = new Translation2d(-WHEEL_BASE.getMeters() / 2.0,
-                        TRACK_WIDTH.getMeters() / 2.0);
-        public static final Translation2d BACK_RIGHT_POSITION = new Translation2d(-WHEEL_BASE.getMeters() / 2.0,
-                        -TRACK_WIDTH.getMeters() / 2.0);
+        // public static final Translation2d FRONT_LEFT_POSITION = new
+        // Translation2d(WHEEL_BASE.getMeters() / 2.0,
+        // TRACK_WIDTH.getMeters() / 2.0);
+        // public static final Translation2d FRONT_RIGHT_POSITION = new
+        // Translation2d(WHEEL_BASE.getMeters() / 2.0,
+        // -TRACK_WIDTH.getMeters() / 2.0);
+        // public static final Translation2d BACK_LEFT_POSITION = new
+        // Translation2d(-WHEEL_BASE.getMeters() / 2.0,
+        // TRACK_WIDTH.getMeters() / 2.0);
+        // public static final Translation2d BACK_RIGHT_POSITION = new
+        // Translation2d(-WHEEL_BASE.getMeters() / 2.0,
+        // -TRACK_WIDTH.getMeters() / 2.0);
 
-        public static final double DRIVE_BASE_RADIUS = FRONT_LEFT_POSITION.getNorm();
+        // public static final double DRIVE_BASE_RADIUS = FRONT_LEFT_POSITION.getNorm();
 
         // Initial configs for the drive and steer motors and the azimuth encoder; these
         // cannot be null.
@@ -102,8 +108,8 @@ public class TunerConstants {
         private static final double kSteerGearRatio = 13.371428571428572;
         private static final Distance kWheelRadius = Inches.of(2);
 
-        private static final boolean kInvertLeftSide = true;
-        private static final boolean kInvertRightSide = false;
+        private static final boolean kInvertLeftSide = false;
+        private static final boolean kInvertRightSide = true;
 
         private static final int kPigeonId = 20;
 

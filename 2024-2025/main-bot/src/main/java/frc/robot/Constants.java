@@ -7,7 +7,7 @@ package frc.robot;
 import frc.robot.generated.TunerConstants;
 import static edu.wpi.first.units.Units.*;
 
-import data.Length;
+// import data.Length;
 import edu.wpi.first.units.measure.Angle;
 
 import edu.wpi.first.units.measure.Distance;
@@ -32,7 +32,7 @@ public class Constants {
   public static class ElevatorConstants {
     public static final int kElevatorLeftMotorID = 15;
     public static final int kElevatorRightMotorID = 16;
-    public static final double kMaxMotorElevatorSpeed = 0.7;
+    public static final double kMaxMotorElevatorSpeed = 0.8;
     public static final int kLeftElevatorEncoderID1 = 9;
     public static final int kLeftElevatorEncoderID2 = 8;
     public static final double kLeftElevatorEncoderBottomValue = 0;
@@ -40,24 +40,26 @@ public class Constants {
     public static final double kRightElevatorEncoderBottomValue = 0;
     public static final double kRightElevatorEncoderTopValue = 15.13;
 
-    // As measured from intake
-    public static final Length MIN_HEIGHT_FROM_FLOOR = Length.fromInches(10.7125); // Temp Values!!!
-    public static final Length MAX_HEIGHT_FROM_FLOOR = Length.fromInches(89.825);
+    // // As measured from intake
+    // public static final Length MIN_HEIGHT_FROM_FLOOR =
+    // Length.fromInches(10.7125); // Temp Values!!!
+    // public static final Length MAX_HEIGHT_FROM_FLOOR = Length.fromInches(89.825);
 
-    public static final double MIN_HEIGHT = 0.0;
-    public static final Length MAX_HEIGHT = MAX_HEIGHT_FROM_FLOOR.minus(MIN_HEIGHT_FROM_FLOOR); // 79.1125
+    // public static final double MIN_HEIGHT = 0.0;
+    // public static final Length MAX_HEIGHT =
+    // MAX_HEIGHT_FROM_FLOOR.minus(MIN_HEIGHT_FROM_FLOOR); // 79.1125
 
     public static class ElevatorPreset {
       // PLACEHOLDER VALUES!!!
-      public static final double level1EncoderValue = 2.9785;
-      public static final double level2EncoderValue = 7.844726;
-      public static final double level3EncoderValue = 15.8208984375;
-      public static final double level4EncoderValue = 15.642578125;
+      public static final double level1EncoderValue = 3.0576; // 2.9785;
+      public static final double level2EncoderValue = 8.6367; // 7.844726;
+      public static final double level3EncoderValue = 0.3645; // 15.8208984375;
+      public static final double level4EncoderValue = 14.4399; // 15.642578125;
       public static final double intakeEncoderValue = 12.5576171875;
       public static final double kickLowerAlgaeOff = 2.773925; // Temp
       public static final double kickUpperAlgaeOff = 15.370605; // Temp
 
-      public static final double defaultStateEncoderValue = 0.6;
+      public static final double defaultStateEncoderValue = 0.8;
     }
   }
 
@@ -70,21 +72,21 @@ public class Constants {
     public static final int kCoramIntakeEncoderID1 = 6;
     public static final int kCoralIntakeEncoderID2 = 7;
     public static final int kCoralLightSensorID = 3;
-    public static final double kMaxArmSpeed = 0.75;
+    public static final double kMaxArmSpeed = 0.5;
 
     // Levels
-    public static final double kCoralEncoderOuttakelvl1Position = -0.033398;
-    public static final double kCoralEncoderOuttakelvl2Position = 0.1;
-    public static final double kCoralEncoderOuttakelvl3Position = 0.80595703125;
-    public static final double kCoralEncoderOuttakelvl4Position = 8.74560546875;
+    public static final double kCoralEncoderOuttakelvl1Position = -0.1176; // -0.033398;
+    public static final double kCoralEncoderOuttakelvl2Position = -0.1772; // 0.1;
+    public static final double kCoralEncoderOuttakelvl3Position = -9.1245; // 0.80595703125;
+    public static final double kCoralEncoderOuttakelvl4Position = -8.0463; // 8.74560546875;
     // Aux actions
-    public static final double kCoralEncoderIntakePosition = 0.6392578125;
-    public static final double kCoralEncoderDefaultPosition = -0.10910156; // Temp
-    public static final double kCoralEncoderKickUpperCoralOff = 6;
-    public static final double kCoralEncoderKickLowerCoralOff = 4.309;
+    public static final double kCoralEncoderIntakePosition = -1.5392578125;
+    public static final double kCoralEncoderDefaultPosition = 0.10910156; // Temp
+    public static final double kCoralEncoderKickUpperCoralOff = -6;
+    public static final double kCoralEncoderKickLowerCoralOff = -4.309;
     // Boundries
-    public static final double kCoralEncoderTopPosition = 16.5;
-    public static final double kCoralEncoderBottomPosition = -0.3;
+    public static final double kCoralEncoderTopPosition = -16.5;
+    public static final double kCoralEncoderBottomPosition = 0.3;
   }
 
   public static class ClimberConstants {

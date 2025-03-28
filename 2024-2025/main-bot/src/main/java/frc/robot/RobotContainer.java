@@ -38,47 +38,36 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.List;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.drive_commands.AltMoveToAprilTagPosition;
-import frc.robot.commands.drive_commands.LockOnAprilTag;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CoralArmSubsystem;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPresets;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.SimulationSubsystem;
 import frc.robot.commands.preset_commands.moveToPreset;
 import frc.robot.commands.preset_commands.intakePreset;
 import frc.robot.commands.preset_commands.defaultState;
-import frc.robot.commands.drive_commands.MoveToAprilTagPosition;
 import frc.robot.commands.preset_commands.knockAlgaeOff;
 import frc.robot.commands.drive_commands.DriveToTargetOffset;
 
@@ -100,7 +89,7 @@ public class RobotContainer {
         // private final AlgaeArmSubsystem m_AlgaeArmSubsystem = new
         // AlgaeArmSubsystem();
         private final CoralArmSubsystem m_CoralArmSubsystem = new CoralArmSubsystem();
-        private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
+        // private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
         // Controllers
         private final CommandXboxController m_driverController = new CommandXboxController(
@@ -108,7 +97,7 @@ public class RobotContainer {
         private final CommandXboxController m_auxillaryController = new CommandXboxController(
                         Constants.OperatorConstants.kAuxiliaryControllerPort);
 
-        private final SendableChooser<Command> autoChooser;
+        private SendableChooser<Command> autoChooser;
 
         /* Swerve drive platform setup */ // From Swerve Project Generator
 
@@ -121,14 +110,17 @@ public class RobotContainer {
         private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1)
                         .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
                         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
-        private final Telemetry logger = new Telemetry(MaxSpeed);
+        // private final Telemetry logger = new Telemetry(MaxSpeed);
+        private double mainDriveInversed = 1;
 
-        public final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
+        private final CommandSwerveDrivetrain m_DrivetrainSubsystem = TunerConstants.createDrivetrain();
         // // The following subsystems must be created after the drivetrain
-        public final LimeLightSubsystem m_LeftReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
+        private final LimeLightSubsystem m_LeftReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
                         Constants.LimelightConstants.kLeftReefLimelightName);
-        public final LimeLightSubsystem m_RightReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
+        private final LimeLightSubsystem m_RightReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
                         Constants.LimelightConstants.kRightReefLimelightName);
+        // private final SimulationSubsystem m_SimulationSubsystem = new
+        // SimulationSubsystem();
         // public final LimeLightSubsystem m_IntakeLimeLightSubsystem = new
         // LimeLightSubsystem(m_DrivetrainSubsystem,
         // Constants.LimelightConstants.kIntakeLimelightName);
@@ -136,23 +128,33 @@ public class RobotContainer {
         // MapleSimSubsystem(m_DrivetrainSubsystem);
 
         // Commands
-        private final LockOnAprilTag m_LockOnAprilTag = new LockOnAprilTag(m_DrivetrainSubsystem,
-                        m_RightReefLimeLightSubsystem, 0, m_driverController, false,
-                        LimelightConstants.desiredLeftRotationOffset);
-        private final MoveToAprilTagPosition m_MoveToAprilTagPosition = new MoveToAprilTagPosition(
-                        m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0, m_driverController, false,
-                        LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeft3DXOffset,
-                        LimelightConstants.desiredLeftArea);
-        private final AltMoveToAprilTagPosition m_AltMoveToAprilTagPosition = new AltMoveToAprilTagPosition(
-                        m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0, m_driverController, false,
-                        LimelightConstants.desiredLeftRotationOffset, LimelightConstants.desiredLeftXOffset,
-                        LimelightConstants.desiredLeftYOffset);
+        // private final LockOnAprilTag m_LockOnAprilTag = new
+        // LockOnAprilTag(m_DrivetrainSubsystem,
+        // m_RightReefLimeLightSubsystem, 0, m_driverController, false,
+        // LimelightConstants.desiredLeftRotationOffset);
+        // private final MoveToAprilTagPosition m_MoveToAprilTagPosition = new
+        // MoveToAprilTagPosition(
+        // m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0, m_driverController,
+        // false,
+        // LimelightConstants.desiredLeftRotationOffset,
+        // LimelightConstants.desiredLeft3DXOffset,
+        // LimelightConstants.desiredLeftArea);
+        // private final AltMoveToAprilTagPosition m_AltMoveToAprilTagPosition = new
+        // AltMoveToAprilTagPosition(
+        // m_DrivetrainSubsystem, m_RightReefLimeLightSubsystem, 0, m_driverController,
+        // false,
+        // LimelightConstants.desiredLeftRotationOffset,
+        // LimelightConstants.desiredLeftXOffset,
+        // LimelightConstants.desiredLeftYOffset);
 
-        private final DriveToTargetOffset m_RightDriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
-                        m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
-        private final DriveToTargetOffset m_LeftDriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
-                        m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
+        // private final DriveToTargetOffset m_RightDriveToTargetOffset = new
+        // DriveToTargetOffset(m_DrivetrainSubsystem,
+        // m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
+        // private final DriveToTargetOffset m_LeftDriveToTargetOffset = new
+        // DriveToTargetOffset(m_DrivetrainSubsystem,
+        // m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
 
+        // normal commands
         private final moveToPreset m_MoveToPresetLvl1 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, 1, false);
         private final moveToPreset m_MoveToPresetLvl2 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
@@ -169,11 +171,38 @@ public class RobotContainer {
                         true);
         private final knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         false);
+        // Auto commands
+        moveToPreset m_MoveToPresetLvl1Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 1, true);
+        moveToPreset m_MoveToPresetLvl2Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 2, true);
+        moveToPreset m_MoveToPresetLvl3Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 3, true);
+        moveToPreset m_MoveToPresetLvl4Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, 4, true);
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
+
+                NamedCommands.registerCommand("Level 1 Preset Command", m_MoveToPresetLvl1Auto);
+                NamedCommands.registerCommand("Level 2 Preset Command", m_MoveToPresetLvl2Auto);
+                NamedCommands.registerCommand("Level 3 Preset Command", m_MoveToPresetLvl3Auto);
+                NamedCommands.registerCommand("Level 4 Preset Command", m_MoveToPresetLvl4Auto);
+                NamedCommands.registerCommand("Intake Command", m_IntakePreset);
+                NamedCommands.registerCommand("Elevator/Coral Default Position", m_DefaultStateCommand);
+                NamedCommands.registerCommand("TestMe",
+                                Commands.runOnce(() -> System.out.println("Command Works???????????????????????")));
+
+                new EventTrigger("Level 4 Event Trigger").onTrue(m_MoveToPresetLvl4);
+
+                if (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue) {
+                        mainDriveInversed *= -1;
+                } else {
+                        DriverStationSim.setAllianceStationId(AllianceStationID.Red1);
+                        mainDriveInversed = 1;
+                }
 
                 // Configure the trigger bindings
                 configureBindings(Math.random());
@@ -197,9 +226,9 @@ public class RobotContainer {
 
                 return drive
                                 // Drive forward with negative Y (forward)
-                                .withVelocityX(m_driverController.getLeftY() * modifiedMaxSpeed)
+                                .withVelocityX(m_driverController.getLeftY() * modifiedMaxSpeed * mainDriveInversed)
                                 // Drive left with negative X (left)
-                                .withVelocityY(m_driverController.getLeftX() * modifiedMaxSpeed)
+                                .withVelocityY(m_driverController.getLeftX() * modifiedMaxSpeed * mainDriveInversed)
                                 // Drive counterclockwise with negative X (left)
                                 .withRotationalRate(-m_driverController.getRightX() * modifiedMaxAngularRate);
         }
@@ -226,26 +255,28 @@ public class RobotContainer {
                 // .whileTrue(new InstantCommand(m_ClimberSubsystem::engageClimber,
                 // m_ClimberSubsystem));
 
-                m_driverController.leftTrigger()
-                                .whileTrue(new InstantCommand(m_ClimberSubsystem::climberForward, m_ClimberSubsystem))
-                                .onFalse(new InstantCommand(() -> m_ClimberSubsystem.climberStop(),
-                                                m_ClimberSubsystem));
-                m_driverController.rightTrigger()
-                                .whileTrue(new InstantCommand(m_ClimberSubsystem::climberBackward, m_ClimberSubsystem))
-                                .onFalse(new InstantCommand(() -> m_ClimberSubsystem.climberStop(),
-                                                m_ClimberSubsystem));
+                // m_driverController.leftTrigger()
+                // .whileTrue(new InstantCommand(m_ClimberSubsystem::climberForward,
+                // m_ClimberSubsystem))
+                // .onFalse(new InstantCommand(() -> m_ClimberSubsystem.climberStop(),
+                // m_ClimberSubsystem));
+                // m_driverController.rightTrigger()
+                // .whileTrue(new InstantCommand(m_ClimberSubsystem::climberBackward,
+                // m_ClimberSubsystem))
+                // .onFalse(new InstantCommand(() -> m_ClimberSubsystem.climberStop(),
+                // m_ClimberSubsystem));
 
                 // ====================== Drive Subsystem ====================== //
                 // Code below is from swerve drive project generator
 
                 m_DrivetrainSubsystem.setDefaultCommand(m_DrivetrainSubsystem.applyRequest(this::defaultDriveLogic));
 
-                m_driverController.x().whileTrue(m_RightDriveToTargetOffset);
+                // m_driverController.x().whileTrue(m_RightDriveToTargetOffset);
 
-                // Align to left reef side
-                m_driverController.b().whileTrue(m_LeftDriveToTargetOffset);
+                // // Align to left reef side
+                // m_driverController.b().whileTrue(m_LeftDriveToTargetOffset);
                 // Align to Right reef side
-                m_driverController.a().whileTrue(m_AltMoveToAprilTagPosition);
+                // m_driverController.a().whileTrue(m_AltMoveToAprilTagPosition);
 
                 // m_driverController.pov(0).whileTrue(m_DriveToTargetOffset);
 
@@ -270,7 +301,16 @@ public class RobotContainer {
                 // m_driverController.start().and(m_driverController.x())
                 // .whileTrue(m_DrivetrainSubsystem.sysIdQuasistatic(Direction.kReverse));
 
-                m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
+                // m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
+
+                // ====================== Simulation Subsystem ====================== //
+                // if (!RobotBase.isReal()) {
+                // DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
+                // DriverStation.silenceJoystickConnectionWarning(true);
+                // m_SimulationSubsystem.setDefaultCommand(new InstantCommand(() -> {
+                // m_SimulationSubsystem.SimulationOutput(m_DrivetrainSubsystem);
+                // }, m_SimulationSubsystem));
+                // }
 
                 // ====================== Limelight Subsystems ====================== //
                 // m_LeftReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
@@ -278,22 +318,17 @@ public class RobotContainer {
 
                 // ====================== Command Compositions ====================== //
 
-                m_auxillaryController.pov(0)
-                                .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.increaseIntakeEncoderPosition()));
-                m_auxillaryController.pov(180)
-                                .onTrue(new InstantCommand(() -> m_ElevatorSubsystem.decreaseIntakeEncoderPosition()));
+                m_auxillaryController.pov(0).onTrue(
+                                new InstantCommand(() -> m_ElevatorSubsystem.increaseElevatorIntakeEncoderPosition()));
+                m_auxillaryController.pov(180).onTrue(
+                                new InstantCommand(() -> m_ElevatorSubsystem.decreaseElevatorIntakeEncoderPosition()));
+                m_auxillaryController.pov(90).onTrue(
+                                new InstantCommand(() -> m_CoralArmSubsystem.changeCoralIntakeEncoderPosition(-0.2)));
+                m_auxillaryController.pov(270).onTrue(
+                                new InstantCommand(() -> m_CoralArmSubsystem.changeCoralIntakeEncoderPosition(0.2)));
 
-                moveToPreset m_MoveToPresetLvl1Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                                m_driverController, m_auxillaryController, 1, true);
-                moveToPreset m_MoveToPresetLvl2Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                                m_driverController, m_auxillaryController, 2, true);
-                moveToPreset m_MoveToPresetLvl3Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                                m_driverController, m_auxillaryController, 3, true);
-                moveToPreset m_MoveToPresetLvl4Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                                m_driverController, m_auxillaryController, 4, true);
-
-                m_auxillaryController.a().onTrue(m_MoveToPresetLvl1Auto);
-                m_auxillaryController.b().onTrue(m_IntakePreset);
+                m_auxillaryController.a().onTrue(m_MoveToPresetLvl1);
+                m_auxillaryController.b().onTrue(m_MoveToPresetLvl2);
                 m_auxillaryController.y().onTrue(m_MoveToPresetLvl3);
                 m_auxillaryController.x().onTrue(m_MoveToPresetLvl4);
                 m_auxillaryController.leftTrigger().onTrue(m_KnockLowerAlgaeOff);
@@ -301,12 +336,6 @@ public class RobotContainer {
                 m_auxillaryController.leftBumper().onTrue(m_IntakePreset);
                 m_auxillaryController.rightBumper().onTrue(m_DefaultStateCommand);
 
-                NamedCommands.registerCommand("Level 1 Preset Command", m_MoveToPresetLvl1Auto);
-                NamedCommands.registerCommand("Level 2 Preset Command", m_MoveToPresetLvl2Auto);
-                NamedCommands.registerCommand("Level 3 Preset Command", m_MoveToPresetLvl3Auto);
-                NamedCommands.registerCommand("Level 4 Preset Command", m_MoveToPresetLvl4Auto);
-                NamedCommands.registerCommand("Intake Command", m_IntakePreset);
-                NamedCommands.registerCommand("Elevator/Coral Default Position", m_DefaultStateCommand);
         }
 
         public boolean isInDesiredState(ElevatorPresets elevatorPreset, CoralArmLevels coralArmLevel) {
