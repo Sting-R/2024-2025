@@ -166,7 +166,7 @@ public class RobotContainer {
         private final defaultState m_DefaultStateCommand = new defaultState(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController);
         private final intakePreset m_IntakePreset = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                        m_driverController, m_auxillaryController);
+                        m_driverController, m_auxillaryController, false);
         private final knockAlgaeOff m_KnockLowerAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         true);
         private final knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
@@ -180,6 +180,8 @@ public class RobotContainer {
                         m_driverController, m_auxillaryController, 3, true);
         moveToPreset m_MoveToPresetLvl4Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, 4, true);
+        private final intakePreset m_IntakePresetAuto = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, m_auxillaryController, true);
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -190,7 +192,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Level 2 Preset Command", m_MoveToPresetLvl2Auto);
                 NamedCommands.registerCommand("Level 3 Preset Command", m_MoveToPresetLvl3Auto);
                 NamedCommands.registerCommand("Level 4 Preset Command", m_MoveToPresetLvl4Auto);
-                NamedCommands.registerCommand("Intake Command", m_IntakePreset);
+                NamedCommands.registerCommand("Intake Command", m_IntakePresetAuto);
                 NamedCommands.registerCommand("Elevator/Coral Default Position", m_DefaultStateCommand);
                 NamedCommands.registerCommand("TestMe",
                                 Commands.runOnce(() -> System.out.println("Command Works???????????????????????")));
@@ -326,6 +328,23 @@ public class RobotContainer {
                                 new InstantCommand(() -> m_CoralArmSubsystem.changeCoralIntakeEncoderPosition(-0.2)));
                 m_auxillaryController.pov(270).onTrue(
                                 new InstantCommand(() -> m_CoralArmSubsystem.changeCoralIntakeEncoderPosition(0.2)));
+
+                m_driverController.pov(270).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl4)));
+                m_driverController.pov(270).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl4)));
+                m_driverController.pov(0).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl3)));
+                m_driverController.pov(0).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl3)));
+                m_driverController.pov(90).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl2)));
+                m_driverController.pov(90).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl2)));
+                m_driverController.pov(180).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl1)));
+                m_driverController.pov(180).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
+                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl1)));
 
                 m_auxillaryController.a().onTrue(m_MoveToPresetLvl1);
                 m_auxillaryController.b().onTrue(m_MoveToPresetLvl2);

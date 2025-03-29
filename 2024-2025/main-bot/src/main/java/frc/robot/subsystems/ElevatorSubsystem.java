@@ -113,8 +113,8 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
 
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
-        leftConfig.Slot0.kP = 18; // p pid //4.1
-        leftConfig.Slot0.kI = 50;
+        leftConfig.Slot0.kP = 25; // p pid //4.1
+        leftConfig.Slot0.kI = 60;
         leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
@@ -135,8 +135,8 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         leftConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         leftConfig.CurrentLimits.StatorCurrentLimit = 60;
 
-        rightConfig.Slot0.kP = 18; // p pid //4.1
-        rightConfig.Slot0.kI = 50;
+        rightConfig.Slot0.kP = 25; // p pid //4.1
+        rightConfig.Slot0.kI = 60;
         rightConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot0.kV = 0;
         rightConfig.Slot0.kA = 0;
@@ -357,9 +357,12 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
     }
 
     public void debuggingMethod() {
-        SmartDashboard.putNumber("Left Elevator Encoder", m_leftElevatorEncoder.get());
-        SmartDashboard.putBoolean("Elevator Top Limit Switch", m_elevatorTopLimitSwitch.get());
-        SmartDashboard.putBoolean("Elevator Bottom Limit Switch", m_elevatorBottomLimitSwitch.get());
+        // SmartDashboard.putNumber("Left Elevator Encoder",
+        // m_leftElevatorEncoder.get());
+        // SmartDashboard.putBoolean("Elevator Top Limit Switch",
+        // m_elevatorTopLimitSwitch.get());
+        // SmartDashboard.putBoolean("Elevator Bottom Limit Switch",
+        // m_elevatorBottomLimitSwitch.get());
         SmartDashboard.putNumber("Elevator Motor Position", m_elevatorLeftMotor.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("Right Motor Position", m_elevatorRightMotor.getPosition().getValueAsDouble());
         SmartDashboard.putString("Current Elevator State", "" + getElevatorState());
@@ -428,6 +431,10 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
             SmartDashboard.putBoolean("Elevator thinks it is at bottom", true);
             return true;
         }
+    }
+
+    public double getElevatorPosition() {
+        return m_elevatorLeftMotor.getPosition().getValueAsDouble();
     }
 
     public ElevatorPresets getElevatorState() {

@@ -17,9 +17,10 @@ public class intakePreset extends Command {
     CommandXboxController operatorController;
     Timer outtakeTimer;
     boolean timerStarted = false;
+    boolean isAuto;
 
     public intakePreset(ElevatorSubsystem elevator, CoralArmSubsystem coralArm, CommandXboxController driveController,
-            CommandXboxController operatorController) {
+            CommandXboxController operatorController, boolean isAuto) {
         addRequirements(elevator, coralArm);
         m_Elevator = elevator;
         m_CoralArm = coralArm;
@@ -27,16 +28,22 @@ public class intakePreset extends Command {
         this.operatorController = operatorController;
         coralLevel = CoralArmLevels.intake;
         elevatorLevel = ElevatorPresets.intake;
+        this.isAuto = isAuto;
     }
 
     public void execute() {
         m_Elevator.elevatorMoveToPresetMM(elevatorLevel);
-        m_CoralArm.intake();
+        m_CoralArm.intake(operatorController);
     }
 
     @Override
     public boolean isFinished() {
-        return m_CoralArm.coralGrabbed();
+        if (isAuto) {
+            return m_CoralArm.coralGrabbed();
+        } else {
+            return false;
+        }
+
         // return m_CoralArm.coralGrabbed() && outtakeTimer.hasElapsed(3);
     }
 

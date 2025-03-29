@@ -32,7 +32,7 @@ public class Constants {
   public static class ElevatorConstants {
     public static final int kElevatorLeftMotorID = 15;
     public static final int kElevatorRightMotorID = 16;
-    public static final double kMaxMotorElevatorSpeed = 0.8;
+    public static final double kMaxMotorElevatorSpeed = 1;
     public static final int kLeftElevatorEncoderID1 = 9;
     public static final int kLeftElevatorEncoderID2 = 8;
     public static final double kLeftElevatorEncoderBottomValue = 0;
@@ -54,8 +54,8 @@ public class Constants {
       public static final double level1EncoderValue = 3.0576; // 2.9785;
       public static final double level2EncoderValue = 8.6367; // 7.844726;
       public static final double level3EncoderValue = 0.3645; // 15.8208984375;
-      public static final double level4EncoderValue = 14.4399; // 15.642578125;
-      public static final double intakeEncoderValue = 12.5576171875;
+      public static final double level4EncoderValue = 15.0399; // 15.642578125;
+      public static final double intakeEncoderValue = 12.3576171875;
       public static final double kickLowerAlgaeOff = 2.773925; // Temp
       public static final double kickUpperAlgaeOff = 15.370605; // Temp
 
@@ -72,16 +72,16 @@ public class Constants {
     public static final int kCoramIntakeEncoderID1 = 6;
     public static final int kCoralIntakeEncoderID2 = 7;
     public static final int kCoralLightSensorID = 3;
-    public static final double kMaxArmSpeed = 0.5;
+    public static final double kMaxArmSpeed = 0.7;
 
     // Levels
     public static final double kCoralEncoderOuttakelvl1Position = -0.1176; // -0.033398;
     public static final double kCoralEncoderOuttakelvl2Position = -0.1772; // 0.1;
     public static final double kCoralEncoderOuttakelvl3Position = -9.1245; // 0.80595703125;
-    public static final double kCoralEncoderOuttakelvl4Position = -8.0463; // 8.74560546875;
+    public static final double kCoralEncoderOuttakelvl4Position = -8.7463; // 8.74560546875;
     // Aux actions
     public static final double kCoralEncoderIntakePosition = -1.5392578125;
-    public static final double kCoralEncoderDefaultPosition = 0.10910156; // Temp
+    public static final double kCoralEncoderDefaultPosition = 0.02978515625; // Temp
     public static final double kCoralEncoderKickUpperCoralOff = -6;
     public static final double kCoralEncoderKickLowerCoralOff = -4.309;
     // Boundries

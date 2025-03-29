@@ -37,7 +37,8 @@ public class defaultState extends Command {
     @Override
     public boolean isFinished() {
         return m_Elevator.isElevatorAtDesiredState(elevatorLevel).getAsBoolean()
-                && m_CoralArm.isCoralArmAtDesiredState(coralLevel).getAsBoolean();
+                && (m_CoralArm.isCoralArmAtDesiredState(coralLevel).getAsBoolean()
+                        || m_CoralArm.isCoralArmAtDesiredState(CoralArmLevels.lvl1).getAsBoolean());
     }
 
     public void end(boolean interrupted) {
