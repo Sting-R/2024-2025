@@ -69,8 +69,8 @@ public class CoralArmSubsystem extends SubsystemBase {
 
         // Coral Arm Going up
         coralArmMotorConfig.Slot0.kP = 6; // p pid //4.1
-        coralArmMotorConfig.Slot0.kI = 0.5;
-        coralArmMotorConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        coralArmMotorConfig.Slot0.kI = 1.5;
+        coralArmMotorConfig.Slot0.kD = 0.25;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot0.kV = 0;
         coralArmMotorConfig.Slot0.kA = 0;
         coralArmMotorConfig.Slot0.kG = 0.55;
@@ -126,11 +126,12 @@ public class CoralArmSubsystem extends SubsystemBase {
         desiredCoralArmState = CoralArmLevels.intake;
         m_CoralArmMotor.setControl(setVoltage.withPosition(intakePosition).withSlot(0));
         if (coralGrabbed() && !AuxController.getHID().getRightStickButton()) {
-            SmartDashboard.putBoolean("Coral grabbed?", true);
+            // SmartDashboard.putBoolean("Coral grabbed?", true);
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         } else {
-            SmartDashboard.putBoolean("Coral grabbed?", false);
+            // SmartDashboard.putBoolean("Coral grabbed?", false);
+
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
         }
@@ -169,6 +170,7 @@ public class CoralArmSubsystem extends SubsystemBase {
         }
         double intakePower = -0.5 * inversed;
         if (ejectCoral) {
+            // System.out.println("Ejecting coral Power: " + intakePower);
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
         } else {
@@ -191,6 +193,7 @@ public class CoralArmSubsystem extends SubsystemBase {
         double intakePower = 0.5 * inversed;
 
         if (ejectCoral) {
+            // System.out.println("Ejecting coral Power: " + 0.5);
             m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
         } else {

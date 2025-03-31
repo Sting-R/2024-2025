@@ -32,7 +32,7 @@ public class Constants {
   public static class ElevatorConstants {
     public static final int kElevatorLeftMotorID = 15;
     public static final int kElevatorRightMotorID = 16;
-    public static final double kMaxMotorElevatorSpeed = 1;
+    public static final double kMaxMotorElevatorSpeed = 0.8;
     public static final int kLeftElevatorEncoderID1 = 9;
     public static final int kLeftElevatorEncoderID2 = 8;
     public static final double kLeftElevatorEncoderBottomValue = 0;
@@ -80,7 +80,7 @@ public class Constants {
     public static final double kCoralEncoderOuttakelvl3Position = -9.1245; // 0.80595703125;
     public static final double kCoralEncoderOuttakelvl4Position = -8.7463; // 8.74560546875;
     // Aux actions
-    public static final double kCoralEncoderIntakePosition = -1.5392578125;
+    public static final double kCoralEncoderIntakePosition = -1.3392578125;
     public static final double kCoralEncoderDefaultPosition = 0.02978515625; // Temp
     public static final double kCoralEncoderKickUpperCoralOff = -6;
     public static final double kCoralEncoderKickLowerCoralOff = -4.309;

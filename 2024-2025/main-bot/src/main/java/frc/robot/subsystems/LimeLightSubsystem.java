@@ -58,7 +58,7 @@ public class LimeLightSubsystem extends SubsystemBase {
 
     // Is this boolean ever changing at runtime? If not, it should be a final
     // variable
-    boolean useMegaTag2 = true; // set to false to use MegaTag1
+    boolean useMegaTag2 = false; // set to false to use MegaTag1
     boolean doRejectUpdate = false;
     if (useMegaTag2 == false) {
       // Use this line to know whether we are part of an alliance (we might not be if

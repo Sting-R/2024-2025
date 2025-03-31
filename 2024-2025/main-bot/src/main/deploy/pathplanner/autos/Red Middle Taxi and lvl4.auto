@@ -5,27 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Command Test Path"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Level 1 Preset Command"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Level 2 Preset Command"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Level 3 Preset Command"
+            "pathName": "Red Middle Taxi "
           }
         },
         {
@@ -35,21 +23,21 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Intake Command"
+            "pathName": "Red Middle Taxi to Reef - G"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Elevator/Coral Default Position"
+            "name": "Level 4 Preset Command - Eject"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Red Middle Alliance",
   "choreoAuto": false
 }

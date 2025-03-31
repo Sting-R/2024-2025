@@ -88,10 +88,8 @@ public class moveToPreset extends Command {
             }
             // otherwise outtakes normally
             else {
-
                 m_CoralArm.outtake(desiredCoralLevel, true);
             }
-
             if (!m_CoralArm.coralGrabbed() && outtakeTimer == null) {
                 outtakeTimer = new Timer();
                 // System.out.println("Outtake Timer Started");

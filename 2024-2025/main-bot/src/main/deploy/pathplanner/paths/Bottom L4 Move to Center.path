@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Level 4 Preset Command",
+      "name": "",
       "waypointRelativePos": 0.4968652037617557,
       "endWaypointRelativePos": null,
       "command": null

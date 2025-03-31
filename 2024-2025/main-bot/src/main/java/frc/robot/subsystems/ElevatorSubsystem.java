@@ -114,7 +114,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
         leftConfig.Slot0.kP = 25; // p pid //4.1
-        leftConfig.Slot0.kI = 60;
+        leftConfig.Slot0.kI = 130;
         leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
@@ -136,7 +136,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         leftConfig.CurrentLimits.StatorCurrentLimit = 60;
 
         rightConfig.Slot0.kP = 25; // p pid //4.1
-        rightConfig.Slot0.kI = 60;
+        rightConfig.Slot0.kI = 130;
         rightConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot0.kV = 0;
         rightConfig.Slot0.kA = 0;
@@ -205,67 +205,35 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         case Level1:
             SmartDashboard.putString("DesiredPreset", "Level1");
             SmartDashboard.putNumber("Desired elevator position", preset1EncoderValue);
-            // if ((preset1EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 &&
-            // !isElevatorAtTop())
-            // || (preset1EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
-            // && !isElevatorAtBottom())) {
+
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset1EncoderValue).withSlot(0));
-            // } else {
-            // this.elevatorMaintainPositionMM();
-            // }
             break;
         case Level2:
             SmartDashboard.putString("DesiredPreset", "Level2");
             SmartDashboard.putNumber("Desired elevator position", preset2EncoderValue);
-            // if ((preset2EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 &&
-            // !isElevatorAtTop())
-            // || (preset2EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
-            // && !isElevatorAtBottom())) {
+
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset2EncoderValue).withSlot(0));
-            // } else {
-            // this.elevatorMaintainPositionMM();
-            // }
             break;
         case Level3:
             SmartDashboard.putString("DesiredPreset", "Level3");
             SmartDashboard.putNumber("Desired elevator position", preset3EncoderValue);
-            // if ((preset3EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 &&
-            // !isElevatorAtTop())
-            // || (preset3EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
-            // && !isElevatorAtBottom())) {
+
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset3EncoderValue).withSlot(0));
-            // } else {
-            // this.elevatorMaintainPositionMM();
-            // }
             break;
         case Level4:
             SmartDashboard.putString("DesiredPreset", "Level4");
             SmartDashboard.putNumber("Desired elevator position", preset4EncoderValue);
-            // if ((preset4EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 &&
-            // !isElevatorAtTop())
-            // || (preset4EncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
-            // && !isElevatorAtBottom())) {
+
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(preset4EncoderValue).withSlot(0));
-            // } else {
-            // this.elevatorMaintainPositionMM();
-            // }
             break;
 
         case intake:
             SmartDashboard.putString("DesiredPreset", "Intake Preset");
             SmartDashboard.putNumber("Desired elevator position", presetIntakeEncoderValue);
-            // if ((presetIntakeEncoderValue -
-            // m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0
-            // && !isElevatorAtTop())
-            // || (presetIntakeEncoderValue -
+            // if ((preset3EncoderValue -
+            // m_elevatorLeftMotor.getPosition().getValueAsDouble() > 0 &&
+            // !isElevatorAtTop())
+            // || (preset3EncoderValue -
             // m_elevatorLeftMotor.getPosition().getValueAsDouble() < 0
             // && !isElevatorAtBottom())) {
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(presetIntakeEncoderValue).withSlot(0));

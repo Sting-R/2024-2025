@@ -69,6 +69,7 @@ import frc.robot.commands.preset_commands.moveToPreset;
 import frc.robot.commands.preset_commands.intakePreset;
 import frc.robot.commands.preset_commands.defaultState;
 import frc.robot.commands.preset_commands.knockAlgaeOff;
+import frc.robot.commands.preset_commands.lvl4AutoPreset;
 import frc.robot.commands.drive_commands.DriveToTargetOffset;
 
 /**
@@ -172,14 +173,16 @@ public class RobotContainer {
         private final knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         false);
         // Auto commands
-        moveToPreset m_MoveToPresetLvl1Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+        private final moveToPreset m_MoveToPresetLvl1Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, 1, true);
-        moveToPreset m_MoveToPresetLvl2Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+        private final moveToPreset m_MoveToPresetLvl2Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, 2, true);
-        moveToPreset m_MoveToPresetLvl3Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+        private final moveToPreset m_MoveToPresetLvl3Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, 3, true);
-        moveToPreset m_MoveToPresetLvl4Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                        m_driverController, m_auxillaryController, 4, true);
+        private final lvl4AutoPreset m_lvl4AutoPreset = new lvl4AutoPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, false);
+        private final lvl4AutoPreset lvl4AutoPresetEject = new lvl4AutoPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
+                        m_driverController, true);
         private final intakePreset m_IntakePresetAuto = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, true);
 
@@ -191,7 +194,8 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Level 1 Preset Command", m_MoveToPresetLvl1Auto);
                 NamedCommands.registerCommand("Level 2 Preset Command", m_MoveToPresetLvl2Auto);
                 NamedCommands.registerCommand("Level 3 Preset Command", m_MoveToPresetLvl3Auto);
-                NamedCommands.registerCommand("Level 4 Preset Command", m_MoveToPresetLvl4Auto);
+                NamedCommands.registerCommand("Level 4 Preset Command - Move", m_lvl4AutoPreset);
+                NamedCommands.registerCommand("Level 4 Preset Command - Eject", lvl4AutoPresetEject);
                 NamedCommands.registerCommand("Intake Command", m_IntakePresetAuto);
                 NamedCommands.registerCommand("Elevator/Coral Default Position", m_DefaultStateCommand);
                 NamedCommands.registerCommand("TestMe",
@@ -315,8 +319,8 @@ public class RobotContainer {
                 // }
 
                 // ====================== Limelight Subsystems ====================== //
-                // m_LeftReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
-                // m_RightReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
+                m_LeftReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
+                m_RightReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);
 
                 // ====================== Command Compositions ====================== //
 
