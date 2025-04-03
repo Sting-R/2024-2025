@@ -64,8 +64,8 @@ public class DriveToTargetOffset extends Command {
       ySpeed = yController.calculate(z_distance, targety);
       SmartDashboard.putNumber("Alimelight velocity", ySpeed);
       SmartDashboard.putNumber("Xlimelight velocity", xSpeed);
-      SmartDashboard.putNumber("ALimelight Setpoint", targetx);
-      SmartDashboard.putNumber("XLimelight Setpoint", targety);
+      SmartDashboard.putNumber("ALimelight Setpoint", targety);
+      SmartDashboard.putNumber("XLimelight Setpoint", targetx);
       SmartDashboard.putNumber("ALimelight current pos", z_distance);
       SmartDashboard.putNumber("XLimelight current pos", x_distance);
 
@@ -82,8 +82,8 @@ public class DriveToTargetOffset extends Command {
       SmartDashboard.putBoolean("Aligned", false);
     }
 
-    m_Drivetrain.setControl(drive.withVelocityX(ySpeed * (DriveTrainConstants.MaxSpeed / 2))
-        .withVelocityY(-xSpeed * (DriveTrainConstants.MaxSpeed / 2)).withRotationalRate(0));
+    m_Drivetrain.setControl(drive.withVelocityX(-ySpeed * (DriveTrainConstants.MaxSpeed / 2))
+        .withVelocityY(xSpeed * (DriveTrainConstants.MaxSpeed / 2)).withRotationalRate(0));
   }
 
   // Called once the command ends or is interrupted.

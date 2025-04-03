@@ -73,7 +73,7 @@ public class CoralArmSubsystem extends SubsystemBase {
         coralArmMotorConfig.Slot0.kD = 0.25;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot0.kV = 0;
         coralArmMotorConfig.Slot0.kA = 0;
-        coralArmMotorConfig.Slot0.kG = 0.55;
+        coralArmMotorConfig.Slot0.kG = 0.75;
 
         // Coral arm going down
         coralArmMotorConfig.Slot1.kP = 1; // p pid //4.1
@@ -81,6 +81,8 @@ public class CoralArmSubsystem extends SubsystemBase {
         coralArmMotorConfig.Slot1.kV = 0;
         coralArmMotorConfig.Slot1.kA = 0;
         coralArmMotorConfig.Slot1.kG = 0.1;
+
+        //
 
         coralArmMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         coralArmMotorConfig.MotorOutput.PeakForwardDutyCycle = motorMaxCoralSpeed;

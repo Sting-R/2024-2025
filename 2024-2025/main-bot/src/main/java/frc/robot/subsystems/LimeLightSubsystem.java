@@ -19,6 +19,8 @@ import frc.robot.LimelightHelpers;
 // bunch of random imports 
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLightSubsystem extends SubsystemBase {
@@ -58,15 +60,15 @@ public class LimeLightSubsystem extends SubsystemBase {
 
     // Is this boolean ever changing at runtime? If not, it should be a final
     // variable
-    boolean useMegaTag2 = false; // set to false to use MegaTag1
+    boolean useMegaTag2 = true; // set to false to use MegaTag1
     boolean doRejectUpdate = false;
     if (useMegaTag2 == false) {
       // Use this line to know whether we are part of an alliance (we might not be if
       // we are not in a match presently)
-      // DriverStation.getAlliance().isEmpty()
+      DriverStation.getAlliance().isEmpty();
 
       // Use this line to know whether we are on the blue alliance
-      // DriverStation.getAlliance().get().equals(Alliance.Blue);
+      DriverStation.getAlliance().get().equals(Alliance.Blue);
 
       // This should change depending on the alliance we are on
       LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
@@ -90,6 +92,7 @@ public class LimeLightSubsystem extends SubsystemBase {
         swerveDriveTrain.addVisionMeasurement(mt1.pose, mt1.timestampSeconds, VecBuilder.fill(.5, .5, 9999999));
       }
     } else if (useMegaTag2 == true) {
+
       LimelightHelpers.SetRobotOrientation(limelightName,
           m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
@@ -99,20 +102,23 @@ public class LimeLightSubsystem extends SubsystemBase {
       // The method .getRate() is depreicated and will be removed soom, so we have
       // switched to this method. However, it is CCW+ instead of CW+, and may not
       // return the same value
-      if (Math.abs(swerveDriveTrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720)
-      // if our angular velocity is greater than 720 degrees per second, ignore vision
-      // updates
-      {
-        doRejectUpdate = true;
-      }
-      if (mt2.tagCount == 0) {
-        doRejectUpdate = true;
-      }
-      if (!doRejectUpdate) {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-        m_poseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+      if (mt2 != null) {
+        System.out.println("mt2 has value for the limelight: " + limelightName);
+        if (Math.abs(swerveDriveTrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720)
+        // if our angular velocity is greater than 720 degrees per second, ignore vision
+        // updates
+        {
+          doRejectUpdate = true;
+        }
+        if (mt2.tagCount == 0) {
+          doRejectUpdate = true;
+        }
+        if (!doRejectUpdate) {
+          m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+          m_poseEstimator.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
 
-        swerveDriveTrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds, VecBuilder.fill(.7, .7, 9999999));
+          swerveDriveTrain.addVisionMeasurement(mt2.pose, mt2.timestampSeconds, VecBuilder.fill(.7, .7, 9999999));
+        }
       }
     }
   }

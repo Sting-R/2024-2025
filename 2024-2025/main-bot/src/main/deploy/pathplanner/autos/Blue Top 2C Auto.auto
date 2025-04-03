@@ -29,12 +29,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Elevator/Coral Default Position"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Blue Top Intake to Reef"

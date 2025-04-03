@@ -257,19 +257,20 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         case defaultState:
             SmartDashboard.putString("DesiredPreset", "DefaultState");
             SmartDashboard.putNumber("Desired elevator position", presetDefaultStateEncoderValue);
-            double velocity = m_elevatorLeftMotor.getVelocity().getValueAsDouble();
+
             m_elevatorLeftMotor.setControl(setVoltage.withPosition(presetDefaultStateEncoderValue).withSlot(0));
 
+            double velocity = m_elevatorLeftMotor.getVelocity().getValueAsDouble();
             // check to see if elevator is at the bottom
-            if (Math.abs(velocity) < 0.05 && elevatorResetTimer == null) {
-                elevatorResetTimer = new Timer();
-                elevatorResetTimer.start();
-            } else if (Math.abs(velocity) < 0.05 && elevatorResetTimer.hasElapsed(0.1)) {
-                // m_elevatorLeftMotor.reset
-                elevatorResetTimer = null;
-            } else if (Math.abs(velocity) > 0.05) {
-                elevatorResetTimer = null;
-            }
+            // if (Math.abs(velocity) < 0.05 && elevatorResetTimer == null) {
+            // elevatorResetTimer = new Timer();
+            // elevatorResetTimer.start();
+            // } else if (Math.abs(velocity) < 0.05 && elevatorResetTimer.hasElapsed(0.1)) {
+            // m_elevatorLeftMotor.setPosition(0);
+            // elevatorResetTimer = null;
+            // } else if (Math.abs(velocity) >= 0.05) {
+            // elevatorResetTimer = null;
+            // }
 
             break;
         case inbetween:

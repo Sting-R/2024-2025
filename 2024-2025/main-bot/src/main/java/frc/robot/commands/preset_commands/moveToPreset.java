@@ -116,7 +116,7 @@ public class moveToPreset extends Command {
                 return false;
             } else {
                 // SmartDashboard.putNumber("Command Timer", outtakeTimer.get());
-                return outtakeTimer.hasElapsed(1.5) && !m_CoralArm.coralGrabbed();
+                return outtakeTimer.hasElapsed(0.5) && !m_CoralArm.coralGrabbed();
             }
             // return m_CoralArm.coralGrabbed() && outtakeTimer.hasElapsed(3);
         } else {

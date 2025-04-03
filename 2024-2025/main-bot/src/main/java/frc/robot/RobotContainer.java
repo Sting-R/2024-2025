@@ -148,12 +148,10 @@ public class RobotContainer {
         // LimelightConstants.desiredLeftXOffset,
         // LimelightConstants.desiredLeftYOffset);
 
-        // private final DriveToTargetOffset m_RightDriveToTargetOffset = new
-        // DriveToTargetOffset(m_DrivetrainSubsystem,
-        // m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
-        // private final DriveToTargetOffset m_LeftDriveToTargetOffset = new
-        // DriveToTargetOffset(m_DrivetrainSubsystem,
-        // m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
+        private final DriveToTargetOffset m_RightDriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
+                        m_LeftReefLimeLightSubsystem, 0, 0, 3, 3);
+        private final DriveToTargetOffset m_LeftDriveToTargetOffset = new DriveToTargetOffset(m_DrivetrainSubsystem,
+                        m_RightReefLimeLightSubsystem, 0, 0, 3, 3);
 
         // normal commands
         private final moveToPreset m_MoveToPresetLvl1 = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
@@ -202,6 +200,7 @@ public class RobotContainer {
                                 Commands.runOnce(() -> System.out.println("Command Works???????????????????????")));
 
                 new EventTrigger("Level 4 Event Trigger").onTrue(m_MoveToPresetLvl4);
+                new EventTrigger("Elevator/Coral Default Position").onTrue(m_DefaultStateCommand);
 
                 if (DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Blue) {
                         mainDriveInversed *= -1;
@@ -277,10 +276,10 @@ public class RobotContainer {
 
                 m_DrivetrainSubsystem.setDefaultCommand(m_DrivetrainSubsystem.applyRequest(this::defaultDriveLogic));
 
-                // m_driverController.x().whileTrue(m_RightDriveToTargetOffset);
+                m_driverController.x().whileTrue(m_RightDriveToTargetOffset);
 
                 // // Align to left reef side
-                // m_driverController.b().whileTrue(m_LeftDriveToTargetOffset);
+                m_driverController.b().whileTrue(m_LeftDriveToTargetOffset);
                 // Align to Right reef side
                 // m_driverController.a().whileTrue(m_AltMoveToAprilTagPosition);
 
