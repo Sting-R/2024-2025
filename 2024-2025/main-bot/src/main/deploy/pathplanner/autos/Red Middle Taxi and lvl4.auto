@@ -33,6 +33,18 @@
           "data": {
             "name": "Level 4 Preset Command - Eject"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Reef - G to Backing Up"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator/Coral Default Position"
+          }
         }
       ]
     }

@@ -103,16 +103,16 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-allprojects {
-    repositories {
-        mavenLocal()
-        jcenter()
-        maven {url 'https://jitpack.io'}
-    }
-}
-dependencies {
-      implementation 'com.github.TeamSCREAMRobotics:SCREAMLib:main-SNAPSHOT'
-}
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
+// allprojects {
+//     repositories {
+//         mavenLocal()
+//         jcenter()
+//         maven {url 'https://jitpack.io'}
+//     }
+// }
+// dependencies {
+//       implementation 'com.github.TeamSCREAMRobotics:SCREAMLib:main-SNAPSHOT'
+// }
+// configurations.all {
+//     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+// }

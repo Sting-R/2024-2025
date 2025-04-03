@@ -120,8 +120,7 @@ public class RobotContainer {
                         Constants.LimelightConstants.kLeftReefLimelightName);
         private final LimeLightSubsystem m_RightReefLimeLightSubsystem = new LimeLightSubsystem(m_DrivetrainSubsystem,
                         Constants.LimelightConstants.kRightReefLimelightName);
-        // private final SimulationSubsystem m_SimulationSubsystem = new
-        // SimulationSubsystem();
+        private final SimulationSubsystem m_SimulationSubsystem = new SimulationSubsystem();
         // public final LimeLightSubsystem m_IntakeLimeLightSubsystem = new
         // LimeLightSubsystem(m_DrivetrainSubsystem,
         // Constants.LimelightConstants.kIntakeLimelightName);
@@ -167,9 +166,9 @@ public class RobotContainer {
         private final intakePreset m_IntakePreset = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, false);
         private final knockAlgaeOff m_KnockLowerAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                        true);
+                        m_auxillaryController, true);
         private final knockAlgaeOff m_KnockUpperAlgaeOff = new knockAlgaeOff(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                        false);
+                        m_auxillaryController, false);
         // Auto commands
         private final moveToPreset m_MoveToPresetLvl1Auto = new moveToPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, 1, true);
@@ -179,8 +178,8 @@ public class RobotContainer {
                         m_driverController, m_auxillaryController, 3, true);
         private final lvl4AutoPreset m_lvl4AutoPreset = new lvl4AutoPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, false);
-        private final lvl4AutoPreset lvl4AutoPresetEject = new lvl4AutoPreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
-                        m_driverController, true);
+        private final lvl4AutoPreset m_lvl4AutoPresetEject = new lvl4AutoPreset(m_ElevatorSubsystem,
+                        m_CoralArmSubsystem, m_driverController, true);
         private final intakePreset m_IntakePresetAuto = new intakePreset(m_ElevatorSubsystem, m_CoralArmSubsystem,
                         m_driverController, m_auxillaryController, true);
 
@@ -193,7 +192,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Level 2 Preset Command", m_MoveToPresetLvl2Auto);
                 NamedCommands.registerCommand("Level 3 Preset Command", m_MoveToPresetLvl3Auto);
                 NamedCommands.registerCommand("Level 4 Preset Command - Move", m_lvl4AutoPreset);
-                NamedCommands.registerCommand("Level 4 Preset Command - Eject", lvl4AutoPresetEject);
+                NamedCommands.registerCommand("Level 4 Preset Command - Eject", m_lvl4AutoPresetEject);
                 NamedCommands.registerCommand("Intake Command", m_IntakePresetAuto);
                 NamedCommands.registerCommand("Elevator/Coral Default Position", m_DefaultStateCommand);
                 NamedCommands.registerCommand("TestMe",
@@ -309,13 +308,13 @@ public class RobotContainer {
                 // m_DrivetrainSubsystem.registerTelemetry(logger::telemeterize);
 
                 // ====================== Simulation Subsystem ====================== //
-                // if (!RobotBase.isReal()) {
-                // DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
-                // DriverStation.silenceJoystickConnectionWarning(true);
-                // m_SimulationSubsystem.setDefaultCommand(new InstantCommand(() -> {
-                // m_SimulationSubsystem.SimulationOutput(m_DrivetrainSubsystem);
-                // }, m_SimulationSubsystem));
-                // }
+                if (!RobotBase.isReal()) {
+                        DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
+                        DriverStation.silenceJoystickConnectionWarning(true);
+                        m_SimulationSubsystem.setDefaultCommand(new InstantCommand(() -> {
+                                m_SimulationSubsystem.SimulationOutput(m_DrivetrainSubsystem);
+                        }, m_SimulationSubsystem));
+                }
 
                 // ====================== Limelight Subsystems ====================== //
                 m_LeftReefLimeLightSubsystem.updateOdometry(m_DrivetrainSubsystem);

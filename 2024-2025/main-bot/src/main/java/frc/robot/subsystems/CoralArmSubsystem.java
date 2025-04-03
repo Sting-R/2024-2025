@@ -41,6 +41,10 @@ public class CoralArmSubsystem extends SubsystemBase {
     private double lvl2Position = CoralArmConstants.kCoralEncoderOuttakelvl2Position;
     private double lvl3Position = CoralArmConstants.kCoralEncoderOuttakelvl3Position;
     private double lvl4Position = CoralArmConstants.kCoralEncoderOuttakelvl4Position;
+    private double lowerAlgaeStg1Position = CoralArmConstants.kCoralEncoderKickLowerCoralOffStg1;
+    private double lowerAlgaeStg2Position = CoralArmConstants.kCoralEncoderKickLowerCoralOffStg2;
+    private double upperAlgaeStg1Position = CoralArmConstants.kCoralEncoderKickUpperCoralOffStg1;
+    private double upperAlgaeStg2Position = CoralArmConstants.kCoralEncoderKickUpperCoralOffStg2;
 
     // Test values for motion magic
     private MotionMagicVoltage setVoltage;
@@ -68,9 +72,9 @@ public class CoralArmSubsystem extends SubsystemBase {
         TalonFXConfiguration coralArmMotorConfig = new TalonFXConfiguration();
 
         // Coral Arm Going up
-        coralArmMotorConfig.Slot0.kP = 6; // p pid //4.1
-        coralArmMotorConfig.Slot0.kI = 1.5;
-        coralArmMotorConfig.Slot0.kD = 0.25;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        coralArmMotorConfig.Slot0.kP = 3; // 6; // p pid //4.1
+        coralArmMotorConfig.Slot0.kI = 2.25; // 2.25;
+        coralArmMotorConfig.Slot0.kD = 0.3; // 0.55;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot0.kV = 0;
         coralArmMotorConfig.Slot0.kA = 0;
         coralArmMotorConfig.Slot0.kG = 0.75;
@@ -82,7 +86,13 @@ public class CoralArmSubsystem extends SubsystemBase {
         coralArmMotorConfig.Slot1.kA = 0;
         coralArmMotorConfig.Slot1.kG = 0.1;
 
-        //
+        // Coral Arm Kickback
+        coralArmMotorConfig.Slot2.kP = 1.5; // p pid //4.1
+        coralArmMotorConfig.Slot2.kI = 1.5;
+        coralArmMotorConfig.Slot2.kD = 0.25;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
+        coralArmMotorConfig.Slot2.kV = 0;
+        coralArmMotorConfig.Slot2.kA = 0;
+        coralArmMotorConfig.Slot2.kG = 0.75;
 
         coralArmMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         coralArmMotorConfig.MotorOutput.PeakForwardDutyCycle = motorMaxCoralSpeed;
@@ -102,7 +112,8 @@ public class CoralArmSubsystem extends SubsystemBase {
     }
 
     public enum CoralArmLevels {
-        intake, lvl1, lvl2, lvl3, lvl4, kickLowerAlgaeOff, kickUpperAlgaeOff, defaultState, inbetween
+        intake, lvl1, lvl2, lvl3, lvl4, kickLowerAlgaeOffStg1, kickLowerAlgaeOffStg2, kickUpperAlgaeOffStg1,
+        kickUpperAlgaeOffStg2, defaultState, inbetween
     }
 
     public void intake() {
@@ -152,6 +163,7 @@ public class CoralArmSubsystem extends SubsystemBase {
         desiredCoralArmState = desiredLevel;
         int inversed = 1;
         switch (desiredCoralArmState) {
+        // Basic coral scoring presets
         case lvl1:
             m_CoralArmMotor.setControl(setVoltage.withPosition(lvl1Position).withSlot(0));
             SmartDashboard.putNumber("Desired Coral Arm Position", lvl1Position);
@@ -168,6 +180,23 @@ public class CoralArmSubsystem extends SubsystemBase {
             m_CoralArmMotor.setControl(setVoltage.withPosition(lvl4Position).withSlot(0));
             inversed *= -1;
             SmartDashboard.putNumber("Desired Coral Arm Position", lvl4Position);
+            break;
+        // Kicking Algae off presets
+        case kickLowerAlgaeOffStg1:
+            m_CoralArmMotor.setControl(setVoltage.withPosition(lowerAlgaeStg1Position).withSlot(0));
+            SmartDashboard.putNumber("Desired Coral Arm Position", lowerAlgaeStg1Position);
+            break;
+        case kickLowerAlgaeOffStg2:
+            m_CoralArmMotor.setControl(setVoltage.withPosition(lowerAlgaeStg2Position).withSlot(0));
+            SmartDashboard.putNumber("Desired Coral Arm Position", lowerAlgaeStg2Position);
+            break;
+        case kickUpperAlgaeOffStg1:
+            m_CoralArmMotor.setControl(setVoltage.withPosition(upperAlgaeStg1Position).withSlot(0));
+            SmartDashboard.putNumber("Desired Coral Arm Position", upperAlgaeStg1Position);
+            break;
+        case kickUpperAlgaeOffStg2:
+            m_CoralArmMotor.setControl(setVoltage.withPosition(upperAlgaeStg2Position).withSlot(0));
+            SmartDashboard.putNumber("Desired Coral Arm Position", upperAlgaeStg2Position);
             break;
         }
         double intakePower = -0.5 * inversed;
@@ -188,7 +217,7 @@ public class CoralArmSubsystem extends SubsystemBase {
      * @param desiredPosition
      */
     public void outtake(double desiredPosition, boolean ejectCoral) {
-        m_CoralArmMotor.setControl(setVoltage.withPosition(desiredPosition).withSlot(0));
+        m_CoralArmMotor.setControl(setVoltage.withPosition(desiredPosition).withSlot(2));
 
         SmartDashboard.putNumber("Desired Coral Arm Position", desiredPosition);
         double inversed = 1;

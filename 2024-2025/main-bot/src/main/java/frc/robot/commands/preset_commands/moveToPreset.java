@@ -52,7 +52,7 @@ public class moveToPreset extends Command {
             isLvl3or4 = true;
             break;
         case 4:
-            desiredCoralLevel = CoralArmLevels.lvl4;
+            desiredCoralLevel = CoralArmLevels.lvl3;
             // Level 3 because the values are very similar
             desiredElevatorLevel = ElevatorPresets.Level4;
             isLvl3or4 = true;
@@ -82,9 +82,9 @@ public class moveToPreset extends Command {
             // Checks if Kickback is needed (level 3 and 4)
             if (desiredElevatorLevel == ElevatorPresets.Level3) {
                 // double position = CoralArmConstants.kCoralEncoderOuttakelvl3Position + 1;
-                m_CoralArm.outtake(CoralArmConstants.kCoralEncoderOuttakelvl3Position - 2, true);
+                m_CoralArm.outtake(CoralArmConstants.kCoralEncoderOuttakelvl3Position - 1.5, true);
             } else if (desiredElevatorLevel == ElevatorPresets.Level4) {
-                m_CoralArm.outtake(CoralArmConstants.kCoralEncoderOuttakelvl4Position - 2, true);
+                m_CoralArm.outtake(CoralArmConstants.kCoralEncoderOuttakelvl4Position - 1, true);
             }
             // otherwise outtakes normally
             else {
@@ -133,6 +133,18 @@ public class moveToPreset extends Command {
     }
 
     public boolean isInDesiredState(ElevatorPresets elevatorPreset, CoralArmLevels coralArmLevel) {
+        // boolean coralArmIsAligned;
+        // if (coralArmLevel == CoralArmLevels.lvl4) {
+        // // Because the presets for level 3 and level 4 are so close, sometimes the
+        // robot
+        // // gets confused and thinks that it is in level 3 when it should be level 4.
+        // // This logic helps circumvent that confusion
+        // coralArmIsAligned =
+        // m_CoralArm.isCoralArmAtDesiredState(CoralArmLevels.lvl3).getAsBoolean();
+        // } else {
+        // coralArmIsAligned =
+        // m_CoralArm.isCoralArmAtDesiredState(coralArmLevel).getAsBoolean();
+        // }
         return m_Elevator.isElevatorAtDesiredState(elevatorPreset).getAsBoolean()
                 && m_CoralArm.isCoralArmAtDesiredState(coralArmLevel).getAsBoolean();
 

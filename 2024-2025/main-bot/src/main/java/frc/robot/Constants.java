@@ -35,10 +35,10 @@ public class Constants {
     public static final double kMaxMotorElevatorSpeed = 0.8;
     public static final int kLeftElevatorEncoderID1 = 9;
     public static final int kLeftElevatorEncoderID2 = 8;
-    public static final double kLeftElevatorEncoderBottomValue = 0;
-    public static final double kLeftElevatorEncoderTopValue = 16.09;
-    public static final double kRightElevatorEncoderBottomValue = 0;
-    public static final double kRightElevatorEncoderTopValue = 15.13;
+    public static final double kLeftElevatorEncoderBottomValue = -0.08;
+    public static final double kLeftElevatorEncoderTopValue = 14.777;
+    public static final double kRightElevatorEncoderBottomValue = -0.08;
+    public static final double kRightElevatorEncoderTopValue = 14.777;
 
     // // As measured from intake
     // public static final Length MIN_HEIGHT_FROM_FLOOR =
@@ -51,13 +51,15 @@ public class Constants {
 
     public static class ElevatorPreset {
       // PLACEHOLDER VALUES!!!
-      public static final double level1EncoderValue = 3.0576; // 2.9785;
-      public static final double level2EncoderValue = 8.6367; // 7.844726;
-      public static final double level3EncoderValue = 0.3645; // 15.8208984375;
-      public static final double level4EncoderValue = 15.0399; // 15.642578125;
-      public static final double intakeEncoderValue = 12.3576171875;
-      public static final double kickLowerAlgaeOff = 2.773925; // Temp
-      public static final double kickUpperAlgaeOff = 15.370605; // Temp
+      public static final double level1EncoderValue = 2.70263671875; // 3.0576
+      public static final double level2EncoderValue = 7.4169921875; // 8.6367
+      public static final double level3EncoderValue = -0.07; // 0.3645
+      public static final double level4EncoderValue = 13.53759765625; // 15.0399
+      public static final double intakeEncoderValue = 12.1176; // 12.3576171875
+      public static final double kickLowerAlgaeOffStg1 = 12.669433; // 2.773925
+      public static final double kickLowerAlgaeOffStg2 = 13.663925; // Temp
+      public static final double kickUpperAlgaeOffStg1 = 2.844725; // Temp
+      public static final double kickUpperAlgaeOffStg2 = 14.599; // Temp
 
       public static final double defaultStateEncoderValue = 0.8;
     }
@@ -75,15 +77,18 @@ public class Constants {
     public static final double kMaxArmSpeed = 0.7;
 
     // Levels
-    public static final double kCoralEncoderOuttakelvl1Position = -0.1176; // -0.033398;
-    public static final double kCoralEncoderOuttakelvl2Position = -0.1772; // 0.1;
-    public static final double kCoralEncoderOuttakelvl3Position = -9.1245; // 0.80595703125;
-    public static final double kCoralEncoderOuttakelvl4Position = -8.7463; // 8.74560546875;
+    public static final double kCoralEncoderOuttakelvl1Position = -0.1176; // -0.27099609375
+    public static final double kCoralEncoderOuttakelvl2Position = -0.1772; // -0.416015625
+    public static final double kCoralEncoderOuttakelvl3Position = -9.1245; // -8.60791015625x
+    public static final double kCoralEncoderOuttakelvl4Position = -9.1463; // -8.51220703125
     // Aux actions
-    public static final double kCoralEncoderIntakePosition = -1.3392578125;
+    public static final double kCoralEncoderIntakePosition = -0.9909; // 1.3392578125
     public static final double kCoralEncoderDefaultPosition = 0.02978515625; // Temp
-    public static final double kCoralEncoderKickUpperCoralOff = -6;
-    public static final double kCoralEncoderKickLowerCoralOff = -4.309;
+
+    public static final double kCoralEncoderKickLowerCoralOffStg1 = -4.309; // -4.309
+    public static final double kCoralEncoderKickLowerCoralOffStg2 = -1;
+    public static final double kCoralEncoderKickUpperCoralOffStg1 = -0.2719; // -6
+    public static final double kCoralEncoderKickUpperCoralOffStg2 = -4.9160;
     // Boundries
     public static final double kCoralEncoderTopPosition = -16.5;
     public static final double kCoralEncoderBottomPosition = 0.3;

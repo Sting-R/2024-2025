@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.200470890410959,
-        "y": 3.8296660958904107
+        "x": 3.380779109589041,
+        "y": 4.160231164383561
       },
       "prevControl": {
-        "x": 2.1186215753424653,
-        "y": 3.724486301369863
+        "x": 0.9165667808219178,
+        "y": 4.085102739726027
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,14 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Elevator/Coral Default Position",
-      "waypointRelativePos": 0.2,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

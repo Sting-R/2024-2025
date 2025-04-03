@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.768667763157893,
-        "y": 4.919819078947368
+        "x": 11.750085616438357,
+        "y": 3.859717465753425
       },
       "prevControl": null,
       "nextControl": {
-        "x": 13.933950297404468,
-        "y": 6.257105037851478
+        "x": 11.419520547945206,
+        "y": 3.859717465753425
       },
       "isLocked": false,
-      "linkedName": "Red Reef - L"
+      "linkedName": "Red Reef - G"
     },
     {
       "anchor": {
-        "x": 16.528253424657535,
-        "y": 7.360702054794521
+        "x": 11.119006849315069,
+        "y": 3.859717465753425
       },
       "prevControl": {
-        "x": 15.528253424657535,
-        "y": 7.360702054794521
+        "x": 11.368371524272753,
+        "y": 3.8419057032564474
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Red Top Intake"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 54.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Red Top",
+  "folder": "Red Middle",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -120.56500000000001
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

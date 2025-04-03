@@ -29,7 +29,7 @@ public class lvl4AutoPreset extends Command {
         // System.out.println("DOES THIS FRIGGING COMMAND WORK????");
         m_Elevator = elevator;
         m_CoralArm = coralArm;
-        desiredCoralLevel = CoralArmLevels.lvl4;
+        desiredCoralLevel = CoralArmLevels.lvl3; // Because lvl 3 and lvl 4 are very close, helps with checking position
         desiredElevatorLevel = ElevatorPresets.Level4;
         this.operatorController = operatorController;
         this.eject = eject;

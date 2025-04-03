@@ -3,6 +3,7 @@ package frc.robot.commands.preset_commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.CoralArmSubsystem;
 import frc.robot.subsystems.CoralArmSubsystem.CoralArmLevels;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -30,8 +31,11 @@ public class defaultState extends Command {
     }
 
     public void execute() {
+        if (m_Elevator.getMotorPosition() <= ElevatorConstants.ElevatorPreset.level2EncoderValue) {
+            m_CoralArm.defaultState();
+        }
         m_Elevator.elevatorMoveToPresetMM(elevatorLevel);
-        m_CoralArm.defaultState();
+
     }
 
     @Override
