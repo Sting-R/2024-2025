@@ -71,9 +71,15 @@ public class moveToPreset extends Command {
 
     public void execute() {
 
-        m_Elevator.elevatorMoveToPresetMM(desiredElevatorLevel);
+        // m_Elevator.elevatorMoveToPresetMM(desiredElevatorLevel);
         // Checks if in positon and intake is pressed, checks if override is pressed and
         // in desired state, and checks if auto is pressed
+        if (desiredElevatorLevel == ElevatorPresets.Level4 && m_CoralArm.getMotorPosition() > -7) {
+            // do nothing. This is to let the coral arm go up before the elevator
+        } else {
+            m_Elevator.elevatorMoveToPresetMM(desiredElevatorLevel);
+        }
+
         if ((isInDesiredState(desiredElevatorLevel, desiredCoralLevel)
                 && operatorController.getHID().getLeftStickButton())
                 || (operatorController.getHID().getLeftStickButton()
@@ -96,16 +102,7 @@ public class moveToPreset extends Command {
                 outtakeTimer.start();
             }
         } else {
-            // Basically checks if it is past the level 3 position, and if so, then raises
-            // coral arm
-            if (m_Elevator.getElevatorPosition() > ElevatorConstants.ElevatorPreset.level4EncoderValue - 4
-                    && desiredElevatorLevel == ElevatorPresets.Level4) {
-                m_CoralArm.outtake(desiredCoralLevel, false);
-            } else if (desiredElevatorLevel == ElevatorPresets.Level4) {
-                // Do nothing
-            } else {
-                m_CoralArm.outtake(desiredCoralLevel, false);
-            }
+            m_CoralArm.outtake(desiredCoralLevel, false);
         }
     }
 

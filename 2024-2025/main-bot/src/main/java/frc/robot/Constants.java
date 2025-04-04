@@ -55,7 +55,7 @@ public class Constants {
       public static final double level2EncoderValue = 7.4169921875; // 8.6367
       public static final double level3EncoderValue = -0.07; // 0.3645
       public static final double level4EncoderValue = 13.53759765625; // 15.0399
-      public static final double intakeEncoderValue = 12.1176; // 12.3576171875
+      public static final double intakeEncoderValue = 11.63330078125;// 11.63330078125 12.1176; // 12.3576171875
       public static final double kickLowerAlgaeOffStg1 = 12.669433; // 2.773925
       public static final double kickLowerAlgaeOffStg2 = 13.663925; // Temp
       public static final double kickUpperAlgaeOffStg1 = 2.844725; // Temp
@@ -77,21 +77,21 @@ public class Constants {
     public static final double kMaxArmSpeed = 0.7;
 
     // Levels
-    public static final double kCoralEncoderOuttakelvl1Position = -0.1176; // -0.27099609375
-    public static final double kCoralEncoderOuttakelvl2Position = -0.1772; // -0.416015625
+    public static final double kCoralEncoderOuttakelvl1Position = -0.9976; // -0.27099609375
+    public static final double kCoralEncoderOuttakelvl2Position = -0.9772; // -0.416015625
     public static final double kCoralEncoderOuttakelvl3Position = -9.1245; // -8.60791015625x
     public static final double kCoralEncoderOuttakelvl4Position = -9.1463; // -8.51220703125
     // Aux actions
-    public static final double kCoralEncoderIntakePosition = -0.9909; // 1.3392578125
-    public static final double kCoralEncoderDefaultPosition = 0.02978515625; // Temp
+    public static final double kCoralEncoderIntakePosition = -1.3755859375; // 1.3392578125
+    public static final double kCoralEncoderDefaultPosition = -0.99978515625; // Temp
 
     public static final double kCoralEncoderKickLowerCoralOffStg1 = -4.309; // -4.309
     public static final double kCoralEncoderKickLowerCoralOffStg2 = -1;
-    public static final double kCoralEncoderKickUpperCoralOffStg1 = -0.2719; // -6
+    public static final double kCoralEncoderKickUpperCoralOffStg1 = -0.9719; // -6
     public static final double kCoralEncoderKickUpperCoralOffStg2 = -4.9160;
     // Boundries
     public static final double kCoralEncoderTopPosition = -16.5;
-    public static final double kCoralEncoderBottomPosition = 0.3;
+    public static final double kCoralEncoderBottomPosition = 0.9;
   }
 
   public static class ClimberConstants {

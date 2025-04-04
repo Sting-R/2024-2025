@@ -45,6 +45,7 @@ public class CoralArmSubsystem extends SubsystemBase {
     private double lowerAlgaeStg2Position = CoralArmConstants.kCoralEncoderKickLowerCoralOffStg2;
     private double upperAlgaeStg1Position = CoralArmConstants.kCoralEncoderKickUpperCoralOffStg1;
     private double upperAlgaeStg2Position = CoralArmConstants.kCoralEncoderKickUpperCoralOffStg2;
+    private double intakePower;
 
     // Test values for motion magic
     private MotionMagicVoltage setVoltage;
@@ -62,6 +63,7 @@ public class CoralArmSubsystem extends SubsystemBase {
         desiredCoralArmState = CoralArmLevels.defaultState;
         m_CoralArmLightSensor = new DigitalInput(CoralArmConstants.kCoralLightSensorID);
         SetUpCoralArmMotor();
+        intakePower = 0.4;
 
         setVoltage = new MotionMagicVoltage(0).withSlot(0);
         setVoltage.UpdateFreqHz = 1000;
@@ -127,8 +129,8 @@ public class CoralArmSubsystem extends SubsystemBase {
             m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0);
         } else {
             SmartDashboard.putBoolean("Coral grabbed?", false);
-            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
-            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
         }
         // .withLimitReverseMotion(true));
     }
@@ -145,8 +147,8 @@ public class CoralArmSubsystem extends SubsystemBase {
         } else {
             // SmartDashboard.putBoolean("Coral grabbed?", false);
 
-            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
-            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
+            m_LeftCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
+            m_RightCoralIntakeMotor.set(ControlMode.PercentOutput, intakePower);
         }
         // .withLimitReverseMotion(true));
     }
@@ -321,6 +323,10 @@ public class CoralArmSubsystem extends SubsystemBase {
 
     public BooleanSupplier isCoralInArm() {
         return () -> m_CoralArmLightSensor.get();
+    }
+
+    public double getMotorPosition() {
+        return m_CoralArmMotor.getPosition().getValueAsDouble();
     }
 
     public void sysIdTest() {

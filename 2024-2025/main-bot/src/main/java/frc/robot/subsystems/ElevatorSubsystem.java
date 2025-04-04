@@ -115,7 +115,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         TalonFXConfiguration rightConfig = new TalonFXConfiguration();
 
         leftConfig.Slot0.kP = 25; // p pid //4.1
-        leftConfig.Slot0.kI = 130;
+        leftConfig.Slot0.kI = 140;
         leftConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         leftConfig.Slot0.kV = 0;
         leftConfig.Slot0.kA = 0;
@@ -137,7 +137,7 @@ public class ElevatorSubsystem extends SubsystemBase {// makes elevator subsyste
         leftConfig.CurrentLimits.StatorCurrentLimit = 60;
 
         rightConfig.Slot0.kP = 25; // p pid //4.1
-        rightConfig.Slot0.kI = 130;
+        rightConfig.Slot0.kI = 140;
         rightConfig.Slot0.kD = 0.2;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         rightConfig.Slot0.kV = 0;
         rightConfig.Slot0.kA = 0;
