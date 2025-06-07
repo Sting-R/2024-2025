@@ -7,8 +7,11 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -312,10 +315,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public void XDriveFunction() {
-        this.getModule(0).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(-45));
-        this.getModule(1).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(45));
-        this.getModule(2).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(45));
-        this.getModule(3).apply(new DutyCycleOut(0), new MotionMagicDutyCycle(-45));
+        // System.out.println("X function");
+        this.getModule(0).apply(new DutyCycleOut(0), new PositionDutyCycle(0.125).withSlot(1));
+        this.getModule(1).apply(new DutyCycleOut(0), new PositionDutyCycle(-0.125).withSlot(1));
+        this.getModule(2).apply(new DutyCycleOut(0), new PositionDutyCycle(-0.125).withSlot(1));
+        this.getModule(3).apply(new DutyCycleOut(0), new PositionDutyCycle(0.125).withSlot(1));
     }
 
     public Pose2d getEstimatedPose() {
@@ -348,5 +352,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         cumalativeAcceleration += velocity;
         SmartDashboard.putNumber("Max Velocity", cumalativeAcceleration);
+    }
+
+    public void addTurnMotorSlot1(TalonFX turnMotor) {
+        TalonFXConfiguration TurnMotorConfig = new TalonFXConfiguration();
+
+        // Coral Arm Going up
+        TurnMotorConfig.Slot1.kP = 3; // 6; // p pid //4.1
+        TurnMotorConfig.Slot1.kI = 0; // 2.25;
+        TurnMotorConfig.Slot1.kD = 0.1; // 0.55;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then
+                                        // .52
+        TurnMotorConfig.Slot1.kV = 0;
+        TurnMotorConfig.Slot1.kA = 0;
+        // TurnMotorConfig.Slot1.kG = 0.75;
+
+        turnMotor.getConfigurator().apply(TurnMotorConfig);
     }
 }

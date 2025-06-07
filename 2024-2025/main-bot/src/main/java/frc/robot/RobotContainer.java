@@ -54,6 +54,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
@@ -211,6 +212,12 @@ public class RobotContainer {
                 // Configure the trigger bindings
                 configureBindings(Math.random());
 
+                // Add PID Slot1 to drivetrain
+                // m_DrivetrainSubsystem.addTurnMotorSlot1(m_DrivetrainSubsystem.getModule(0).getSteerMotor());
+                // m_DrivetrainSubsystem.addTurnMotorSlot1(m_DrivetrainSubsystem.getModule(1).getSteerMotor());
+                // m_DrivetrainSubsystem.addTurnMotorSlot1(m_DrivetrainSubsystem.getModule(2).getSteerMotor());
+                // m_DrivetrainSubsystem.addTurnMotorSlot1(m_DrivetrainSubsystem.getModule(3).getSteerMotor());
+
                 // Build an auto chooser. This will use Commands.none() as the default option.
                 autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -275,10 +282,11 @@ public class RobotContainer {
 
                 m_DrivetrainSubsystem.setDefaultCommand(m_DrivetrainSubsystem.applyRequest(this::defaultDriveLogic));
 
-                m_driverController.x().whileTrue(m_RightDriveToTargetOffset);
+                m_driverController.x().whileTrue(
+                                new RunCommand(() -> m_DrivetrainSubsystem.XDriveFunction(), m_DrivetrainSubsystem));
 
                 // // Align to left reef side
-                m_driverController.b().whileTrue(m_LeftDriveToTargetOffset);
+                // m_driverController.b().whileTrue(m_LeftDriveToTargetOffset);
                 // Align to Right reef side
                 // m_driverController.a().whileTrue(m_AltMoveToAprilTagPosition);
 
@@ -331,29 +339,49 @@ public class RobotContainer {
                 m_auxillaryController.pov(270).onTrue(
                                 new InstantCommand(() -> m_CoralArmSubsystem.changeCoralIntakeEncoderPosition(0.2)));
 
-                m_driverController.pov(270).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl4)));
-                m_driverController.pov(270).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl4)));
-                m_driverController.pov(0).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl3)));
-                m_driverController.pov(0).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl3)));
-                m_driverController.pov(90).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl2)));
-                m_driverController.pov(90).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl2)));
-                m_driverController.pov(180).and(m_driverController.leftTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2, CoralArmLevels.lvl1)));
-                m_driverController.pov(180).and(m_driverController.rightTrigger()).onTrue(new InstantCommand(
-                                () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl1)));
+                // Commands to change the position of a preset for a driver. Uses the DPad to
+                // determine which preset, and the left and right triggers to increment and
+                // decrement
+                // m_driverController.pov(270).and(m_driverController.leftTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2,
+                // CoralArmLevels.lvl4)));
+                // m_driverController.pov(270).and(m_driverController.rightTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl4)));
+                // m_driverController.pov(0).and(m_driverController.leftTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2,
+                // CoralArmLevels.lvl3)));
+                // m_driverController.pov(0).and(m_driverController.rightTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl3)));
+                // m_driverController.pov(90).and(m_driverController.leftTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2,
+                // CoralArmLevels.lvl2)));
+                // m_driverController.pov(90).and(m_driverController.rightTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl2)));
+                // m_driverController.pov(180).and(m_driverController.leftTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(-0.2,
+                // CoralArmLevels.lvl1)));
+                // m_driverController.pov(180).and(m_driverController.rightTrigger()).onTrue(new
+                // InstantCommand(
+                // () -> m_CoralArmSubsystem.changeCoralLvlPosition(0.2, CoralArmLevels.lvl1)));
+
+                m_auxillaryController.leftTrigger()
+                                .onTrue(new InstantCommand(() -> m_CoralArmSubsystem.changeCoralLvlPosition(true)));
+                m_auxillaryController.rightTrigger()
+                                .onTrue(new InstantCommand(() -> m_CoralArmSubsystem.changeCoralLvlPosition(false)));
 
                 m_auxillaryController.a().onTrue(m_MoveToPresetLvl1);
                 m_auxillaryController.b().onTrue(m_MoveToPresetLvl2);
                 m_auxillaryController.y().onTrue(m_MoveToPresetLvl3);
                 m_auxillaryController.x().onTrue(m_MoveToPresetLvl4);
-                m_auxillaryController.leftTrigger().onTrue(m_KnockLowerAlgaeOff);
-                m_auxillaryController.rightTrigger().onTrue(m_KnockUpperAlgaeOff);
+                // m_auxillaryController.leftTrigger().onTrue(m_KnockLowerAlgaeOff);
+                // m_auxillaryController.rightTrigger().onTrue(m_KnockUpperAlgaeOff);
                 m_auxillaryController.leftBumper().onTrue(m_IntakePreset);
                 m_auxillaryController.rightBumper().onTrue(m_DefaultStateCommand);
 

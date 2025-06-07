@@ -87,7 +87,8 @@ public class TunerConstants {
                                         // Swerve azimuth does not require much torque output, so we can set a
                                         // relatively low
                                         // stator current limit to help avoid brownouts without impacting performance.
-                                        .withStatorCurrentLimit(Amps.of(60)).withStatorCurrentLimitEnable(true));
+                                        .withStatorCurrentLimit(Amps.of(60)).withStatorCurrentLimitEnable(true))
+                        .withSlot1(new Slot1Configs().withKP(5).withKI(0.2).withKD(0));
         private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
         // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
         private static final Pigeon2Configuration pigeonConfigs = null;
@@ -248,4 +249,5 @@ public class TunerConstants {
                                         odometryStandardDeviation, visionStandardDeviation, modules);
                 }
         }
+
 }

@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Command Test Path"
+            "waitTime": 5.0
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Level 3 Preset Command"
+            "pathName": "Red Middle Taxi "
           }
         }
       ]

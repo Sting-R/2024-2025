@@ -74,8 +74,8 @@ public class CoralArmSubsystem extends SubsystemBase {
         TalonFXConfiguration coralArmMotorConfig = new TalonFXConfiguration();
 
         // Coral Arm Going up
-        coralArmMotorConfig.Slot0.kP = 3; // 6; // p pid //4.1
-        coralArmMotorConfig.Slot0.kI = 2.25; // 2.25;
+        coralArmMotorConfig.Slot0.kP = 7; // 6; // p pid //4.1
+        coralArmMotorConfig.Slot0.kI = 3; // 2.25;
         coralArmMotorConfig.Slot0.kD = 0.3; // 0.55;// SmartDashboard.getNumber("d", 0.51); // d pid .5362, then .52
         coralArmMotorConfig.Slot0.kV = 0;
         coralArmMotorConfig.Slot0.kA = 0;
@@ -282,6 +282,38 @@ public class CoralArmSubsystem extends SubsystemBase {
         case lvl4:
             lvl4Position += change;
             System.out.println("new coral arm encoder lvl4 position " + lvl4Position);
+            break;
+        }
+    }
+
+    public void changeCoralLvlPosition(boolean increasing) {
+
+        double change;
+        if (increasing) {
+            change = 0.2;
+        } else {
+            change = -0.2;
+        }
+        switch (getCurrentCoralArmState()) {
+        case lvl1:
+            lvl1Position += change;
+            System.out.println("new coral arm encoder lvl1 position " + lvl1Position);
+            break;
+        case lvl2:
+            lvl2Position += change;
+            System.out.println("new coral arm encoder lvl2 position " + lvl2Position);
+            break;
+        case lvl3:
+            lvl3Position += change;
+            System.out.println("new coral arm encoder lvl3 position " + lvl3Position);
+            break;
+        case lvl4:
+            lvl4Position += change;
+            System.out.println("new coral arm encoder lvl4 position " + lvl4Position);
+            break;
+        case intake:
+            intakePosition += change;
+            System.out.println("new coral arm encoder intake position " + intakePosition);
             break;
         }
     }
