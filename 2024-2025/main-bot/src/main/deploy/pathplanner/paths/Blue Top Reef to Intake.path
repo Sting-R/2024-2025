@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.7864726027397264,
+        "y": 4.911515410958904
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7797517123287676,
+        "y": 6.624443493150684
+      },
+      "isLocked": false,
+      "linkedName": "Blue Reef - L"
+    },
+    {
+      "anchor": {
+        "x": 0.2103595890410959,
+        "y": 7.5560359589041095
+      },
+      "prevControl": {
+        "x": 1.8331335616438402,
+        "y": 7.330650684931508
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Blue Top Intake Waypoint"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 126.25383773744483
+  },
+  "reversed": false,
+  "folder": "Blue Top",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -59.99999999999999
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Middle Taxi "
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Level 4 Preset Command - Move"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Middle Taxi to Reef - G"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Level 4 Preset Command - Eject"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Reef - G to Backing Up"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator/Coral Default Position"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Red Middle Alliance",
+  "choreoAuto": false
+}

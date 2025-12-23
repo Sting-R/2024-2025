@@ -1,0 +1,33 @@
+{
+    "controllerID": 0,
+    "swerveDrive": {
+        "frontLeft": {
+            "driveID": 1,
+            "turnID": 2,
+            "encoderID": 10,
+            "posY": -0.23,
+            "posX": 0.36
+        },
+        "frontRight": {
+            "driveID": 7,
+            "turnID": 8,
+            "encoderID": 12,
+            "posY": 0.23,
+            "posX": 0.36
+        },
+        "backLeft": {
+            "driveID": 3,
+            "turnID": 4,
+            "encoderID": 11,
+            "posY": -0.23,
+            "posX": -0.36
+        },
+        "backRight": {
+            "driveID": 5,
+            "turnID": 6,
+            "encoderID": 9,
+            "posY": 0.23,
+            "posX": -0.36
+        }
+    }
+}

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 17.45984589041096,
+        "y": 7.480907534246576
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 14.948579443042538,
+        "y": 7.529016086878155
+      },
+      "isLocked": false,
+      "linkedName": "Red Top Intake"
+    },
+    {
+      "anchor": {
+        "x": 14.229323630136987,
+        "y": 3.859717465753425
+      },
+      "prevControl": {
+        "x": 16.336478235400143,
+        "y": 3.8212306236481615
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Red Reef - A"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Red Top",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 54.0
+  },
+  "useDefaultConstraints": true
+}

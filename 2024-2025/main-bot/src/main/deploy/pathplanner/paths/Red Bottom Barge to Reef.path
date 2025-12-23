@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 10.427825342465754,
+        "y": 1.8763270547945206
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 14.038339266402307,
+        "y": 1.6430335255948092
+      },
+      "isLocked": false,
+      "linkedName": "Red Bottom Barge - Middle"
+    },
+    {
+      "anchor": {
+        "x": 13.838655821917808,
+        "y": 3.093407534246575
+      },
+      "prevControl": {
+        "x": 14.233145953496752,
+        "y": 1.823341744772891
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Red Reef - D"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "reversed": false,
+  "folder": "Red Bottom",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

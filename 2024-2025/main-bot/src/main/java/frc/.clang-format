@@ -1,0 +1,6 @@
+Language: Java
+BasedOnStyle: Microsoft
+
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveDeclarations: Consecutive
+ColumnLimit: 0
